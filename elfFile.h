@@ -27,6 +27,14 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
  * @param header Header du fichier
  */
 void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index);
+
+/**
+ *
+ * @param elfFile
+ * @param table
+ * @param header
+ * @param name
+ */
 void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, Elf32_Word name);
 
 /**
