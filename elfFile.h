@@ -27,6 +27,8 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
  * @param header Header du fichier
  */
 void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index);
+
+
 void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, Elf32_Word name);
 
 /**
@@ -34,7 +36,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, El
  * @param elfFile fichier ELF
  * @param header Header du fichier
  */
-Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
+Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile);
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
