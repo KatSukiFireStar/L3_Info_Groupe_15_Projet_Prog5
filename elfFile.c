@@ -4,7 +4,7 @@
 
 #include "elfFile.h"
 
-// Todo
+// ToDo
 
 int main(int argc, char *argv[])
 {
