@@ -12,30 +12,34 @@
  * Affiche l'entête ELF de @p elfFile
  * @param elfFile fichier ELF
  */
-void ShowElfHeader(FILE *elfFile);
+Elf32_Ehdr ShowElfHeader(FILE *elfFile);
 
 /**
  * Affiche la table des sections ELF et des détails relatifs à chaque section de @p elfFile
- * @param elfFile fichier ELF
+ * @param elfFile Fichier ELF
+ * @param header Header du fichier
  */
-void ShowSectionTableAndDetails(FILE *elfFile);
+Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
 
 /**
  * Affiche le contenu de la section ... ELF de @p elfFile
  * @param elfFile fichier ELF
+ * @param header Header du fichier
  */
-void ShowSection(FILE *elfFile);
+void ShowSection(FILE *elfFile, Elf32_Section header);
 
 /**
  * Affiche la table des symboles ELF et des détails relatifs à chaque symboles de @p elfFile
  * @param elfFile fichier ELF
+ * @param header Header du fichier
  */
-void ShowSymbolsTableAndDetails(FILE *elfFile);
+Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
  * @param elfFile fichier ELF
+ * @param header Header du fichier
  */
-void ShowReimplantationTablesAndDetails(FILE *elfFile);
+Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header);
 
 #endif //PROJET_PROG_ELFFILE_H
