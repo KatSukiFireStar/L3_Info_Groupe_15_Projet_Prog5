@@ -27,7 +27,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
  * @param header Header du fichier
  */
 void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index);
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Word name);
+void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, Elf32_Word name);
 
 /**
  * Affiche la table des symboles ELF et des détails relatifs à chaque symboles de @p elfFile
