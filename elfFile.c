@@ -40,5 +40,26 @@ void BackToBegin(FILE *file)
 
 int main(int argc, char *argv[])
 {
+    FILE        *elfFile;
+    Elf32_Ehdr  header;
+    Elf32_Shdr  *sectionTable;
+    Elf32_Sym   *symbolTable;
+    Elf32_Rel   *reimplantationTable;
+
+    elfFile = fopen(argv[1], "r");
+
+    header = ShowElfHeader(elfFile);
+    BackToBegin(elfFile);
+    sectionTable = ShowSectionTableAndDetails(elfFile, header);
+    BackToBegin(elfFile);
+    ShowSectionFromIndex(elfFile, sectionTable, 0);
+    symbolTable = ShowSymbolsTableAndDetails(elfFile, header);
+    BackToBegin(elfFile);
+    reimplantationTable = ShowReimplantationTablesAndDetails(elfFile, header);
+
+    (void) reimplantationTable;
+    (void) symbolTable;
+
+    fclose(elfFile);
     return 0;
 }
