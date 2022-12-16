@@ -40,8 +40,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
     Elf32_Sym *symbolTable = malloc(sizeof(Elf32_Sym) * section.sh_entsize);
     fseek(elfFile, section.sh_offset, SEEK_SET);
 
-        int i;
-        for (i = 0; i < section.sh_entsize; i++) {
+        for (int i = 0; i < section.sh_entsize; i++) {
             fread(&symbolTable[i].st_name, sizeof(Elf32_Word), 1, elfFile);
             printf("Nom du symbol: %ls\n", &symbolTable[i].st_name);
             fread(&symbolTable[i].st_size, sizeof(Elf32_Word), 1, elfFile);
@@ -90,8 +89,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
             Elf32_Syminfo *symbolTablee = malloc(sizeof(Elf32_Syminfo) * section.sh_entsize);
             fseek(elfFile, section.sh_offset, SEEK_SET);
 
-            int i;
-            for (i = 0; i < section.sh_entsize; i++) {
+            for (int i = 0; i < section.sh_entsize; i++) {
                 fread(&symbolTablee[i].si_boundto, sizeof(Elf32_Half), 1, elfFile);
                 fread(&symbolTablee[i].si_flags, sizeof(Elf32_Half), 1, elfFile);
                 if ((symbolTablee[i].si_boundto & SYMINFO_BT_SELF)== SYMINFO_BT_SELF){
@@ -114,7 +112,6 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
         else{
             printf("No Symbol Table");
         }
-
 }}
 
 
