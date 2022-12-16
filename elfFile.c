@@ -75,20 +75,20 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
         fread(&sectionTable[i].sh_flags, sizeof( Elf32_Word), 1, elfFile);
         if ((sectionTable[i].sh_flags & SHF_WRITE) == SHF_WRITE)
         //Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus;
-        printf("%s",W);
+        printf("W");
                    
         if ((sectionTable[i].sh_flags & SHF_ALLOC)== SHF_ALLOC) 
         //La section fait partie de l'image mémoire du programme à exécuter.");
-        printf("%s",A);
+        printf("A");
         
                 
         if ((sectionTable[i].sh_flags & SHF_EXECINSTR)== SHF_EXECINSTR)
        //La section contient du code exécutable.\n");
-        printf("%s",X);
+        printf("X");
        
         if ((sectionTable[i].sh_flags & SHF_MASKPROC) == SHF_MASKPROC) 
         //Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur
-        printf("%s",M);
+        printf("M");
 
        
        
@@ -145,3 +145,9 @@ int main(int argc, char *argv[])
     fclose(elfFile);
     return 0;
 }
+
+
+
+
+
+
