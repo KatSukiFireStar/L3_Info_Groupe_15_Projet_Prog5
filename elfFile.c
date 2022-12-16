@@ -3,6 +3,7 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "elfFile.h"
 
 Elf32_Ehdr ShowElfHeader(FILE *elfFile){
@@ -35,7 +36,14 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     {
         printf("ELF32\n");
     }
-    printf("ELF64\n");
+    else if(header.e_ident[4]=='2')
+    {
+        printf("ELF64\n");
+    }
+    else
+    {
+        exit;
+    }
 
     // afficher Data
     printf("\nClasse : \t");
@@ -43,7 +51,15 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     {
         printf("1's complement, Big endian\n");
     }
+    else if(header.e_ident[5]=='2')
+    {
         printf("2's complement, little endian\n");
+    }
+    else
+    {
+        exit;
+    }
+
 
     // afficher version
     printf("Version: \t %d",header.e_ident[6]);
@@ -83,7 +99,15 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
 
     // afficher Version ABI
-    printf("Version ABI : \t 0");
+    printf("\nVersion ABI : \t");
+    if(header.e_version==0)
+    {
+        printf("Aucune\n");
+    }
+    else if(header.e_version==1)
+    {
+        printf("%d\n", header.e_version);
+    }
 
     //afficher type
     printf("type : \t");
@@ -153,7 +177,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     switch (header.e_flags)
     {
         case EF_PARISC_TRAPNIL:
-            printf("SHF_WRITE\n");
+            printf("0x00010000\n");
         case EF_PARISC_EXT:
             printf("0x00020000\n");
         case EF_PARISC_LSB:
