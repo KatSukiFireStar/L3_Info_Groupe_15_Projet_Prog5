@@ -46,20 +46,24 @@ int main(int argc, char *argv[])
     Elf32_Sym   *symbolTable;
     Elf32_Rel   *reimplantationTable;
 
-    elfFile = fopen(argv[1], "r");
+    for (int i = 1; i < argc; i++)
+    {
+        elfFile = fopen(argv[i], "r");
 
-    header = ShowElfHeader(elfFile);
-    BackToBegin(elfFile);
-    sectionTable = ShowSectionTableAndDetails(elfFile, header);
-    BackToBegin(elfFile);
-    ShowSectionFromIndex(elfFile, sectionTable, 0);
-    symbolTable = ShowSymbolsTableAndDetails(elfFile, header);
-    BackToBegin(elfFile);
-    reimplantationTable = ShowReimplantationTablesAndDetails(elfFile, header);
+        header = ShowElfHeader(elfFile);
+        BackToBegin(elfFile);
+        sectionTable = ShowSectionTableAndDetails(elfFile, header);
+        BackToBegin(elfFile);
+        ShowSectionFromIndex(elfFile, sectionTable, 0);
+        symbolTable = ShowSymbolsTableAndDetails(elfFile, header);
+        BackToBegin(elfFile);
+        reimplantationTable = ShowReimplantationTablesAndDetails(elfFile, header);
 
-    (void) reimplantationTable;
-    (void) symbolTable;
+        (void) reimplantationTable;
+        (void) symbolTable;
 
-    fclose(elfFile);
+        fclose(elfFile);
+    }
+
     return 0;
 }
