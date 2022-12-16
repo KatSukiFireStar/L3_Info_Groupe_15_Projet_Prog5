@@ -31,11 +31,11 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
     // afficher classe
     printf("\nClasse : \t");
-    if(header.e_ident[4]=='1')
+    if(header.e_ident[4]==1)
     {
         printf("ELF32\n");
     }
-    else if(header.e_ident[4]=='2')
+    else if(header.e_ident[4]==2)
     {
         printf("ELF64\n");
     }
@@ -46,11 +46,11 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
 
     // afficher Data
     printf("\nClasse : \t");
-    if(header.e_ident[5]=='1')
+    if(header.e_ident[5]==1)
     {
         printf("1's complement, Big endian\n");
     }
-    else if(header.e_ident[5]=='2')
+    else if(header.e_ident[5]==2)
     {
         printf("2's complement, little endian\n");
     }
@@ -172,22 +172,48 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     printf("Start of section headers :  \t%d\n",header.e_phoff);
 
     // afficher Fanions
-    printf("Fanions : \t");
-    switch (header.e_flags)
+    printf("Fanions : %x (", header.e_flags);
+    if((header.e_flags & EF_PARISC_TRAPNIL) == EF_PARISC_TRAPNIL)
     {
-        case EF_PARISC_TRAPNIL:
-            printf("0x00010000\n");
-        case EF_PARISC_EXT:
-            printf("0x00020000\n");
-        case EF_PARISC_LSB:
-            printf("0x00040000\n");
-        case EF_PARISC_WIDE:
-            printf("0x00080000\n");
-        case EF_PARISC_NO_KABP:
-            printf("0x00100000\n");
-        case EF_PARISC_LAZYSWAP:
-            printf("0x00400000\n");
+        printf("X, Trap nil pointer dereference");
     }
+    else if((header.e_flags & EF_PARISC_EXT) == EF_PARISC_EXT)
+    {
+        printf("X, Program uses arch. extensions");
+    }
+    else if((header.e_flags & EF_PARISC_LSB) == EF_PARISC_LSB)
+    {
+        printf("X, Program expects little endian");
+    }
+    else if((header.e_flags & EF_PARISC_WIDE) == EF_PARISC_WIDE)
+    {
+        printf("X, Program expects wide mode.");
+    }
+    else if((header.e_flags & EF_PARISC_NO_KABP) == EF_PARISC_NO_KABP)
+    {
+        printf("X, No kernel assisted branch");
+    }
+    else if((header.e_flags & EF_PARISC_LAZYSWAP) == EF_PARISC_LAZYSWAP)
+    {
+        printf("X, Allow lazy swapping");
+    }
+    else if((header.e_flags & EF_PARISC_ARCH) == EF_PARISC_ARCH)
+    {
+        printf("X, Architecture version , ");
+        if((header.e_flags & EFA_PARISC_1_0) == EFA_PARISC_1_0)
+        {
+            printf("PA-RISC 1.0 big-endian");
+        }
+        else if((header.e_flags & EFA_PARISC_1_1) == EFA_PARISC_1_1)
+        {
+            printf("PA-RISC 1.1 big-endian");
+        }
+        else if((header.e_flags & EFA_PARISC_2_0) == EFA_PARISC_2_0)
+        {
+            printf("PA-RISC 2.0 big-endian");
+        }
+    }
+    printf(" )\n");
 
     // afficher Size of this header
     printf("Size of this header:  \t%d\n",header.e_ehsize);
