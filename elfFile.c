@@ -3,6 +3,7 @@
 //
 
 #include "elfFile.h"
+#include <stdlib.h>
 
 void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
 {
@@ -38,7 +39,8 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
     fseek(elfFile, header.e_shoff, SEEK_SET);
     
     //Pour chaque entrée de la table, il est demand´e d’afficher les principales caractéristiques
-    for (int i = 0; i < header.e_shnum; i++) {
+    int i;
+    for (i = 0; i < header.e_shnum; i++) {
         //lire le nom de la section
         fread(&sectionTable[i].sh_name, sizeof(Elf32_Word), 1, elfFile);
         printf("Section: %ls\n", &sectionTable[i].sh_name);
@@ -54,39 +56,27 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
         fread(&sectionTable[i].sh_offset, sizeof(Elf32_Word), 1, elfFile);
         printf("Position de la section : %d\n", sectionTable[i].sh_offset);
 
-        
-         switch (sectionTable[i].sh_flags) {
-            //Lire les attributs de la section
-            fread(&sectionTable[i].sh_flags, sizeof(Elf32_Word), 1, elfFile);
-             case SHF_WRITE:
-                  
-                 if (sectionTable[i].sh_flags == SHF_WRITE) 
-                    printf("Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus.\n");
-                else
-                    printf("Cette section ne contient pas des données qu'il devrait être possible d'écrire durant l'exécution du processus.\n");
+        fread(&sectionTable[i].sh_flags, sizeof(Elf32_Word), 1, elfFile);
+        if ((sectionTable[i].sh_flags & SHF_WRITE) == SHF_WRITE)
+            printf("Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus.\n");
+        else
+            printf("Cette section ne contient pas des données qu'il devrait être possible d'écrire durant l'exécution du processus.\n");
                 
-                 break;
-             case SHF_ALLOC:
-                if (sectionTable[i].sh_flags == SHF_ALLOC) 
-                    printf("La section fait partie de l'image mémoire du programme à exécuter.\n");
-                else
-                    printf("La section ne fait pas partie de l'image mémoire du programme à exécuter.\n");
-                 break;
-             case SHF_EXECINSTR:
-                 if(sectionTable[i].sh_flags == SHF_EXECINSTR) 
-                    printf("La section contient du code exécutable.\n");
-                else
-                    printf("La section ne contient pas du code exécutable.\n");
-                 break;
-             case SHF_MASKPROC:
-                if (sectionTable[i].sh_flags == SHF_MASKPROC) 
-                    printf("Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur.\n");
-                else
-                    printf("Tous les bits contenus dans ce masque ne sont pas réservés à des sémantiques spécifiques au processeur.\n");
-                 break;
-             default:
-                 break;
-         }
+        if ((sectionTable[i].sh_flags & SHF_ALLOC)== SHF_ALLOC) 
+            printf("La section fait partie de l'image mémoire du programme à exécuter.\n");
+        else
+            printf("La section ne fait pas partie de l'image mémoire du programme à exécuter.\n");
+                
+        if ((sectionTable[i].sh_flags & SHF_EXECINSTR)== SHF_EXECINSTR)
+            printf("La section contient du code exécutable.\n");
+        else
+            printf("La section ne contient pas du code exécutable.\n");
+            
+        if ((sectionTable[i].sh_flags & SHF_MASKPROC) == SHF_MASKPROC) 
+            printf("Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur.\n");
+        else
+            printf("Tous les bits contenus dans ce masque ne sont pas réservés à des sémantiques spécifiques au processeur.\n");
+         
         //Lire l'adresse de la section
         fread(&sectionTable[i].sh_addr, sizeof(Elf32_Word), 1, elfFile);
         //l'adresse à  laquelle le premier octet de la section doit se trouver.
