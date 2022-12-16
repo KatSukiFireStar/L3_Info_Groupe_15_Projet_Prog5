@@ -44,9 +44,15 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, El
  */
 Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr symbol);
 
+Elf32_Sym *ShowSymbolsTableDynamicAndDetails(FILE *elfFile, Elf32_Shdr section);
+
 Elf32_Sym *listeTableSymbol(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable);
 
-Elf32_Sym *ShowSymbolsTableAndDetailss(FILE *elfFile, Elf32_Shdr section);
+Elf32_Sym *listeTableSymbolD(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable);
+
+
+
+
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile

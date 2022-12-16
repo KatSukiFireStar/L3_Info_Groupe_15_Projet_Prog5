@@ -40,7 +40,12 @@ Elf32_Sym *listeTableSymbol(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectio
         if(&sectionTable[i].sh_type == SHT_SYMTAB){
             ShowSymbolsTableAndDetails(elfFile, sectionTable[i]);
         }
-        else if(&sectionTable[i].sh_type == SHT_DYNSYM){
+    }
+}
+
+Elf32_Sym *listeTableSymbolD(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable){
+    for(int i = 0; i < header.e_shnum; i++) {
+        if(&sectionTable[i].sh_type == SHT_DYNSYM){
             ShowSymbolsTableAndDetailss(elfFile, sectionTable[i]);
         }
     }
@@ -97,7 +102,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
         }
     return symbolTable;}
 
-Elf32_Sym *ShowSymbolsTableAndDetailss(FILE *elfFile, Elf32_Shdr section){
+Elf32_Sym *ShowSymbolsTableDynamicAndDetails(FILE *elfFile, Elf32_Shdr section){
                 Elf32_Sym *symbolTable = malloc(sizeof(Elf32_Sym) * section.sh_entsize);
                 fseek(elfFile, section.sh_offset, SEEK_SET);
 
