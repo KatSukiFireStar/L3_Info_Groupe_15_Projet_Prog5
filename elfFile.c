@@ -25,10 +25,9 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     printf("En-tête ELF: \n");
     // afficher Magique
     printf("Magique : ");
-    int i=0;
-    while(i<EI_NIDENT){
+    for(int i=0;i<EI_NIDENT;i++)
+    {
         printf("%c " , header.e_ident[i]);
-        i++;
     }
     // afficher classe
     printf("\nClasse : \t");
@@ -42,7 +41,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
     else
     {
-        exit;
+        exit(-1);
     }
 
     // afficher Data
@@ -57,7 +56,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
     else
     {
-        exit;
+        exit(-1);
     }
 
 
