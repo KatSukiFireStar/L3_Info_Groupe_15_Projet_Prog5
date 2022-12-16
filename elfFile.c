@@ -68,20 +68,28 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
             switch (symbolTable[i].st_info) {
                 case STB_LOCAL:
                     printf("Local symbol\n");
+                    break;
                 case STB_GLOBAL:
                     printf("Global symbol\n");
+                    break;
                 case STB_WEAK:
                     printf("Weak symbol\n");
+                    break;
                 case STB_NUM:
                     printf("Number of defined types\n");
+                    break;
                 case STB_LOOS:
                     printf("Start of OS-specific\n");
+                    break;
                 case STB_HIOS:
                     printf("End of OS-specific\n");
+                    break;
                 case STB_LOPROC:
                     printf("Start of processor-specific\n");
+                    break;
                 case STB_HIPROC:
                     printf("End of processor-specific\n");
+                    break;
             }
             printf("Insertion BIND : %c\n", ELF32_ST_BIND(symbolTable[i].st_value));
             printf("Insertion TYPE : %u\n", ELF32_ST_TYPE(symbolTable[i].st_value));
@@ -91,12 +99,16 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
             switch (symbolTable[i].st_other) {
                 case STV_DEFAULT:
                     printf("Default symbol visibility rules\n");
+                    break;
                 case STV_INTERNAL:
                     printf("Processor specific hidden class\n");
+                    break;
                 case STV_HIDDEN:
                     printf("Sym unavailable in other modules\n");
+                break;
                 case STV_PROTECTED:
                     printf("Not preemptible, not exported\n");
+                break;
             }
 
         }
