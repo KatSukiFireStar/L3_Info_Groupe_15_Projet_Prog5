@@ -15,7 +15,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     fread(&header.e_entry,sizeof (Elf32_Addr),1,elfFile);
     fread(&header.e_phoff,sizeof (Elf32_Off),1,elfFile);
     fread(&header.e_shoff,sizeof (Elf32_Off),1,elfFile);
-    fread(&header.e_flags,sizeof (Elf32_Off),1,elfFile);
+    fread(&header.e_flags,sizeof (Elf32_Word),1,elfFile);
     fread(&header.e_ehsize,sizeof (Elf32_Half),1,elfFile);
     fread(&header.e_phentsize,sizeof (Elf32_Half),1,elfFile);
     fread(&header.e_phnum,sizeof (Elf32_Half),1,elfFile);
