@@ -51,4 +51,10 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
  */
 Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header);
 
+/**
+ * Permet le retour au debut du fichier
+ * @param elfFile fichier ELF
+ */
+void BackToBegin(FILE *file);
+
 #endif //PROJET_PROG_ELFFILE_H
