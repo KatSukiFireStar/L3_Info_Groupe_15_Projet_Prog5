@@ -13,10 +13,10 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
     {
         unsigned char byte;
         fread(&byte, sizeof(byte), 1, elfFile);
-        fprintf(stdin, "%x", byte);
+        fprintf(stdout, "%x", byte);
         if ((i + 1) % 4 == 0)
         {
-            fprintf(stdin, " ");
+            fprintf(stdout, " ");
         }
     }
 }
@@ -41,23 +41,26 @@ void BackToBegin(FILE *file)
 int main(int argc, char *argv[])
 {
     FILE        *elfFile;
-    Elf32_Ehdr  header;
-    Elf32_Shdr  *sectionTable;
-    Elf32_Sym   *symbolTable;
-    Elf32_Rel   *reimplantationTable;
+    Elf32_Ehdr  header[argc-1];
+    Elf32_Shdr  *sectionTable[argc-1];
+    Elf32_Sym   *symbolTable[argc-1];
+    Elf32_Rel   *reimplantationTable[argc-1];
 
+    //Permet de recuperer toutes les informations d'un fichier
+    //et les stockes dans des variables
+    //A la fin, le fichier est fermé et on ouvre le fichier suivant
     for (int i = 1; i < argc; i++)
     {
         elfFile = fopen(argv[i], "r");
 
-        header = ShowElfHeader(elfFile);
+        header[i-1] = ShowElfHeader(elfFile);
         BackToBegin(elfFile);
-        sectionTable = ShowSectionTableAndDetails(elfFile, header);
+        sectionTable[i-1] = ShowSectionTableAndDetails(elfFile, header[i-1]);
         BackToBegin(elfFile);
-        ShowSectionFromIndex(elfFile, sectionTable, 0);
-        symbolTable = ShowSymbolsTableAndDetails(elfFile, header);
+        ShowSectionFromIndex(elfFile, sectionTable[i-1], 0);
+        symbolTable[i-1] = ShowSymbolsTableAndDetails(elfFile, header[i-1]);
         BackToBegin(elfFile);
-        reimplantationTable = ShowReimplantationTablesAndDetails(elfFile, header);
+        reimplantationTable[i-1] = ShowReimplantationTablesAndDetails(elfFile, header[i-1]);
 
         (void) reimplantationTable;
         (void) symbolTable;
