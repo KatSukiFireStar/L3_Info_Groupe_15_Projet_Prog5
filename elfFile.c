@@ -265,6 +265,27 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, El
     }
 }
 
+Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
+    if(section.sh_type == 2){
+    Elf32_Sym *symbolTable = malloc(sizeof(Elf32_Sym) * section.sh_entsize);
+    fseek(elfFile, section.sh_offset, SEEK_SET);
+
+        int i;
+        for (i = 0; i < section.sh_entsize; i++) {
+            fread(&symbolTable[i].st_name, sizeof(Elf32_Word), 1, elfFile);
+            printf("Nom du symbol: %ls\n", &symbolTable[i].st_name);
+            fread(&symbolTable[i].st_size, sizeof(Elf32_Word), 1, elfFile);
+            printf("Taille du symbol : %d\n", symbolTable[i].st_size);
+            fread(&symbolTable[i].st_shndx, sizeof(Elf32_Section), 1, elfFile);
+            printf("Index de la table : %d\n", symbolTable[i].st_shndx);
+            fread(&symbolTable[i].st_value, sizeof(Elf32_Addr), 1, elfFile);
+            printf("Valeur du symbol : %d\n", symbolTable[i].st_value);
+
+
+
+}}}
+
+
 void BackToBegin(FILE *file)
 {
     fseek(file, 0, SEEK_SET);
