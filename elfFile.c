@@ -8,7 +8,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     fread(&header.e_machine,sizeof (Elf32_Half),1,elfFile);
     fread(&header.e_version,sizeof (Elf32_Word),1,elfFile);
     fread(&header.e_entry,sizeof (Elf32_Addr),1,elfFile);
-    fread(&header.e_phoff,sizeof (uElf32_Off),1,elfFile);
+    fread(&header.e_phoff,sizeof (Elf32_Off),1,elfFile);
     fread(&header.e_shoff,sizeof (Elf32_Off),1,elfFile);
     fread(&header.e_flags,sizeof (Elf32_Off),1,elfFile);
     fread(&header.e_ehsize,sizeof (Elf32_Half),1,elfFile);
@@ -17,16 +17,17 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     fread(&header.e_shentsize,sizeof (Elf32_Half),1,elfFile);
     fread(&header.e_shnum,sizeof (Elf32_Half),1,elfFile);
     fread(&header.e_shstrndx,sizeof (Elf32_Half),1,elfFile);
-    printf("En-tête ELF: \n);
+    printf("En-tête ELF: \n");
     // afficher Magique
-    printf("Magique : ")
+    printf("Magique : ");
+    int i=0;
     while(i<EI_NIDENT){
         printf("%c " , header.e_ident[i]);
         i++;
     }
     // afficher classe
     printf("\nClasse : \t");
-    if(header.e_ident[4]==1)
+    if(header.e_ident[4]=='1')
     {
         printf("ELF32\n");
     }
@@ -34,25 +35,17 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
 
     // afficher Data
     printf("\nClasse : \t");
-    if(header.e_ident[5]==1)
+    if(header.e_ident[5]=='1')
     {
         printf("1's complement, Big endian\n");
     }
         printf("2's complement, little endian\n");
 
-    // afficher Data
-    //to do
-
-    // afficher Données
-    printf("\nDonnées : \t");
-    if(header.e_Données==1)
-    {
-        printf("complément à 1, système à octets de poids faible d'abord (little endian)\n");
-    }
-    printf("complément à 1, système à octets de poids faible d'abord (big endian)\n");
+    // afficher version
+    printf("Version: \t %d",header.e_ident[6]);
 
     // afficher OS/ABI
-    printf("OS/ABI : \t);
+    printf("OS/ABI : \t");
     switch (header.e_machine)
     {
         case ELFOSABI_NONE:
@@ -86,10 +79,10 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
 
     // afficher Version ABI
-    printf("Version ABI : \t 0")
+    printf("Version ABI : \t 0");
 
     //afficher type
-    printf("type : \t);
+    printf("type : \t");
     switch (header.e_type)
     {
         case ET_NONE:
@@ -107,7 +100,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
 
     //afficher machine
-    printf("machine : \t);
+    printf("machine : \t");
     switch (header.e_machine)
     {
         case EM_NONE:
@@ -152,21 +145,21 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     printf("Start of section headers :  \t%d\n",header.e_phoff);
 
     // afficher Fanions
-    printf("Fanions : \t);
-    switch (header.e_machine)
+    printf("Fanions : \t");
+    switch (header.e_flags)
     {
-        case SHF_WRITE:
+        case EF_PARISC_TRAPNIL:
             printf("SHF_WRITE\n");
-        case SHF_ALLOC:
-            printf("SHF_ALLOC\n");
-        case SHF_EXECINSTR:
-            printf("SHF_EXECINSTR\n");
-        case SHF_RELA_LIVEPATCH:
-            printf("SHF_RELA_LIVEPATCH\n");
-        case SHF_RO_AFTER_INIT:
-            printf("SHF_RO_AFTER_INIT\n");
-        case SHF_MASKPROC:
-            printf("SHF_MASKPROC\n");
+        case EF_PARISC_EXT:
+            printf("0x00020000\n");
+        case EF_PARISC_LSB:
+            printf("0x00040000\n");
+        case EF_PARISC_WIDE:
+            printf("0x00080000\n");
+        case EF_PARISC_NO_KABP:
+            printf("0x00100000\n");
+        case EF_PARISC_LAZYSWAP:
+            printf("0x00400000\n");
     }
 
     // afficher Size of this header
@@ -187,10 +180,11 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     // afficher Section header string table index
     printf("Section header string table index : \t%d",header.e_shstrndx);
 
+    return header;
 
 }
 
 int main(int argc, char *argv[])
 {
-    return 0;
+
 }
