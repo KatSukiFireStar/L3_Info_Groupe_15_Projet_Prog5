@@ -50,10 +50,11 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
             printf("Index de la table : %d\n", symbolTable[i].st_shndx);
             fread(&symbolTable[i].st_value, sizeof(Elf32_Addr), 1, elfFile);
             printf("Valeur du symbol : %d\n", symbolTable[i].st_value);
+        }
 
 
 
-}}}
+}}
 
 
 void BackToBegin(FILE *file)
