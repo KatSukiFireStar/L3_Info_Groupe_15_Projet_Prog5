@@ -6,283 +6,285 @@
 #include <stdlib.h>
 #include "elfFile.h"
 
-Elf32_Ehdr ShowElfHeader(FILE *elfFile){
+Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
     Elf32_Ehdr header;
-    fread(&header.e_ident,sizeof(unsigned char),EI_NIDENT,elfFile);
-    fread(&header.e_type,sizeof (Elf32_Half),1,elfFile);
-    fread(&header.e_machine,sizeof (Elf32_Half),1,elfFile);
-    fread(&header.e_version,sizeof (Elf32_Word),1,elfFile);
-    fread(&header.e_entry,sizeof (Elf32_Addr),1,elfFile);
-    fread(&header.e_phoff,sizeof (Elf32_Off),1,elfFile);
-    fread(&header.e_shoff,sizeof (Elf32_Off),1,elfFile);
-    fread(&header.e_flags,sizeof (Elf32_Word),1,elfFile);
-    fread(&header.e_ehsize,sizeof (Elf32_Half),1,elfFile);
-    fread(&header.e_phentsize,sizeof (Elf32_Half),1,elfFile);
-    fread(&header.e_phnum,sizeof (Elf32_Half),1,elfFile);
-    fread(&header.e_shentsize,sizeof (Elf32_Half),1,elfFile);
-    fread(&header.e_shnum,sizeof (Elf32_Half),1,elfFile);
-    fread(&header.e_shstrndx,sizeof (Elf32_Half),1,elfFile);
+    fread(&header.e_ident, sizeof(unsigned char), EI_NIDENT, elfFile);
+    fread(&header.e_type, sizeof(Elf32_Half), 1, elfFile);
+    fread(&header.e_machine, sizeof(Elf32_Half), 1, elfFile);
+    fread(&header.e_version, sizeof(Elf32_Word), 1, elfFile);
+    fread(&header.e_entry, sizeof(Elf32_Addr), 1, elfFile);
+    fread(&header.e_phoff, sizeof(Elf32_Off), 1, elfFile);
+    fread(&header.e_shoff, sizeof(Elf32_Off), 1, elfFile);
+    fread(&header.e_flags, sizeof(Elf32_Word), 1, elfFile);
+    fread(&header.e_ehsize, sizeof(Elf32_Half), 1, elfFile);
+    fread(&header.e_phentsize, sizeof(Elf32_Half), 1, elfFile);
+    fread(&header.e_phnum, sizeof(Elf32_Half), 1, elfFile);
+    fread(&header.e_shentsize, sizeof(Elf32_Half), 1, elfFile);
+    fread(&header.e_shnum, sizeof(Elf32_Half), 1, elfFile);
+    fread(&header.e_shstrndx, sizeof(Elf32_Half), 1, elfFile);
     // check ELF
-    if(
-            header.e_ident[EI_MAG0]!=ELFMAG0 ||
-            header.e_ident[EI_MAG1]!=ELFMAG1 ||
-            header.e_ident[EI_MAG2]!=ELFMAG2 ||
-            header.e_ident[EI_MAG3]!=ELFMAG3
-            )
-    {
+    if (header.e_ident[EI_MAG0] != ELFMAG0 ||
+        header.e_ident[EI_MAG1] != ELFMAG1 ||
+        header.e_ident[EI_MAG2] != ELFMAG2 ||
+        header.e_ident[EI_MAG3] != ELFMAG3) {
         exit(-1);
     }
-                printf("En-tête ELF: \n");
+
+    printf("En-tête ELF: \n");
     // afficher Magique
     printf("Magique : ");
-    for(int i=0;i<EI_NIDENT;i++)
-    {
-        printf("%x " , header.e_ident[i]);
+    for (int i = 0; i < EI_NIDENT; i++) {
+        printf("0x%x ", header.e_ident[i]);
     }
+    printf("\n");
+
     // afficher classe
-    printf("\nClasse : \t");
-    if(header.e_ident[EI_CLASS]==ELFCLASS32)
-    {
-        printf("ELF32\n");
-    }
-    else if(header.e_ident[EI_CLASS]==ELFCLASS64)
-    {
-        printf("ELF64\n");
-    }
-    else
-    {
+    printf("Classe : \t");
+    if (header.e_ident[EI_CLASS] == ELFCLASS32) {
+        printf("ELF32");
+    } else if (header.e_ident[EI_CLASS] == ELFCLASS64) {
+        printf("ELF64");
+    } else {
         exit(-1);
     }
+    printf("\n");
 
     // afficher Data
-    printf("\nData : \t");
-    if(header.e_ident[EI_DATA]==ELFDATA2LSB)
-    {
-        printf("2's complement, little endian\n");
-    }
-    else if(header.e_ident[EI_DATA]==ELFDATA2MSB)
-    {
-        printf("2's complement, Big endian\n");
-    }
-    else
-    {
+    printf("Data : \t");
+    if (header.e_ident[EI_DATA] == ELFDATA2LSB) {
+        printf("2's complement, little endian");
+    } else if (header.e_ident[EI_DATA] == ELFDATA2MSB) {
+        printf("2's complement, Big endian");
+    } else {
         exit(-1);
     }
-
+    printf("\n");
 
     // afficher version
-    printf("Version: \t %d",header.e_ident[EI_VERSION]);
+    printf("Version: \t %d", header.e_ident[EI_VERSION]);
+    printf("\n");
 
     // afficher OS/ABI
     printf("OS/ABI : \t");
-    switch (header.e_ident[EI_OSABI])
-    {
+    switch (header.e_ident[EI_OSABI]) {
         case ELFOSABI_NONE:
-            printf("UNIX System V ABI\n");
+            printf("UNIX System V ABI");
+            break;
         case ELFOSABI_HPUX:
-            printf("HP-UX\n");
+            printf("HP-UX");
+            break;
         case ELFOSABI_NETBSD:
-            printf("NetBSD\n");
+            printf("NetBSD");
+            break;
         case ELFOSABI_GNU:
-            printf("Object uses GNU ELF extensions\n");
+            printf("Object uses GNU ELF extensions");
+            break;
         case ELFOSABI_SOLARIS:
-            printf("Sun Solaris\n");
+            printf("Sun Solaris");
+            break;
         case ELFOSABI_AIX:
-            printf("IBM AIX\n");
+            printf("IBM AIX");
+            break;
         case ELFOSABI_IRIX:
-            printf("SGI Irix\n");
+            printf("SGI Irix");
+            break;
         case ELFOSABI_FREEBSD:
-            printf("FreeBSD\n");
+            printf("FreeBSD");
+            break;
         case ELFOSABI_TRU64:
-            printf("Compaq TRU64 UNIX\n");
+            printf("Compaq TRU64 UNIX");
+            break;
         case ELFOSABI_MODESTO:
-            printf("Novell Modesto\n");
+            printf("Novell Modesto");
+            break;
         case ELFOSABI_OPENBSD:
-            printf("OpenBSD\n");
+            printf("OpenBSD");
+            break;
         case ELFOSABI_ARM_AEABI:
-            printf("ARM EABI\n");
+            printf("ARM EABI");
+            break;
         case ELFOSABI_ARM:
-            printf("ARM\n");
+            printf("ARM");
+            break;
         case ELFOSABI_STANDALONE:
-            printf("Standalone (embedded) application\n");
+            printf("Standalone (embedded) application");
+            break;
     }
+    printf("\n");
 
     // afficher Version ABI
-    printf("\nVersion ABI : \t%d (",header.e_version);
-    if(header.e_version==EV_NONE)
-    {
-        printf("Aucune )\n");
+    printf("Version ABI : \t%d (", header.e_version);
+    if (header.e_version == EV_NONE) {
+        printf("Aucune )");
+    } else if (header.e_version == EV_CURRENT) {
+        printf(" Actuel " );
     }
-    else if(header.e_version==EV_CURRENT)
-    {
-        printf("%d )\n", header.e_version);
-    }
+    printf(")\n");
 
     //afficher type
     printf("type : \t");
-    switch (header.e_type)
-    {
+    switch (header.e_type) {
         case ET_NONE:
-            printf("No file type\n");
+            printf("No file type");
+            break;
         case ET_REL:
-            printf("Relocatable file\n");
+            printf("Relocatable file");
+            break;
         case ET_EXEC:
-            printf("Executable file\n");
+            printf("Executable file");
+            break;
         case ET_DYN:
-            printf("Shared object file\n");
+            printf("Shared object file");
+            break;
         case ET_CORE:
-            printf("Core file\n");
+            printf("Core file");
+            break;
         case ET_NUM:
-            printf("Fichier Core\n");
+            printf("Fichier Core");
+            break;
     }
+    printf("\n");
 
     //afficher machine
     printf("machine : \t");
-    switch (header.e_machine)
-    {
+    switch (header.e_machine) {
         case EM_NONE:
-            printf("No machine\n");
+            printf("No machine");
+            break;
         case EM_M32:
-            printf("AT&T WE 32100\n");
+            printf("AT&T WE 32100");
+            break;
         case EM_SPARC:
-            printf("SUN SPARC\n");
+            printf("SUN SPARC");
+            break;
         case EM_386:
-            printf("Intel 80386\n");
+            printf("Intel 80386");
+            break;
         case EM_68K:
-            printf("Motorola m68k family\n");
+            printf("Motorola m68k family");
+            break;
         case EM_88K:
-            printf("Motorola m88k family\n");
+            printf("Motorola m88k family");
+            break;
         case EM_IAMCU:
-            printf("Intel MCU\n");
+            printf("Intel MCU");
+            break;
         case EM_860:
-            printf("Intel 80860\n");
+            printf("Intel 80860");
+            break;
         case EM_MIPS:
-            printf("MIPS R3000 big-endian\n");
+            printf("MIPS R3000 big-endian");
+            break;
         case EM_BPF:
-            printf("Linux BPF -- in-kernel virtual machine\n");
+            printf("Linux BPF -- in-kernel virtual machine");
+            break;
+        case EM_X86_64:
+            printf("AMD x86-64 architecture");
+            break;
     }
+    printf("\n");
 
     // afficher Version
     printf("Version : \t");
-    switch (header.e_version)
-    {
+    switch (header.e_version) {
         case EV_NONE:
-            printf("Invalid ELF version\n");
+            printf("Invalid ELF version");
+            break;
         case EV_CURRENT:
-            printf("%d \n",header.e_version);
+            printf("0x%x ", header.e_version);
+            break;
     }
+    printf("\n");
 
     // afficher Entry point address
-    printf("Entry point address :  \t%x\n",header.e_entry);
+    printf("Entry point address :  \t0x%x", header.e_entry);
+    printf("\n");
 
     // afficher Start of program headers
-    printf("Start of program headers :  \t%d\n",header.e_phoff);
+    printf("Start of program headers :  \t%d", header.e_phoff);
+    printf("\n");
 
     // afficher Start of section headers:
-    printf("Start of section headers :  \t%d\n",header.e_shoff);
+    printf("Start of section headers :  \t%d", header.e_shoff);
+    printf("\n");
 
     // afficher Fanions
-    printf("Fanions : %x ( ", header.e_flags);
-    if((header.e_flags & EF_PARISC_TRAPNIL) == EF_PARISC_TRAPNIL)
-    {
-        printf("Trap nil pointer dereference");
-    }
-    else if((header.e_flags & EF_PARISC_EXT) == EF_PARISC_EXT)
-    {
-        printf("Program uses arch. extensions");
-    }
-    else if((header.e_flags & EF_PARISC_LSB) == EF_PARISC_LSB)
-    {
-        printf("Program expects little endian");
-    }
-    else if((header.e_flags & EF_PARISC_WIDE) == EF_PARISC_WIDE)
-    {
-        printf("Program expects wide mode.");
-    }
-    else if((header.e_flags & EF_PARISC_NO_KABP) == EF_PARISC_NO_KABP)
-    {
-        printf("No kernel assisted branch");
-    }
-    else if((header.e_flags & EF_PARISC_LAZYSWAP) == EF_PARISC_LAZYSWAP)
-    {
-        printf("Allow lazy swapping");
-    }
-    else if((header.e_flags & EF_PARISC_ARCH) == EF_PARISC_ARCH)
-    {
-        printf("Architecture version , ");
-        if((header.e_flags & EFA_PARISC_1_0) == EFA_PARISC_1_0)
-        {
-            printf("PA-RISC 1.0 big-endian");
-        }
-        else if((header.e_flags & EFA_PARISC_1_1) == EFA_PARISC_1_1)
-        {
-            printf("PA-RISC 1.1 big-endian");
-        }
-        else if((header.e_flags & EFA_PARISC_2_0) == EFA_PARISC_2_0)
-        {
-            printf("PA-RISC 2.0 big-endian");
+    printf("Fanions : 0x%x (", header.e_flags);
+    if ((header.e_flags & EF_PARISC_TRAPNIL) == EF_PARISC_TRAPNIL) {
+        printf(" Trap nil pointer dereference");
+    }  if ((header.e_flags & EF_PARISC_EXT) == EF_PARISC_EXT) {
+        printf(" Program uses arch. extensions");
+    }  if ((header.e_flags & EF_PARISC_LSB) == EF_PARISC_LSB) {
+        printf(" Program expects little endian");
+    }  if ((header.e_flags & EF_PARISC_WIDE) == EF_PARISC_WIDE) {
+        printf(" Program expects wide mode.");
+    }  if ((header.e_flags & EF_PARISC_NO_KABP) == EF_PARISC_NO_KABP) {
+        printf( " No kernel assisted branch");
+    }  if ((header.e_flags & EF_PARISC_LAZYSWAP) == EF_PARISC_LAZYSWAP) {
+        printf(" Allow lazy swapping");
+    }  if ((header.e_flags & EF_PARISC_ARCH) == EF_PARISC_ARCH) {
+        printf(" Architecture version , ");
+        if ((header.e_flags & EFA_PARISC_1_0) == EFA_PARISC_1_0) {
+            printf(" PA-RISC 1.0 big-endian");
+        }  if ((header.e_flags & EFA_PARISC_1_1) == EFA_PARISC_1_1) {
+            printf(" PA-RISC 1.1 big-endian");
+        }  if ((header.e_flags & EFA_PARISC_2_0) == EFA_PARISC_2_0) {
+            printf(" PA-RISC 2.0 big-endian");
         }
     }
     printf(" )\n");
 
     // afficher Size of this header
-    printf("Size of this header:  \t%d\n",header.e_ehsize);
+    printf("Size of this header:  \t%d\n", header.e_ehsize);
 
     //afficher Size of program headers
-    printf("Size of program headers:  \t%d\n",header.e_phentsize);
+    printf("Size of program headers:  \t%d\n", header.e_phentsize);
 
     // afficher Number of program headers
-    printf("Number of program headers: \t%d\n",header.e_phnum);
+    printf("Number of program headers: \t%d\n", header.e_phnum);
 
     // afficher Size of section headers
-    printf("Size of section headers:  \t%d\n",header.e_shentsize);
+    printf("Size of section headers:  \t%d\n", header.e_shentsize);
 
     // afficher Nombre of section header:
-    printf("Nombre of section header: \t%d\n",header.e_shnum);
+    printf("Nombre of section header: \t%d\n", header.e_shnum);
 
     // afficher Section header string table index
-    printf("Section header string table index : \t%d",header.e_shstrndx);
+    printf("Section header string table index : \t%d\n", header.e_shstrndx);
 
     return header;
 
 }
-void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
-{
+
+void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index) {
     Elf32_Shdr section = table[index];
 
     fseek(elfFile, section.sh_offset, SEEK_SET);
-    for (int i = 0; i < section.sh_size; i++)
-    {
+    for (int i = 0; i < section.sh_size; i++) {
         unsigned char byte;
         fread(&byte, sizeof(byte), 1, elfFile);
-        fprintf(stdin, "%x", byte);
-        if ((i + 1) % 4 == 0)
-        {
+        fprintf(stdin, "0x%x", byte);
+        if ((i + 1) % 4 == 0) {
             fprintf(stdin, " ");
         }
     }
 }
 
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, Elf32_Word name)
-{
-    for (int i = 0; i < header.e_shentsize; i++)
-    {
-        if (table[i].sh_name == name)
-        {
+void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, Elf32_Word name) {
+    for (int i = 0; i < header.e_shentsize; i++) {
+        if (table[i].sh_name == name) {
             ShowSectionFromIndex(elfFile, table, i);
             return;
         }
     }
 }
 
-void BackToBegin(FILE *file)
-{
+void BackToBegin(FILE *file) {
     fseek(file, 0, SEEK_SET);
 }
 
-int main(int argc, char *argv[])
-{
-    FILE        *elfFile;
+int main(int argc, char *argv[]) {
+    FILE *elfFile;
 //    Elf32_Ehdr  header;
 //    Elf32_Shdr  *sectionTable;
 //    Elf32_Sym   *symbolTable;
@@ -302,7 +304,7 @@ int main(int argc, char *argv[])
 //    (void) reimplantationTable;
 //    (void) symbolTable;
 
-    (void)ShowElfHeader(elfFile);
+    (void) ShowElfHeader(elfFile);
 
     fclose(elfFile);
     return 0;
