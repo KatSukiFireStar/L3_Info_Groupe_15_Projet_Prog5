@@ -50,7 +50,59 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
 
          //Lire le type de la section
         fread(&sectionTable[i].sh_type, sizeof(Elf32_Word), 1, elfFile);
-        printf("Nom du Type de la section : %s\n", sectionTable[i].sh_type);
+        switch (sectionTable[i].sh_type){
+            case 0:
+                printf("Type de la section : SHT_NULL\n");
+                break;
+            case 1:
+                printf("Type de la section : SHT_PROGBITS\n");
+                break;
+            case 2:
+                printf("Type de la section : SHT_SYMTAB\n");
+                break;
+            case 3:
+                printf("Type de la section : SHT_STRTAB\n");
+                break;
+            case 4:
+                printf("Type de la section : SHT_RELA\n");
+                break;
+            case 5:
+                printf("Type de la section : SHT_HASH\n");
+                break;
+            case 6:
+                printf("Type de la section : SHT_DYNAMIC\n");
+                break;
+            case 7:
+                printf("Type de la section : SHT_NOTE\n");
+                break;
+            case 8:
+                printf("Type de la section : SHT_NOBITS\n");
+                break;
+            case 9:
+                printf("Type de la section : SHT_REL\n");
+                break;
+            case 10:
+                printf("Type de la section : SHT_SHLIB\n");
+                break;
+            case 11:
+                printf("Type de la section : SHT_DYNSYM\n");
+                break;
+            case 0x70000000:
+                printf("Type de la section : SHT_LOPROC\n");
+                break;
+            case 0x7fffffff:
+                printf("Type de la section : SHT_HIPROC\n");
+                break;
+            case 0x80000000:
+                printf("Type de la section : SHT_LOUSER\n");
+                break;
+
+
+
+
+
+        }
+
 
          //Lire l'adresse de la section
         fread(&sectionTable[i].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
@@ -93,9 +145,6 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
         printf("M");
 
        
-       
-        
-
         //Lire l'indice de la table des en-têtes de sections
         fread(&sectionTable[i].sh_link, sizeof(Elf32_Word), 1, elfFile);
         //lien vers un indice de la table des en-têtes de  sections,
