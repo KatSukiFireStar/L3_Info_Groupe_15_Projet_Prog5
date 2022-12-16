@@ -27,15 +27,15 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     printf("Magique : ");
     for(int i=0;i<EI_NIDENT;i++)
     {
-        printf("%c " , header.e_ident[i]);
+        printf("%x " , header.e_ident[i]);
     }
     // afficher classe
     printf("\nClasse : \t");
-    if(header.e_ident[4]==1)
+    if(header.e_ident[EI_CLASS]==ELFCLASS32)
     {
         printf("ELF32\n");
     }
-    else if(header.e_ident[4]==2)
+    else if(header.e_ident[EI_CLASS]==ELFCLASS64)
     {
         printf("ELF64\n");
     }
@@ -45,14 +45,14 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
 
     // afficher Data
-    printf("\nClasse : \t");
-    if(header.e_ident[5]==1)
-    {
-        printf("1's complement, Big endian\n");
-    }
-    else if(header.e_ident[5]==2)
+    printf("\nData : \t");
+    if(header.e_ident[EI_DATA]==ELFDATA2LSB)
     {
         printf("2's complement, little endian\n");
+    }
+    else if(header.e_ident[EI_DATA]==ELFDATA2MSB)
+    {
+        printf("2's complement, Big endian\n");
     }
     else
     {
@@ -61,11 +61,11 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
 
 
     // afficher version
-    printf("Version: \t %d",header.e_ident[6]);
+    printf("Version: \t %d",header.e_ident[EI_VERSION]);
 
     // afficher OS/ABI
     printf("OS/ABI : \t");
-    switch (header.e_machine)
+    switch (header.e_ident[EI_OSABI])
     {
         case ELFOSABI_NONE:
             printf("UNIX System V ABI\n");
@@ -98,14 +98,14 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
 
     // afficher Version ABI
-    printf("\nVersion ABI : \t");
-    if(header.e_version==0)
+    printf("\nVersion ABI : \t%d (",header.e_version);
+    if(header.e_version==EV_NONE)
     {
-        printf("Aucune\n");
+        printf("Aucune )\n");
     }
-    else if(header.e_version==1)
+    else if(header.e_version==EV_CURRENT)
     {
-        printf("%d\n", header.e_version);
+        printf("%d )\n", header.e_version);
     }
 
     //afficher type
@@ -153,7 +153,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
 
     // afficher Version
-    printf("Version ABI : \t");
+    printf("Version : \t");
     switch (header.e_version)
     {
         case EV_NONE:
@@ -163,43 +163,43 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile){
     }
 
     // afficher Entry point address
-    printf("Entry point address :  \t%d\n",header.e_entry);
+    printf("Entry point address :  \t%x\n",header.e_entry);
 
     // afficher Start of program headers
     printf("Start of program headers :  \t%d\n",header.e_phoff);
 
     // afficher Start of section headers:
-    printf("Start of section headers :  \t%d\n",header.e_phoff);
+    printf("Start of section headers :  \t%d\n",header.e_shoff);
 
     // afficher Fanions
-    printf("Fanions : %x (", header.e_flags);
+    printf("Fanions : %x ( ", header.e_flags);
     if((header.e_flags & EF_PARISC_TRAPNIL) == EF_PARISC_TRAPNIL)
     {
-        printf("X, Trap nil pointer dereference");
+        printf("Trap nil pointer dereference");
     }
     else if((header.e_flags & EF_PARISC_EXT) == EF_PARISC_EXT)
     {
-        printf("X, Program uses arch. extensions");
+        printf("Program uses arch. extensions");
     }
     else if((header.e_flags & EF_PARISC_LSB) == EF_PARISC_LSB)
     {
-        printf("X, Program expects little endian");
+        printf("Program expects little endian");
     }
     else if((header.e_flags & EF_PARISC_WIDE) == EF_PARISC_WIDE)
     {
-        printf("X, Program expects wide mode.");
+        printf("Program expects wide mode.");
     }
     else if((header.e_flags & EF_PARISC_NO_KABP) == EF_PARISC_NO_KABP)
     {
-        printf("X, No kernel assisted branch");
+        printf("No kernel assisted branch");
     }
     else if((header.e_flags & EF_PARISC_LAZYSWAP) == EF_PARISC_LAZYSWAP)
     {
-        printf("X, Allow lazy swapping");
+        printf("Allow lazy swapping");
     }
     else if((header.e_flags & EF_PARISC_ARCH) == EF_PARISC_ARCH)
     {
-        printf("X, Architecture version , ");
+        printf("Architecture version , ");
         if((header.e_flags & EFA_PARISC_1_0) == EFA_PARISC_1_0)
         {
             printf("PA-RISC 1.0 big-endian");
@@ -264,27 +264,6 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, El
         }
     }
 }
-
-Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr section){
-    if(section.sh_type == 2){
-    Elf32_Sym *symbolTable = malloc(sizeof(Elf32_Sym) * section.sh_entsize);
-    fseek(elfFile, section.sh_offset, SEEK_SET);
-
-        int i;
-        for (i = 0; i < section.sh_entsize; i++) {
-            fread(&symbolTable[i].st_name, sizeof(Elf32_Word), 1, elfFile);
-            printf("Nom du symbol: %ls\n", &symbolTable[i].st_name);
-            fread(&symbolTable[i].st_size, sizeof(Elf32_Word), 1, elfFile);
-            printf("Taille du symbol : %d\n", symbolTable[i].st_size);
-            fread(&symbolTable[i].st_shndx, sizeof(Elf32_Section), 1, elfFile);
-            printf("Index de la table : %d\n", symbolTable[i].st_shndx);
-            fread(&symbolTable[i].st_value, sizeof(Elf32_Addr), 1, elfFile);
-            printf("Valeur du symbol : %d\n", symbolTable[i].st_value);
-
-
-
-}}}
-
 
 void BackToBegin(FILE *file)
 {
