@@ -38,7 +38,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, El
 Elf32_Sym *listeTableSymbol(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable){
      for(int i = 0; i < header.e_shnum; i++) {
         if(&sectionTable[i].sh_type == SHT_SYMTAB){
-            ShowSymbolsTableAndDetails(elfFile, sectionTable[i]);
+           return ShowSymbolsTableAndDetails(elfFile, sectionTable[i]);
         }
     }
 }
@@ -46,7 +46,7 @@ Elf32_Sym *listeTableSymbol(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectio
 Elf32_Sym *listeTableSymbolD(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable){
     for(int i = 0; i < header.e_shnum; i++) {
         if(&sectionTable[i].sh_type == SHT_DYNSYM){
-            ShowSymbolsTableAndDetailss(elfFile, sectionTable[i]);
+           return ShowSymbolsTableDynamicAndDetails(elfFile, sectionTable[i]);
         }
     }
 }
