@@ -44,10 +44,8 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
         //lire le nom de la section
         fread(&sectionTable[i].sh_name, sizeof(Elf32_Word), 1, elfFile);
         printf("Section: %ls\n", &sectionTable[i].sh_name);
-        //lire la taille de la section
-        fread(&sectionTable[i].sh_size, sizeof(Elf32_Word), 1, elfFile);
         //Lire la taille de la section
-        fread(&sectionTable[i].sh_type, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[i].sh_size, sizeof(Elf32_Word), 1, elfFile);
         printf("Taille de la section : %d\n", sectionTable[i].sh_size);
         //Lire le type de la section
         fread(&sectionTable[i].sh_type, sizeof(Elf32_Word), 1, elfFile);
@@ -56,7 +54,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
         fread(&sectionTable[i].sh_offset, sizeof(Elf32_Word), 1, elfFile);
         printf("Position de la section : %d\n", sectionTable[i].sh_offset);
 
-        fread(&sectionTable[i].sh_flags, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[i].sh_flags, sizeof( Elf32_Word), 1, elfFile);
         if ((sectionTable[i].sh_flags & SHF_WRITE) == SHF_WRITE)
             printf("Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus.\n");
         else
@@ -78,7 +76,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
             printf("Tous les bits contenus dans ce masque ne sont pas réservés à des sémantiques spécifiques au processeur.\n");
          
         //Lire l'adresse de la section
-        fread(&sectionTable[i].sh_addr, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[i].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
         //l'adresse à  laquelle le premier octet de la section doit se trouver.
         printf("Adresse de la section : %d\n", sectionTable[i].sh_addr);
 
@@ -116,6 +114,26 @@ void BackToBegin(FILE *file)
 {
     fseek(file, 0, SEEK_SET);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int main(int argc, char *argv[])
 {
