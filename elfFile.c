@@ -57,24 +57,17 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
         fread(&sectionTable[i].sh_flags, sizeof( Elf32_Word), 1, elfFile);
         if ((sectionTable[i].sh_flags & SHF_WRITE) == SHF_WRITE)
             printf("Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus.\n");
-        else
-            printf("Cette section ne contient pas des données qu'il devrait être possible d'écrire durant l'exécution du processus.\n");
-                
+                   
         if ((sectionTable[i].sh_flags & SHF_ALLOC)== SHF_ALLOC) 
             printf("La section fait partie de l'image mémoire du programme à exécuter.\n");
-        else
-            printf("La section ne fait pas partie de l'image mémoire du programme à exécuter.\n");
+        
                 
         if ((sectionTable[i].sh_flags & SHF_EXECINSTR)== SHF_EXECINSTR)
             printf("La section contient du code exécutable.\n");
-        else
-            printf("La section ne contient pas du code exécutable.\n");
-            
+       
         if ((sectionTable[i].sh_flags & SHF_MASKPROC) == SHF_MASKPROC) 
             printf("Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur.\n");
-        else
-            printf("Tous les bits contenus dans ce masque ne sont pas réservés à des sémantiques spécifiques au processeur.\n");
-         
+       
         //Lire l'adresse de la section
         fread(&sectionTable[i].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
         //l'adresse à  laquelle le premier octet de la section doit se trouver.
@@ -108,6 +101,24 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
         
     }
     return sectionTable;
+}
+
+/*L’objectif de cette étape est de construire un programme capable de lire et d’afficher les tables de
+réimplantation(repositionnement) d’un fichier ELF pour machine ARM. Pour chaque entrée, il est demandé d’afficher les
+informations suivantes :
+— la cible de la réimplantation 3
+;
+— le type de réimplantation à effectuer (noter que chaque architecture mat´erielle dispose d’une
+spécification distincte pour les types de réimplantation) ;
+— l’index de l’entrée concernée dans la table des symboles (le symbole impliqu´e dans la réimplantation,
+par exemple, dans le cas d’un appel de fonction, le symbole impliqu´e est le nom de la fonction appel´ee).
+3. Le champ correspondant est nomme offset mais son contenu dépend du type de fichier ELF qui le contient. Pour un fichier
+translatable, il s’agit effectivement d’un offset à partir du début de la section concernée. Pour un fichier ELF ex´ecutable ou une
+biblioth`eque partag´ee, le champ correspond en fait à l’adresse mémoire de l’element concerné.
+*/
+/*La fonction ShowReimplantationTablesAndDetails permet d'afficher des tables de réimplantation*/
+Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header){
+
 }
 
 void BackToBegin(FILE *file)
