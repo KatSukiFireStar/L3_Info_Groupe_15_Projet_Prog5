@@ -67,11 +67,3 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
  * @return Un tableau de Relocation correpondant à la table des sections
  */
 Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header);
-
-/**
- * Permet le retour au debut du fichier
- * @param file fichier
- */
-void BackToBegin(FILE *file);
-
-#endif //PROJET_PROG_ELFFILE_H

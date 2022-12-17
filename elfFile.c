@@ -78,11 +78,6 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, un
     }
 }
 
-void BackToBegin(FILE *file)
-{
-    fseek(file, 0, SEEK_SET);
-}
-
 int main(int argc, char *argv[])
 {
     FILE *elfFile;
@@ -99,12 +94,12 @@ int main(int argc, char *argv[])
         elfFile = fopen(argv[i], "r");
 
         header[i - 1] = ShowElfHeader(elfFile);
-        BackToBegin(elfFile);
+        rewind(elfFile);
         sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
-        BackToBegin(elfFile);
+        rewind(elfFile);
         ShowSectionFromIndex(elfFile, sectionTable[i - 1], 0);
         symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1]);
-        BackToBegin(elfFile);
+        rewind(elfFile);
         reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
 
         (void) reimplantationTable;
