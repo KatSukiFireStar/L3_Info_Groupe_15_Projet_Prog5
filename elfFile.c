@@ -52,6 +52,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, un
             if (currentChar == '\0')
             {
                 nameId = i - currentIndex;
+                break;
             }
             currentIndex++;
         }
