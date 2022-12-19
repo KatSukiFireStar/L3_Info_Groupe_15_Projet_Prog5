@@ -46,7 +46,7 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index);
  * @param header Header du fichier @p elfFile
  * @param name Nom de la section à afficher
  */
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, unsigned char *name);
+void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name);
 
 /**
  * Affiche la table des symboles ELF et des détails relatifs à chaque symboles de @p elfFile
