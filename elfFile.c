@@ -203,46 +203,45 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     return sectionTable;
 }
 
-
-int nbTableReimplantation(Elf32_Shdr *TableSection, Elf32_Ehdr header)
-{
-    int compteur = 0;
-    int i;
-    for (i = 0; i < header.e_shnum; i++)
-    {
-        if (TableSection[i].sh_type == SHT_REL)
-        {
-            compteur++;
-        }
-    }
-    return compteur;
-}
-
-Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header)
-{
-    Elf32_Shdr *TableSection = malloc(header.e_shnum * sizeof(Elf32_Shdr));
-    Elf32_Rel *TableReimplantation = malloc(header.e_shnum * sizeof(Elf32_Rel));//e_shnum=nombre des entrées
-    int i;
-    //Pour chaque entrée de la table des sections
-    for (i = 0; i < header.e_shnum; i++)
-    {
-        //Si c'est une table de réimplantation
-        if (TableSection[i].sh_type == SHT_REL)
-        {
-            rewind(elfFile);//OU fseek(elfFile, sectionTable[i].sh_offset, SEEK_SET);
-            int nb = nbTableReimplantation(TableSection, header);
-            fread(TableReimplantation, sizeof(Elf32_Rel), nb, elfFile);
-            int j;
-            for (j = 0; j < nb; j++)
-            {
-                printf("La cible de la réimplantation est : %d\n", TableReimplantation[j].r_offset);
-                printf("Le type de réimplantation est : %d\n", TableReimplantation[j].r_info);
-                printf("L'index de l'entrée concernée dans la table des symboles est : %d\n",
-                       TableReimplantation[j].r_info >> 8);
-
-            }
-        }
-        return TableReimplantation;
-
-    }
-}
+//int nbTableReimplantation(Elf32_Shdr *TableSection, Elf32_Ehdr header)
+//{
+//    int compteur = 0;
+//    int i;
+//    for (i = 0; i < header.e_shnum; i++)
+//    {
+//        if (TableSection[i].sh_type == SHT_REL)
+//        {
+//            compteur++;
+//        }
+//    }
+//    return compteur;
+//}
+//
+//Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header)
+//{
+//    Elf32_Shdr *TableSection = malloc(header.e_shnum * sizeof(Elf32_Shdr));
+//    Elf32_Rel *TableReimplantation = malloc(header.e_shnum * sizeof(Elf32_Rel));//e_shnum=nombre des entrées
+//    int i;
+//    //Pour chaque entrée de la table des sections
+//    for (i = 0; i < header.e_shnum; i++)
+//    {
+//        //Si c'est une table de réimplantation
+//        if (TableSection[i].sh_type == SHT_REL)
+//        {
+//            rewind(elfFile);//OU fseek(elfFile, sectionTable[i].sh_offset, SEEK_SET);
+//            int nb = nbTableReimplantation(TableSection, header);
+//            fread(TableReimplantation, sizeof(Elf32_Rel), nb, elfFile);
+//            int j;
+//            for (j = 0; j < nb; j++)
+//            {
+//                printf("La cible de la réimplantation est : %d\n", TableReimplantation[j].r_offset);
+//                printf("Le type de réimplantation est : %d\n", TableReimplantation[j].r_info);
+//                printf("L'index de l'entrée concernée dans la table des symboles est : %d\n",
+//                       TableReimplantation[j].r_info >> 8);
+//
+//            }
+//        }
+//        return TableReimplantation;
+//
+//    }
+//}
