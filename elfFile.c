@@ -108,6 +108,8 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
         case ELFOSABI_STANDALONE:
             printf("Standalone (embedded) application");
             break;
+        default:
+            exit(-1);
     }
     printf("\n");
 
@@ -136,6 +138,8 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
         case ET_NUM:
             printf("NUM, Fichier Core");
             break;
+        default:
+            exit(-1);
     }
     printf("\n");
 
@@ -175,6 +179,8 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
         case EM_X86_64:
             printf("AMD x86-64 architecture");
             break;
+        default:
+            printf("Machine not implemented")
     }
     printf("\n");
 
@@ -187,6 +193,8 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
         case EV_CURRENT:
             printf("0x%x ", header.e_version);
             break;
+        default:
+            exit(-1);
     }
     printf("\n");
 
