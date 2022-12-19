@@ -42,7 +42,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, El
  * @param elfFile fichier ELF
  * @param header Header du fichier
  */
-Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr symbol);
+Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr symbol,Elf32_Shdr *sectionTable);
 
 Elf32_Sym *ShowSymbolsTableDynamicAndDetails(FILE *elfFile, Elf32_Shdr section);
 
