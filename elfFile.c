@@ -3,6 +3,7 @@
 //
 
 #include <stdlib.h>
+#include <unistd.h>
 #include "elfFile.h"
 
 void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
@@ -63,7 +64,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, un
         }
     }
 
-    if(nameId == -1)
+    if (nameId == -1)
     {
         exit(-2);
     }
@@ -86,9 +87,29 @@ int main(int argc, char *argv[])
     Elf32_Sym *symbolTable[argc - 1];
     Elf32_Rel *reimplantationTable[argc - 1];
 
-    //Permet de recuperer toutes les informations d'un fichier
-    //et les stockes dans des variables
-    //A la fin, le fichier est fermé et on ouvre le fichier suivant
+    if (argc <= 1)
+    {
+        fprintf(stderr, "Vous n'avez pas mis de fichier en paramètres!");
+        return -3;
+    }
+//    else if (argc <= 2)
+//    {
+//        fprintf(stderr, "Vous n'avez mis qu'un seul fichier en paramètres!");
+//        return -4;
+//    }
+
+    for (int i = 1; i < argc; i++)
+    {
+        if (access(argv[i], R_OK))
+        {
+            fprintf(stderr, "Le fichier %s ne peut pas etre ouvert!", argv[i]);
+            return -5;
+        }
+    }
+
+    // Permet de recuperer toutes les informations d'un fichier
+    // et les stockes dans des variables
+    // A la fin, le fichier est fermé et on ouvre le fichier suivant
     for (int i = 1; i < argc; i++)
     {
         elfFile = fopen(argv[i], "r");
