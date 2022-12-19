@@ -113,7 +113,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
     printf("\n");
 
     // afficher Version ABI
-    printf("ABI Version : \t%d",header.e_ident[EI_VERSION]);
+    printf("ABI Version : \t%d",header.e_ident[EI_ABIVERSION]);
     printf("\n");
 
     //afficher type
