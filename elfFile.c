@@ -5,6 +5,11 @@
 #include "elfFile.h"
 #include <stdlib.h>
 
+
+
+
+
+
 void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
 {
     Elf32_Shdr section = table[index];
@@ -45,8 +50,25 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
     int i;
     for (i = 0; i < header.e_shnum; i++) {
        //Le nom de la section
+       Elf32_Shdr stringTable = sectionTable[header.e_shstrndx];
+       fseek(elfFile, stringTable.sh_offset + sectionTable[i].sh_name, SEEK_SET);
+        /*stringTable.sh_offset + sectionTable[i].sh_name permet de se positionner au début du nom de la section
+         * et de lire le nom de la section
+        fseek(elfFile, stringTable.sh_offset + sectionTable[i].sh_name, SEEK_SET) permet donc de déplacer le curseur 
+        au début du nom de la section
+         */
+        
+        int j = 0;
+        char c;
+        //On veut lire chaque caractére du nom de la section et le stocker dans une varaible nom_section
+        char nom_section[100];
+        while (c != '\0'){
+            fread(&c, sizeof(char), 1, elfFile);
+            nom_section[j] = c;
+            j++;
+        }
+        
         fread(&sectionTable[i].sh_name, sizeof(Elf32_Word), 1, elfFile);
-        printf("Nom de la section : %s\n", sectionTable[i].sh_name);
 
          //Lire le type de la section
         fread(&sectionTable[i].sh_type, sizeof(Elf32_Word), 1, elfFile);
@@ -96,11 +118,6 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
             case 0x80000000:
                 printf("Type de la section : SHT_LOUSER\n");
                 break;
-
-
-
-
-
         }
 
 
@@ -166,9 +183,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header){
     return sectionTable;
 }
 
-void BackToBegin(FILE *file){
-    fseek(file, 0, SEEK_SET);
-}
+
 
 
 int nbTableReimplantation(Elf32_Shdr *TableSection,Elf32_Ehdr header){
@@ -198,40 +213,9 @@ Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header){
                 printf("La cible de la réimplantation est : %d\n", TableReimplantation[j].r_offset);
                 printf("Le type de réimplantation est : %d\n", TableReimplantation[j].r_info);
                 printf("L'index de l'entrée concernée dans la table des symboles est : %d\n", TableReimplantation[j].r_info >> 8);
+               
             }
         }
         return TableReimplantation;
-
+       
 }
-
-
-int main(int argc, char *argv[]){
-    FILE        *elfFile;
-    Elf32_Ehdr  header;
-    Elf32_Shdr  *sectionTable;
-    Elf32_Sym   *symbolTable;
-    Elf32_Rel   *reimplantationTable;
-
-    elfFile = fopen(argv[1], "r");
-
-    header = ShowElfHeader(elfFile);
-    BackToBegin(elfFile);
-    sectionTable = ShowSectionTableAndDetails(elfFile, header);
-    BackToBegin(elfFile);
-    ShowSectionFromIndex(elfFile, sectionTable, 0);
-    symbolTable = ShowSymbolsTableAndDetails(elfFile, header);
-    BackToBegin(elfFile);
-    reimplantationTable = ShowReimplantationTablesAndDetails(elfFile, header);
-
-    (void) reimplantationTable;
-    (void) symbolTable;
-
-    fclose(elfFile);
-    return 0;
-}
-
-
-
-
-
-
