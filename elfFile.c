@@ -34,7 +34,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
     // afficher Magique
     printf("Magic : ");
     for (int i = 0; i < EI_NIDENT; i++) {
-        printf("%x ", header.e_ident[i]);
+        printf("%02hhx ", header.e_ident[i]);
     }
     printf("\n");
 
