@@ -34,7 +34,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 
     printf("ELF Header: \n");
     // afficher Magique
-    printf("Magic : ");
+    printf("Magic: ");
     for (int i = 0; i < EI_NIDENT; i++)
     {
         printf("%02hhx ", header.e_ident[i]);
@@ -42,7 +42,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher classe
-    printf("  Class : \t");
+    printf("  Class: \t");
     if (header.e_ident[EI_CLASS] == ELFCLASS32)
     {
         printf("ELF32");
@@ -58,7 +58,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher Data
-    printf("  Data : \t");
+    printf("  Data: \t");
     if (header.e_ident[EI_DATA] == ELFDATA2LSB)
     {
         printf("2's complement, little endian");
@@ -78,7 +78,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher OS/ABI
-    printf("  OS/ABI : \t");
+    printf("  OS/ABI: \t");
     switch (header.e_ident[EI_OSABI])
     {
         case ELFOSABI_NONE:
@@ -129,11 +129,11 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher Version ABI
-    printf("  ABI Version : \t%d", header.e_ident[EI_ABIVERSION]);
+    printf("  ABI Version: \t%d", header.e_ident[EI_ABIVERSION]);
     printf("\n");
 
     //afficher type
-    printf("  Type : \t");
+    printf("  Type: \t");
     switch (header.e_type)
     {
         case ET_NONE:
@@ -160,7 +160,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     //afficher machine
-    printf("  Machine : \t");
+    printf("  Machine: \t");
     switch (header.e_machine)
     {
         case EM_NONE:
@@ -202,7 +202,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher Version
-    printf("  Version : \t");
+    printf("  Version: \t");
     switch (header.e_version)
     {
         case EV_NONE:
@@ -217,19 +217,19 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher Entry point address
-    printf("  Entry point address :  \t0x%x", header.e_entry);
+    printf("  Entry point address:  \t0x%x", header.e_entry);
     printf("\n");
 
     // afficher Start of program headers
-    printf("  Start of program headers :  \t%d", header.e_phoff);
+    printf("  Start of program headers:  \t%d", header.e_phoff);
     printf("\n");
 
     // afficher Start of section headers:
-    printf("  Start of section headers :  \t%d", header.e_shoff);
+    printf("  Start of section headers:  \t%d", header.e_shoff);
     printf("\n");
 
     // afficher Fanions
-    printf("  Flags : 0x%x (", header.e_flags);
+    printf("  Flags: 0x%x (", header.e_flags);
     if ((header.e_flags & EF_PARISC_TRAPNIL) == EF_PARISC_TRAPNIL)
     {
         printf(" Trap nil pointer dereference");
@@ -288,7 +288,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("  Number of section header: \t%d\n", header.e_shnum);
 
     // afficher Section header string table index
-    printf("  Section header string table index : \t%d\n", header.e_shstrndx);
+    printf("  Section header string table index: \t%d\n", header.e_shstrndx);
 
     return header;
 
@@ -386,6 +386,9 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
         //Lire le type de la section
         fread(&sectionTable[i].sh_type, sizeof(Elf32_Word), 1, elfFile);
 
+        //Lire le type de la section
+        fread(&sectionTable[i].sh_flags, sizeof(Elf32_Word), 1, elfFile);
+
         //Lire l'adresse de la section
         fread(&sectionTable[i].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
 
@@ -395,12 +398,6 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
         //Lire la taille de la section
         fread(&sectionTable[i].sh_size, sizeof(Elf32_Word), 1, elfFile);
 
-        //Lire la taille de l'entrée
-        fread(&sectionTable[i].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
-
-        //Lire le type de la section
-        fread(&sectionTable[i].sh_flags, sizeof(Elf32_Word), 1, elfFile);
-
         //Lire l'indice de la table des en-têtes de sections
         fread(&sectionTable[i].sh_link, sizeof(Elf32_Word), 1, elfFile);
 
@@ -409,6 +406,9 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 
         //Lire la taille de l'alignement
         fread(&sectionTable[i].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire la taille de l'entrée
+        fread(&sectionTable[i].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
     }
 
     Elf32_Shdr stringTable = sectionTable[header.e_shstrndx];
@@ -416,7 +416,8 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     //Affichage des informations de la table des sections
     for (int i = 0; i < header.e_shnum; i++)
     {
-        printf("Nom de la section : ");
+        printf("Section %d\n", i);
+        printf(" Section name: ");
         fseek(elfFile, stringTable.sh_offset + sectionTable[i].sh_name, SEEK_SET);
 
         char c = ' ';
@@ -428,7 +429,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 
         printf("\n");
 
-        printf("Type de la section : %u (", sectionTable[i].sh_type);
+        printf(" Section type: %u (", sectionTable[i].sh_type);
         switch (sectionTable[i].sh_type)
         {
             case SHT_NULL:
@@ -484,51 +485,52 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
         printf(")\n");
 
         //l'adresse à  laquelle le premier octet de la section doit se trouver.
-        printf("Adresse de la section : %x\n", sectionTable[i].sh_addr);
+        printf(" Section address: %x\n", sectionTable[i].sh_addr);
 
 
-        printf("Position de la section : %x\n", sectionTable[i].sh_offset);
+        printf(" Section offset: %x\n", sectionTable[i].sh_offset);
 
 
-        printf("Taille de la section : %u\n", sectionTable[i].sh_size);
+        printf(" Section size: %x\n", sectionTable[i].sh_size);
 
 
         //la taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille.
-        printf("La taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille : %x\n",
+        printf(" Entry size if section holds table: %x\n",
                sectionTable[i].sh_entsize);
 
 
-        printf("Fanions de la section : %x ( ", sectionTable[i].sh_flags);
+        printf(" Section flags: %x ( ", sectionTable[i].sh_flags);
         //Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus;
         if ((sectionTable[i].sh_flags & SHF_WRITE) == SHF_WRITE)
-            printf("Write ");
+            printf("'Write' ");
 
         //La section fait partie de l'image mémoire du programme à exécuter.");
         if ((sectionTable[i].sh_flags & SHF_ALLOC) == SHF_ALLOC)
-            printf("Occupies memory during execution ");
+            printf("'Alloc' ");
 
 
         //La section contient du code exécutable.\n");
         if ((sectionTable[i].sh_flags & SHF_EXECINSTR) == SHF_EXECINSTR)
-            printf("Executable ");
+            printf("'Executable' ");
 
         //Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur
         if ((sectionTable[i].sh_flags & SHF_MASKPROC) == SHF_MASKPROC)
-            printf("Processor-specific ");
+            printf("'Processor-specific' ");
 
-        printf("\n");
+        printf(")\n");
 
         //lien vers un indice de la table des en-têtes de  sections,
-        printf("Lien vers un indice de la table des en-têtes de sections : %x\n", sectionTable[i].sh_link);
+        printf(" Link to another section: %d\n", sectionTable[i].sh_link);
 
 
 
         //informations supplémentaires, dépendant du type de section.
-        printf("Informations supplémentaires, dépendant du type de section : %x\n", sectionTable[i].sh_info);
+        printf(" Additional section information: %d\n", sectionTable[i].sh_info);
 
 
         //la taille de l'alignement, exprimée en puissance de 2.
-        printf("La taille de l'alignement, exprimée en puissance de 2 : %u\n", sectionTable[i].sh_addralign);
+        printf(" Section alignment (exponent of 2): %u\n", sectionTable[i].sh_addralign);
+        printf("\n");
     }
 
     return sectionTable;
@@ -565,9 +567,9 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 //            int j;
 //            for (j = 0; j < nb; j++)
 //            {
-//                printf("La cible de la réimplantation est : %d\n", TableReimplantation[j].r_offset);
-//                printf("Le type de réimplantation est : %d\n", TableReimplantation[j].r_info);
-//                printf("L'index de l'entrée concernée dans la table des symboles est : %d\n",
+//                printf("La cible de la réimplantation est: %d\n", TableReimplantation[j].r_offset);
+//                printf("Le type de réimplantation est: %d\n", TableReimplantation[j].r_info);
+//                printf("L'index de l'entrée concernée dans la table des symboles est: %d\n",
 //                       TableReimplantation[j].r_info >> 8);
 //
 //            }
@@ -583,8 +585,8 @@ int main(int argc, char *argv[])
     FILE *elfFile;
     Elf32_Ehdr header[argc - 1];
     Elf32_Shdr *sectionTable[argc - 1];
-    Elf32_Sym *symbolTable[argc - 1];
-    Elf32_Rel *reimplantationTable[argc - 1];
+//    Elf32_Sym *symbolTable[argc - 1];
+//    Elf32_Rel *reimplantationTable[argc - 1];
 
     if (argc <= 1)
     {
@@ -615,15 +617,17 @@ int main(int argc, char *argv[])
 
         header[i - 1] = ShowElfHeader(elfFile);
         rewind(elfFile);
+        printf("\n");
         sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
-        rewind(elfFile);
-        ShowSectionFromIndex(elfFile, sectionTable[i - 1], 0);
-        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1]);
-        rewind(elfFile);
-        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
-
-        (void) reimplantationTable;
-        (void) symbolTable;
+        (void) sectionTable;
+//        rewind(elfFile);
+//        ShowSectionFromIndex(elfFile, sectionTable[i - 1], 0);
+//        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1]);
+//        rewind(elfFile);
+//        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
+//
+//        (void) reimplantationTable;
+//        (void) symbolTable;
 
         fclose(elfFile);
     }
