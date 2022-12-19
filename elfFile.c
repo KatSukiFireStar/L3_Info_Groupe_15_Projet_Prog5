@@ -481,7 +481,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
                 break;
         }
 
-        printf(")");
+        printf(")\n");
 
         //l'adresse à  laquelle le premier octet de la section doit se trouver.
         printf("Adresse de la section : %x\n", sectionTable[i].sh_addr);
@@ -498,25 +498,25 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
                sectionTable[i].sh_entsize);
 
 
-        printf("Fanions de la section : %x\n", sectionTable[i].sh_flags);
+        printf("Fanions de la section : %x ( ", sectionTable[i].sh_flags);
         //Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus;
         if ((sectionTable[i].sh_flags & SHF_WRITE) == SHF_WRITE)
-            printf("W");
+            printf("Write ");
 
         //La section fait partie de l'image mémoire du programme à exécuter.");
         if ((sectionTable[i].sh_flags & SHF_ALLOC) == SHF_ALLOC)
-            printf("A");
+            printf("Occupies memory during execution ");
 
 
         //La section contient du code exécutable.\n");
         if ((sectionTable[i].sh_flags & SHF_EXECINSTR) == SHF_EXECINSTR)
-            printf("X");
+            printf("Executable ");
 
         //Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur
         if ((sectionTable[i].sh_flags & SHF_MASKPROC) == SHF_MASKPROC)
-            printf("M");
+            printf("Processor-specific ");
 
-
+        printf("\n");
 
         //lien vers un indice de la table des en-têtes de  sections,
         printf("Lien vers un indice de la table des en-têtes de sections : %x\n", sectionTable[i].sh_link);
