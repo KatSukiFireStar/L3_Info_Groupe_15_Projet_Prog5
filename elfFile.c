@@ -159,7 +159,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
         printf("Position de la section : %x\n", sectionTable[i].sh_offset);
 
 
-        printf("Taille de la section : %x\n", sectionTable[i].sh_size);
+        printf("Taille de la section : %u\n", sectionTable[i].sh_size);
 
 
         //la taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille.
