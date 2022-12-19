@@ -32,14 +32,14 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
 
     printf("En-tête ELF: \n");
     // afficher Magique
-    printf("Magique : ");
+    printf("Magic : ");
     for (int i = 0; i < EI_NIDENT; i++) {
-        printf("0x%x ", header.e_ident[i]);
+        printf("%x ", header.e_ident[i]);
     }
     printf("\n");
 
     // afficher classe
-    printf("Classe : \t");
+    printf("Class : \t");
     if (header.e_ident[EI_CLASS] == ELFCLASS32) {
         printf("ELF32");
     } else if (header.e_ident[EI_CLASS] == ELFCLASS64) {
@@ -113,40 +113,35 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
     printf("\n");
 
     // afficher Version ABI
-    printf("Version ABI : \t%d (", header.e_version);
-    if (header.e_version == EV_NONE) {
-        printf("Aucune )");
-    } else if (header.e_version == EV_CURRENT) {
-        printf(" Actuel " );
-    }
-    printf(")\n");
+    printf("ABI Version : \t%d",header.e_ident[EI_VERSION]);
+    printf("\n");
 
     //afficher type
-    printf("type : \t");
+    printf("Type : \t");
     switch (header.e_type) {
         case ET_NONE:
-            printf("No file type");
+            printf("NONE, No file type");
             break;
         case ET_REL:
-            printf("Relocatable file");
+            printf("REL, Relocatable file");
             break;
         case ET_EXEC:
-            printf("Executable file");
+            printf("EXEC, Executable file");
             break;
         case ET_DYN:
-            printf("Shared object file");
+            printf("DYN, Shared object file");
             break;
         case ET_CORE:
-            printf("Core file");
+            printf("CORE, Core file");
             break;
         case ET_NUM:
-            printf("Fichier Core");
+            printf("NUM, Fichier Core");
             break;
     }
     printf("\n");
 
     //afficher machine
-    printf("machine : \t");
+    printf("Machine : \t");
     switch (header.e_machine) {
         case EM_NONE:
             printf("No machine");
@@ -209,7 +204,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
     printf("\n");
 
     // afficher Fanions
-    printf("Fanions : 0x%x (", header.e_flags);
+    printf("Flags : 0x%x (", header.e_flags);
     if ((header.e_flags & EF_PARISC_TRAPNIL) == EF_PARISC_TRAPNIL) {
         printf(" Trap nil pointer dereference");
     }  if ((header.e_flags & EF_PARISC_EXT) == EF_PARISC_EXT) {
@@ -247,7 +242,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile) {
     printf("Size of section headers:  \t%d\n", header.e_shentsize);
 
     // afficher Nombre of section header:
-    printf("Nombre of section header: \t%d\n", header.e_shnum);
+    printf("Number of section header: \t%d\n", header.e_shnum);
 
     // afficher Section header string table index
     printf("Section header string table index : \t%d\n", header.e_shstrndx);
