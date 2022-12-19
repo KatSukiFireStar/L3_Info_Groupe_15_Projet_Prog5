@@ -306,7 +306,14 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
         fprintf(stdout, "%02hhx", byte);
         if ((i + 1) % 4 == 0)
         {
-            fprintf(stdout, " ");
+            if ((i + 1) % 16 == 0)
+            {
+                fprintf(stdout, "\n");
+            }
+            else
+            {
+                fprintf(stdout, " ");
+            }
         }
     }
 }
