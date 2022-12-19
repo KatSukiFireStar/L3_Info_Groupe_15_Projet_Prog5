@@ -43,33 +43,31 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     Elf32_Shdr *sectionTable = malloc(sizeof(Elf32_Shdr) * header.e_shnum);
     fseek(elfFile, header.e_shoff, SEEK_SET);
 
-    
-    int i;
     //Lecture de la table des sections
-    for (i = 0; i < header.e_shnum; i++)
+    for (int i = 0; i < header.e_shnum; i++)
     {
         //Lire le nom de la section
         fread(&sectionTable[i].sh_name, sizeof(Elf32_Word), 1, elfFile);
 
-          //Lire le type de la section
+        //Lire le type de la section
         fread(&sectionTable[i].sh_type, sizeof(Elf32_Word), 1, elfFile);
 
         //Lire l'adresse de la section
         fread(&sectionTable[i].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
 
-         //Lire la position de la section
+        //Lire la position de la section
         fread(&sectionTable[i].sh_offset, sizeof(Elf32_Word), 1, elfFile);
 
         //Lire la taille de la section
         fread(&sectionTable[i].sh_size, sizeof(Elf32_Word), 1, elfFile);
 
-         //Lire la taille de l'entrée
+        //Lire la taille de l'entrée
         fread(&sectionTable[i].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
 
         //Lire le type de la section
         fread(&sectionTable[i].sh_flags, sizeof(Elf32_Word), 1, elfFile);
 
-         //Lire l'indice de la table des en-têtes de sections
+        //Lire l'indice de la table des en-têtes de sections
         fread(&sectionTable[i].sh_link, sizeof(Elf32_Word), 1, elfFile);
 
         //Lire les informations supplémentaires
@@ -78,9 +76,11 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
         //Lire la taille de l'alignement
         fread(&sectionTable[i].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
     }
-       
+
+    Elf32_Shdr stringTable = sectionTable[header.e_shstrndx];
+
     //Affichage des informations de la table des sections
-    for (i = 0; i < header.e_shnum; i++)
+    for (int i = 0; i < header.e_shnum; i++)
     {
         printf("Nom de la section : ");
         fseek(elfFile, stringTable.sh_offset + sectionTable[i].sh_name, SEEK_SET);
@@ -89,84 +89,84 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 
         fseek(elfFile, stringTable.sh_offset + sectionTable[i].sh_name, SEEK_SET); /*permet donc de déplacer le curseur 
         au début du nom de la section*/
-        
-        while (c != '\0'){
+
+        char c = ' ';
+        while (c != '\0')
+        {
             fread(&c, sizeof(char), 1, elfFile);
             printf("%c", c);
         }
 
-        printf("Type de la section : %s\n", sectionTable[i].sh_type);
+        printf("Type de la section : %u (", sectionTable[i].sh_type);
         switch (sectionTable[i].sh_type)
         {
-            case  SHT_NULL:
-                printf(" Section header table entry unused \n");
+            case SHT_NULL:
+                printf("Section header table entry unused");
                 break;
             case SHT_PROGBITS:
-                printf("Program data\n");
+                printf("Program data");
                 break;
             case SHT_SYMTAB:
-                printf("Symbol table\n");
+                printf("Symbol table");
                 break;
             case SHT_STRTAB:
-                printf("String table \n");
+                printf("String table");
                 break;
             case SHT_RELA:
-                printf("Relocation entries with addends\n");
+                printf("Relocation entries with addends");
                 break;
             case SHT_HASH:
-                printf("Symbol hash table \n");
+                printf("Symbol hash table");
                 break;
             case SHT_DYNAMIC:
-                printf("Dynamic linking information \n");
+                printf("Dynamic linking information");
                 break;
             case SHT_NOTE:
-                printf("Notes\n");
+                printf("Notes");
                 break;
             case SHT_NOBITS:
-                printf("Program space with no data (bss)\n");
+                printf("Program space with no data (bss)");
                 break;
-            case SHT_REL		:
-                printf("Relocation entries, no addends\n");
+            case SHT_REL:
+                printf("Relocation entries, no addends");
                 break;
             case SHT_SHLIB:
-                printf("Reserved\n");
+                printf("Reserved");
                 break;
             case SHT_DYNSYM:
-                printf(" Dynamic linker symbol table\n");
+                printf(" Dynamic linker symbol table");
                 break;
             case SHT_LOPROC:
-                printf("TStart of processor-specific \n");
+                printf("TStart of processor-specific");
                 break;
             case SHT_HIPROC:
-                printf("End of processor-specific\n");
+                printf("End of processor-specific");
                 break;
             case SHT_LOUSER:
-                printf("Start of application-specific \n");
+                printf("Start of application-specific");
                 break;
             case SHT_HIUSER:
-                printf("End of application-specific \n");
+                printf("End of application-specific");
                 break;
         }
 
+        printf(")");
 
-        
         //l'adresse à  laquelle le premier octet de la section doit se trouver.
         printf("Adresse de la section : %x\n", sectionTable[i].sh_addr);
 
-       
+
         printf("Position de la section : %x\n", sectionTable[i].sh_offset);
 
 
-        
         printf("Taille de la section : %x\n", sectionTable[i].sh_size);
 
-       
+
         //la taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille.
         printf("La taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille : %x\n",
                sectionTable[i].sh_entsize);
 
 
-        
         printf("Fanions de la section : %x\n", sectionTable[i].sh_flags);
         //Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus;
         if ((sectionTable[i].sh_flags & SHF_WRITE) == SHF_WRITE)
@@ -186,16 +186,16 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
             printf("M");
 
 
-       
+
         //lien vers un indice de la table des en-têtes de  sections,
         printf("Lien vers un indice de la table des en-têtes de sections : %x\n", sectionTable[i].sh_link);
 
 
-        
+
         //informations supplémentaires, dépendant du type de section.
         printf("Informations supplémentaires, dépendant du type de section : %x\n", sectionTable[i].sh_info);
 
-        
+
         //la taille de l'alignement, exprimée en puissance de 2.
         printf("La taille de l'alignement, exprimée en puissance de 2 : %x\n", sectionTable[i].sh_addralign);
     }
