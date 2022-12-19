@@ -303,7 +303,7 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
     {
         unsigned char byte;
         fread(&byte, sizeof(byte), 1, elfFile);
-        fprintf(stdout, "%02x", byte);
+        fprintf(stdout, "%02hhx", byte);
         if ((i + 1) % 4 == 0)
         {
             fprintf(stdout, " ");
