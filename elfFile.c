@@ -418,11 +418,6 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     {
         printf("Nom de la section : ");
         fseek(elfFile, stringTable.sh_offset + sectionTable[i].sh_name, SEEK_SET);
-        /*stringTable.sh_offset + sectionTable[i].sh_name permet de se positionner au début du nom de la section
-         et de lire le nom de la section*/
-
-        fseek(elfFile, stringTable.sh_offset + sectionTable[i].sh_name, SEEK_SET); /*permet donc de déplacer le curseur
-        au début du nom de la section*/
 
         char c = ' ';
         while (c != '\0')
@@ -430,6 +425,8 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
             fread(&c, sizeof(char), 1, elfFile);
             printf("%c", c);
         }
+
+        printf("\n");
 
         printf("Type de la section : %u (", sectionTable[i].sh_type);
         switch (sectionTable[i].sh_type)
