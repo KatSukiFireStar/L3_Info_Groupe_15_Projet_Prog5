@@ -197,7 +197,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 
 
         //la taille de l'alignement, exprimée en puissance de 2.
-        printf("La taille de l'alignement, exprimée en puissance de 2 : %x\n", sectionTable[i].sh_addralign);
+        printf("La taille de l'alignement, exprimée en puissance de 2 : %u\n", sectionTable[i].sh_addralign);
     }
 
     return sectionTable;
