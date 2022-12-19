@@ -56,7 +56,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, un
  * @param header Header du fichier @p elfFile
  * @return Un tableau de Symbol correpondant à la table des sections
  */
-Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Shdr header);
+Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
