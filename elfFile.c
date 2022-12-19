@@ -318,7 +318,7 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
     }
 }
 
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, unsigned char *name)
+void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name)
 {
     Elf32_Shdr stringTable = table[header.e_shstrndx];
 
@@ -329,10 +329,10 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, un
     int skip = 0;
     int currentIndex = 0;
 
-    for (int i = 1; i < stringTable.sh_size; i++)
+    for (int i = 1; i <= stringTable.sh_size; i++)
     {
-        unsigned char currentChar;
-        fscanf(elfFile, "%c", &currentChar);
+        char currentChar;
+        fread(&currentChar, sizeof(char), 1, elfFile);
 
         if (skip == 1)
         {
@@ -347,7 +347,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, un
         {
             if (currentChar == '\0')
             {
-                nameId = i - currentIndex;
+                nameId = i - currentIndex - 1;
                 for (int j = 0; j < header.e_shentsize; j++)
                 {
                     if (table[j].sh_name == nameId)
@@ -619,9 +619,8 @@ int main(int argc, char *argv[])
         rewind(elfFile);
         printf("\n");
         sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
-        (void) sectionTable;
-//        rewind(elfFile);
-//        ShowSectionFromIndex(elfFile, sectionTable[i - 1], 0);
+        rewind(elfFile);
+        ShowSectionFromName(elfFile, sectionTable[i - 1], header[i - 1], ".group");
 //        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1]);
 //        rewind(elfFile);
 //        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
