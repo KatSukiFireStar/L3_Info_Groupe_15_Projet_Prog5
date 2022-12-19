@@ -303,7 +303,7 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
     {
         unsigned char byte;
         fread(&byte, sizeof(byte), 1, elfFile);
-        fprintf(stdout, "%x", byte);
+        fprintf(stdout, "%02x", byte);
         if ((i + 1) % 4 == 0)
         {
             fprintf(stdout, " ");
@@ -341,7 +341,14 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, un
             if (currentChar == '\0')
             {
                 nameId = i - currentIndex;
-                break;
+                for (int j = 0; j < header.e_shentsize; j++)
+                {
+                    if (table[j].sh_name == nameId)
+                    {
+                        ShowSectionFromIndex(elfFile, table, j);
+                        return;
+                    }
+                }
             }
             currentIndex++;
         }
@@ -355,15 +362,6 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, un
     if (nameId == -1)
     {
         exit(-2);
-    }
-
-    for (int i = 0; i < header.e_shentsize; i++)
-    {
-        if (table[i].sh_name == nameId)
-        {
-            ShowSectionFromIndex(elfFile, table, i);
-            return;
-        }
     }
 }
 
