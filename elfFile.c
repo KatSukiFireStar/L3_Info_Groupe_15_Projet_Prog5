@@ -228,43 +228,44 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("  Flags: 0x%x (", header.e_flags);
     if ((header.e_flags & EF_PARISC_TRAPNIL) == EF_PARISC_TRAPNIL)
     {
-        printf(" Trap nil pointer dereference");
+        printf(" 'Trap nil pointer dereference'");
     }
     if ((header.e_flags & EF_PARISC_EXT) == EF_PARISC_EXT)
     {
-        printf(" Program uses arch. extensions");
+        printf(" 'Program uses arch. extensions'");
     }
     if ((header.e_flags & EF_PARISC_LSB) == EF_PARISC_LSB)
     {
-        printf(" Program expects little endian");
+        printf(" 'Program expects little endian'");
     }
     if ((header.e_flags & EF_PARISC_WIDE) == EF_PARISC_WIDE)
     {
-        printf(" Program expects wide mode.");
+        printf(" 'Program expects wide mode'");
     }
     if ((header.e_flags & EF_PARISC_NO_KABP) == EF_PARISC_NO_KABP)
     {
-        printf(" No kernel assisted branch");
+        printf(" 'No kernel assisted branch'");
     }
     if ((header.e_flags & EF_PARISC_LAZYSWAP) == EF_PARISC_LAZYSWAP)
     {
-        printf(" Allow lazy swapping");
+        printf(" 'Allow lazy swapping'");
     }
     if ((header.e_flags & EF_PARISC_ARCH) == EF_PARISC_ARCH)
     {
-        printf(" Architecture version , ");
+        printf(" 'Architecture version, ");
         if ((header.e_flags & EFA_PARISC_1_0) == EFA_PARISC_1_0)
         {
-            printf(" PA-RISC 1.0 big-endian");
+            printf(" 'PA-RISC 1.0 big-endian'");
         }
         if ((header.e_flags & EFA_PARISC_1_1) == EFA_PARISC_1_1)
         {
-            printf(" PA-RISC 1.1 big-endian");
+            printf(" 'PA-RISC 1.1 big-endian'");
         }
         if ((header.e_flags & EFA_PARISC_2_0) == EFA_PARISC_2_0)
         {
-            printf(" PA-RISC 2.0 big-endian");
+            printf(" 'PA-RISC 2.0 big-endian'");
         }
+        printf("'");
     }
     printf(" )\n");
 
