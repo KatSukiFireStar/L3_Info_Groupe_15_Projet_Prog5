@@ -340,6 +340,7 @@ int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, c
             {
                 skip = 0;
             }
+
             continue;
         }
 
@@ -372,7 +373,7 @@ int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, c
     }
 
     printf("No table have the %s name", name);
-    exit(-1);
+    exit(-2);
 }
 
 void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name)
