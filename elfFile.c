@@ -375,7 +375,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, ch
 
 Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 {
-    Elf32_Shdr *sectionTable = malloc(sizeof(Elf32_Shdr) * header.e_shnum);
+    Elf32_Shdr * sectionTable = malloc(sizeof(Elf32_Shdr) * header.e_shnum);
     fseek(elfFile, header.e_shoff, SEEK_SET);
 
     //Lecture de la table des sections
@@ -548,7 +548,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
         }
     }
 
-    Elf32_Sym *symbolTable = malloc(sizeof(Elf32_Sym) * section.sh_entsize);
+    Elf32_Sym * symbolTable = malloc(sizeof(Elf32_Sym) * section.sh_entsize);
     fseek(elfFile, section.sh_offset, SEEK_SET);
 
     for (int i = 0; i < section.sh_entsize; i++)
@@ -757,7 +757,7 @@ int main(int argc, char *argv[])
     FILE *elfFile;
     Elf32_Ehdr header[argc - 1];
     Elf32_Shdr *sectionTable[argc - 1];
-//    Elf32_Sym *symbolTable[argc - 1];
+    Elf32_Sym *symbolTable[argc - 1];
 //    Elf32_Rel *reimplantationTable[argc - 1];
 
     if (argc <= 1)
@@ -793,7 +793,8 @@ int main(int argc, char *argv[])
         sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
         rewind(elfFile);
         ShowSectionFromName(elfFile, sectionTable[i - 1], header[i - 1], ".group");
-//        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1]);
+        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1], sectionTable[i - 1]);
+        (void) symbolTable;
 //        rewind(elfFile);
 //        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
 //
