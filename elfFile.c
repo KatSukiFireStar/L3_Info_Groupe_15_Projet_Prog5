@@ -774,25 +774,25 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
     return symbolTable;
 }
 
-int nbTableReimplantation(Elf32_Shdr *TableSection, Elf32_Ehdr header)
+
+Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable, Elf32_Sym * symbolTable)
 {
-    int compteur = 0;
-    int i;
-    for (i = 0; i < header.e_shnum; i++)
+    uint32_t reimTableSize = 0;
+
+    for (int i = 0; i < header.e_shnum; i++)
     {
-        if (TableSection[i].sh_type == SHT_REL)
+        if (sectionTable[i].sh_type == SHT_REL)
         {
-            compteur++;
+            reimTableSize += (sectionTable[i].sh_size / sectionTable[i].sh_entsize);
         }
     }
-    return compteur;
-}
 
-Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable)
-{
-    Elf32_Rel *TableReimplantation = malloc(header.e_shnum * sizeof(Elf32_Rel));
+    Elf32_Rel *reimplantationTable = malloc(sizeof(Elf32_Rel) * reimTableSize);
 
+    Elf32_Shdr strtab = sectionTable[GetSectionIndexByName(elfFile, sectionTable, header, ".strtab")];
+    Elf32_Shdr strndx = sectionTable[header.e_shstrndx];
 
+    int k = 0;
     // Pour chaque entrée de la table des sections
     for (int i = 0; i < header.e_shnum; i++)
     {
@@ -801,22 +801,52 @@ Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, 
             continue;
         }
 
-        // Si c'est une table de réimplantation
+        printf("Reimplantation from table %d\n", i);
+
         fseek(elfFile, sectionTable[i].sh_offset, SEEK_SET);
-        int nb = nbTableReimplantation(sectionTable, header);
-        fread(TableReimplantation, sizeof(Elf32_Rel), nb, elfFile);
 
-        for (int i1 = 0; i1 < nb; i1++)
+        int tmp = k;
+        for (uint32_t j = 0; j < (sectionTable[i].sh_size / sectionTable[i].sh_entsize); j++)
         {
-            printf("La cible de la réimplantation est: %d\n", TableReimplantation[i1].r_offset);
-            /*afficher le type de réimplantation et l'index de la table des
-        symboles d'une entrée de relocalisation */
-            printf("Le type de réimplantation est: %d\n", ELF32_R_TYPE(TableReimplantation[i1].r_info));
-            printf("L'index de la table des symboles est: %d\n", ELF32_R_SYM(TableReimplantation[i1].r_info));
+            fread(&reimplantationTable[k].r_offset, sizeof(Elf32_Addr), 1, elfFile);
+            fread(&reimplantationTable[k].r_info, sizeof(Elf32_Word), 1, elfFile);
+            k++;
+        }
 
+        k = tmp;
+        for (uint32_t j = 0; j < (sectionTable[i].sh_size / sectionTable[i].sh_entsize); j++)
+        {
+            printf("Reimplantation %d\n", k);
+
+            printf("  Offset: \t%08x\n", reimplantationTable[k].r_offset);
+            printf("  Info: \t%08x\n", reimplantationTable[k].r_info);
+
+            printf("  Type: \t%d\n", ELF32_R_TYPE(reimplantationTable[k].r_info));
+            Elf32_Sym sym = symbolTable[ELF32_R_SYM(reimplantationTable[k].r_info)];
+            printf("  Symbol value: %08x\n", sym.st_value);
+            printf("  Symbol name: \t");
+            unsigned char type = ELF32_ST_TYPE(sym.st_info);
+            if (type == STT_SECTION)
+            {
+                fseek(elfFile, strndx.sh_offset + sectionTable[sym.st_shndx].sh_name, SEEK_SET);
+            }
+            else
+            {
+                fseek(elfFile, strtab.sh_offset + sym.st_name, SEEK_SET);
+            }
+
+            char c = ' ';
+            while (c != '\0')
+            {
+                fread(&c, sizeof(char), 1, elfFile);
+                printf("%c", c);
+            }
+            printf("\n\n");
+            k++;
         }
     }
-    return TableReimplantation;
+
+    return reimplantationTable;
 }
 
 
@@ -826,7 +856,7 @@ int main(int argc, char *argv[])
     Elf32_Ehdr header[argc - 1];
     Elf32_Shdr *sectionTable[argc - 1];
     Elf32_Sym *symbolTable[argc - 1];
-//    Elf32_Rel *reimplantationTable[argc - 1];
+    Elf32_Rel *reimplantationTable[argc - 1];
 
     if (argc <= 1)
     {
@@ -865,9 +895,10 @@ int main(int argc, char *argv[])
         symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1], sectionTable[i - 1]);
         (void) symbolTable;
 //        rewind(elfFile);
-//        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
+        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1], sectionTable[i - 1],
+                                                                        symbolTable[i - 1]);
 //
-//        (void) reimplantationTable;
+        (void) reimplantationTable;
 //        (void) symbolTable;
 
         fclose(elfFile);
