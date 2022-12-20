@@ -589,14 +589,14 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
             printf("Symbol %d\n", i);
 
             //affichage value
-            printf("  Value: %08x\n", symbolTable[i].st_value);
+            printf("  Value: \t%08x\n", symbolTable[i].st_value);
 
             //affichage size
-            printf("  Size: %d\n", symbolTable[i].st_size);
+            printf("  Size: \t%d\n", symbolTable[i].st_size);
 
             //affichage type
             unsigned char type = ELF32_ST_TYPE(symbolTable[i].st_info);
-            printf("  Type: %d ( ", type);
+            printf("  Type: \t%d ( ", type);
             switch (ELF32_ST_TYPE(symbolTable[i].st_info))
             {
                 case STT_NOTYPE:
@@ -648,7 +648,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
 
             //affichage bind
             unsigned char bind = ELF32_ST_BIND(symbolTable[i].st_info);
-            printf("  Bind: %d ( ", bind);
+            printf("  Bind: \t%d ( ", bind);
             switch (bind)
             {
                 case STB_LOCAL:
@@ -688,7 +688,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
 
             //affichage Visibility
             unsigned char visibility = ELF32_ST_VISIBILITY(symbolTable[i].st_other);
-            printf("  Visibility: %d (", visibility);
+            printf("  Visibility: \t%d (", visibility);
             switch (visibility)
             {
                 case STV_DEFAULT:
@@ -709,7 +709,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
             printf(")\n");
 
             //afficher
-            printf("  Ndx: ");
+            printf("  Ndx: \t");
             switch (symbolTable[i].st_shndx)
             {
                 case SHN_UNDEF:
@@ -747,7 +747,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
             printf("\n");
 
             //afficher nom
-            printf("  Symbol name: ");
+            printf("  Symbol name: \t");
             if (type == STT_SECTION)
             {
                 fseek(elfFile, strndx.sh_offset + sectionTable[symbolTable[i].st_shndx].sh_name, SEEK_SET);
@@ -763,7 +763,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
                 fread(&c, sizeof(char), 1, elfFile);
                 printf("%c", c);
             }
-            printf("\n");
+            printf("\n\n");
         }
     }
 
