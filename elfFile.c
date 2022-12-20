@@ -35,7 +35,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 
     printf("ELF Header: \n");
     // afficher Magique
-    printf("Magic: ");
+    printf("  Magic: \t");
     for (int i = 0; i < EI_NIDENT; i++)
     {
         printf("%02hhx ", header.e_ident[i]);
@@ -44,39 +44,38 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 
     // afficher classe
     printf("  Class: \t");
-    if (header.e_ident[EI_CLASS] == ELFCLASS32)
+    switch (header.e_ident[EI_CLASS])
     {
-        printf("ELF32");
+        case ELFCLASS32:
+            printf("ELF32");
+            break;
+        case ELFCLASS64:
+            printf("ELF64");
+            break;
+        default:
+            exit(-1);
     }
-    else if (header.e_ident[EI_CLASS] == ELFCLASS64)
-    {
-        printf("ELF64");
-    }
-    else
-    {
-        exit(-1);
-    }
+
     printf("\n");
 
     // afficher Data
     printf("  Data: \t");
-    if (header.e_ident[EI_DATA] == ELFDATA2LSB)
+    switch (header.e_ident[EI_DATA])
     {
-        printf("2's complement, little endian");
+        case ELFDATA2LSB:
+            printf("2's complement, little endian");
+            break;
+        case ELFDATA2MSB:
+            printf("2's complement, Big endian");
+            break;
+        default:
+            exit(-1);
     }
-    else if (header.e_ident[EI_DATA] == ELFDATA2MSB)
-    {
-        printf("2's complement, Big endian");
-    }
-    else
-    {
-        exit(-1);
-    }
+
     printf("\n");
 
     // afficher version
-    printf("  Version: \t %d", header.e_ident[EI_VERSION]);
-    printf("\n");
+    printf("  Version: \t %d\n", header.e_ident[EI_VERSION]);
 
     // afficher OS/ABI
     printf("  OS/ABI: \t");
@@ -130,8 +129,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher Version ABI
-    printf("  ABI Version: \t%d", header.e_ident[EI_ABIVERSION]);
-    printf("\n");
+    printf("  ABI Version: \t%d\n", header.e_ident[EI_ABIVERSION]);
 
     //afficher type
     printf("  Type: \t");
@@ -198,7 +196,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
             printf("AMD x86-64 architecture");
             break;
         default:
-            printf("Machine not implemented");
+            printf("Machine not implemented (%d)", header.e_machine);
     }
     printf("\n");
 
@@ -218,16 +216,13 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher Entry point address
-    printf("  Entry point address:  \t0x%x", header.e_entry);
-    printf("\n");
+    printf("  Entry point address:  \t0x%x\n", header.e_entry);
 
     // afficher Start of program headers
-    printf("  Start of program headers:  \t%d", header.e_phoff);
-    printf("\n");
+    printf("  Start of program headers:  \t%d\n", header.e_phoff);
 
     // afficher Start of section headers:
-    printf("  Start of section headers:  \t%d", header.e_shoff);
-    printf("\n");
+    printf("  Start of section headers:  \t%d\n", header.e_shoff);
 
     // afficher Fanions
     printf("  Flags: 0x%x (", header.e_flags);
