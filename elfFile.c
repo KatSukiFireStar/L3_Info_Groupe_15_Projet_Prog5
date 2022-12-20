@@ -536,57 +536,92 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     return sectionTable;
 }
 
-//int nbTableReimplantation(Elf32_Shdr *TableSection, Elf32_Ehdr header)
-//{
-//    int compteur = 0;
-//    int i;
-//    for (i = 0; i < header.e_shnum; i++)
-//    {
-//        if (TableSection[i].sh_type == SHT_REL)
-//        {
-//            compteur++;
-//        }
-//    }
-//    return compteur;
-//}
-//
-//Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header)
-//{
-//    Elf32_Shdr *TableSection = malloc(header.e_shnum * sizeof(Elf32_Shdr));
-//    Elf32_Rel *TableReimplantation = malloc(header.e_shnum * sizeof(Elf32_Rel));//e_shnum=nombre des entrées
-//    int i;
+int nbTableReimplantation(Elf32_Shdr *TableSection, Elf32_Ehdr header){
+   int compteur = 0;
+   int i;
+   for (i = 0; i < header.e_shnum; i++)
+   {
+       if (TableSection[i].sh_type == SHT_REL)
+        {
+            compteur++;
+        }
+}
+    return compteur;
+}
+
+Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header){
+    Elf32_Shdr *TableSection = malloc(header.e_shnum * sizeof(Elf32_Shdr));
+    Elf32_Rel *TableReimplantation = malloc(header.e_shnum * sizeof(Elf32_Rel));//e_shnum=nombre des entrées
+    
+    //Lecture de la table des sections
+    for (int i = 0; i < header.e_shnum; i++)
+    {
+        //Lire le nom de la section
+        fread(&TableSection[i].sh_name, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire le type de la section
+        fread(&TableSection[i].sh_type, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire le type de la section
+        fread(&TableSection[i].sh_flags, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire l'adresse de la section
+        fread(&TableSection[i].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
+
+        //Lire la position de la section
+        fread(&TableSection[i].sh_offset, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire la taille de la section
+        fread(&TableSection[i].sh_size, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire l'indice de la table des en-têtes de sections
+        fread(&TableSection[i].sh_link, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire les informations supplémentaires
+        fread(&TableSection[i].sh_info, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire la taille de l'alignement
+        fread(&TableSection[i].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
+
+        //Lire la taille de l'entrée
+        fread(&TableSection[i].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
+        
+        //Lire l'adresse
+        fread(&TableReimplantation[i].r_offset,sizeof(Elf32_Addr),1,elfFile);
+       // Lire le type de  Relocation type et symbol index 
+        fread(&TableReimplantation[i].r_info,sizeof(Elf32_Word),1,elfFile);
+    }
+
+
 //    //Pour chaque entrée de la table des sections
-//    for (i = 0; i < header.e_shnum; i++)
-//    {
-//        //Si c'est une table de réimplantation
-//        if (TableSection[i].sh_type == SHT_REL)
-//        {
-//            rewind(elfFile);//OU fseek(elfFile, sectionTable[i].sh_offset, SEEK_SET);
-//            int nb = nbTableReimplantation(TableSection, header);
-//            fread(TableReimplantation, sizeof(Elf32_Rel), nb, elfFile);
-//            int j;
-//            for (j = 0; j < nb; j++)
-//            {
-//                printf("La cible de la réimplantation est: %d\n", TableReimplantation[j].r_offset);
-//                printf("Le type de réimplantation est: %d\n", TableReimplantation[j].r_info);
-//                printf("L'index de l'entrée concernée dans la table des symboles est: %d\n",
-//                       TableReimplantation[j].r_info >> 8);
-//
-//            }
-//        }
-//        return TableReimplantation;
-//
-//    }
-//}
+    for (int i = 0; i < header.e_shnum; i++){
+//          //Si c'est une table de réimplantation
+       if (TableSection[i].sh_type == SHT_REL){
+           fseek(elfFile, TableSection[i].sh_offset, SEEK_SET);
+           int nb = nbTableReimplantation(TableSection, header);
+          fread(TableReimplantation, sizeof(Elf32_Rel), nb, elfFile);
+        
+            for (int i = 0; i < nb; i++){
+              printf("La cible de la réimplantation est: %d\n", TableReimplantation[i].r_offset);
+                /*afficher le type de réimplantation et l'index de la table des
+            symboles d'une entrée de relocalisation */
+                printf("Le type de réimplantation est: %d\n", ELF32_R_TYPE(TableReimplantation[i].r_info));
+                printf("L'index de la table des symboles est: %d\n", ELF32_R_SYM(TableReimplantation[i].r_info));
+
+           }
+       } 
+    }
+    return TableReimplantation;
+}
 
 
 int main(int argc, char *argv[])
 {
     FILE *elfFile;
     Elf32_Ehdr header[argc - 1];
-    Elf32_Shdr *sectionTable[argc - 1];
+    //Elf32_Shdr *sectionTable[argc - 1];
 //    Elf32_Sym *symbolTable[argc - 1];
-//    Elf32_Rel *reimplantationTable[argc - 1];
+  Elf32_Rel *reimplantationTable[argc - 1];
 
     if (argc <= 1)
     {
@@ -615,18 +650,20 @@ int main(int argc, char *argv[])
     {
         elfFile = fopen(argv[i], "r");
 
-        header[i - 1] = ShowElfHeader(elfFile);
-        rewind(elfFile);
-        printf("\n");
-        sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
-        (void) sectionTable;
+        //header[i - 1] = ShowElfHeader(elfFile);
+        //rewind(elfFile);
+        //printf("\n");
+        //sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
+        //(void) sectionTable;
 //        rewind(elfFile);
+//          printf("\n");
 //        ShowSectionFromIndex(elfFile, sectionTable[i - 1], 0);
 //        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1]);
-//        rewind(elfFile);
-//        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
+       rewind(elfFile);
+        printf("\n");
+       reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
 //
-//        (void) reimplantationTable;
+        (void) reimplantationTable;
 //        (void) symbolTable;
 
         fclose(elfFile);
@@ -634,3 +671,6 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+
+
