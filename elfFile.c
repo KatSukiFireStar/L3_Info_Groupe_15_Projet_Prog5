@@ -213,6 +213,8 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
             }
         }
     }
+
+    return symbolTable;
 }
 
 
