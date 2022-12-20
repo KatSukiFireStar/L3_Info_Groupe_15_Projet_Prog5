@@ -9,37 +9,63 @@
 #include <elf.h>
 
 /**
- * Affiche l'entête ELF de @p elfFile
- * @param elfFile fichier ELF
+ * Affiche et extrait le header d'un fichier ELF
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf.
+ * @return Le header de @p elfFile
  */
 Elf32_Ehdr ShowElfHeader(FILE *elfFile);
 
 /**
  * Affiche la table des sections ELF et des détails relatifs à chaque section de @p elfFile
- * @param elfFile Fichier ELF
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf.
  * @param header Header du fichier
+ * @return Un tableau de SectionHeader correpondant à la table des sections
  */
 Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
 
 /**
- * Affiche le contenu de la section ... ELF de @p elfFile
- * @param elfFile fichier ELF
- * @param header Header du fichier
+ * Affiche le contenu d'une section elf
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf.
+ * @param table Table des section du fichier @p elfFile
+ * @param index Index de la section
  */
-void ShowSection(FILE *elfFile, Elf32_Section header);
+void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index);
+
+/**
+ * Affiche le contenu d'une section elf
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf.
+ * @param table Table des section du fichier @p elfFile
+ * @param header Header du fichier @p elfFile
+ * @param name Nom de la section à afficher
+ */
+void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name);
 
 /**
  * Affiche la table des symboles ELF et des détails relatifs à chaque symboles de @p elfFile
- * @param elfFile fichier ELF
- * @param header Header du fichier
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf.
+ * @param header Header du fichier @p elfFile
+ * @return Un tableau de Symbol correpondant à la table des sections
  */
-Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
+Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable);
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
- * @param elfFile fichier ELF
- * @param header Header du fichier
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf.
+ * @param header Header du fichier @p elfFile
+ * @return Un tableau de Relocation correpondant à la table des sections
  */
-Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header);
+Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable, Elf32_Sym * symbolTable);
 
 #endif //PROJET_PROG_ELFFILE_H
