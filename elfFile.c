@@ -2,6 +2,7 @@
 // Created by Pyrolink on 14/12/2022.
 //
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "elfFile.h"
@@ -318,7 +319,7 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
     }
 }
 
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name)
+int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name)
 {
     Elf32_Shdr stringTable = table[header.e_shstrndx];
 
@@ -352,8 +353,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, ch
                 {
                     if (table[j].sh_name == nameId)
                     {
-                        ShowSectionFromIndex(elfFile, table, j);
-                        return;
+                        return j;
                     }
                 }
             }
@@ -368,8 +368,17 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, ch
 
     if (nameId == -1)
     {
+        printf("The string is not found");
         exit(-2);
     }
+
+    printf("No table have the %s name", name);
+    exit(-1);
+}
+
+void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name)
+{
+    ShowSectionFromIndex(elfFile, table, GetSectionIndexByName(elfFile, table, header, name));
 }
 
 Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
@@ -536,6 +545,235 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     return sectionTable;
 }
 
+Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable)
+{
+    uint32_t symTableSize = 0;
+    for (int i = 0; i < header.e_shnum; i++)
+    {
+        if (sectionTable[i].sh_type == SHT_SYMTAB)
+        {
+            symTableSize += sectionTable[i].sh_size / sectionTable[i].sh_entsize;
+        }
+    }
+
+    Elf32_Sym *symbolTable = malloc(sizeof(Elf32_Sym) * symTableSize);
+
+    for (int table = 0; table < header.e_shnum; table++)
+    {
+        Elf32_Shdr section = sectionTable[table];
+
+        if (section.sh_type != SHT_SYMTAB)
+        {
+            continue;
+        }
+
+        uint32_t count = section.sh_size / section.sh_entsize;
+
+        printf("Symbols from table %d\n", table);
+
+        fseek(elfFile, section.sh_offset, SEEK_SET);
+
+        for (int i = 0; i < count; i++)
+        {
+            fread(&symbolTable[i].st_name, sizeof(Elf32_Word), 1, elfFile);
+            fread(&symbolTable[i].st_value, sizeof(Elf32_Addr), 1, elfFile);
+            fread(&symbolTable[i].st_size, sizeof(Elf32_Word), 1, elfFile);
+            fread(&symbolTable[i].st_info, sizeof(unsigned char), 1, elfFile);
+            fread(&symbolTable[i].st_other, sizeof(unsigned char), 1, elfFile);
+            fread(&symbolTable[i].st_shndx, sizeof(Elf32_Section), 1, elfFile);
+        }
+        // affichage des symboles
+
+        Elf32_Shdr strtab = sectionTable[GetSectionIndexByName(elfFile, sectionTable, header, ".strtab")];
+        Elf32_Shdr strndx = sectionTable[header.e_shstrndx];
+
+        for (int i = 0; i < count; i++)
+        {
+            //affichage numero
+            printf("Symbol %d\n", i);
+
+            //affichage value
+            printf("  Value: %08x\n", symbolTable[i].st_value);
+
+            //affichage size
+            printf("  Size: %d\n", symbolTable[i].st_size);
+
+            //affichage type
+            unsigned char type = ELF32_ST_TYPE(symbolTable[i].st_info);
+            printf("  Type: %d ( ", type);
+            switch (ELF32_ST_TYPE(symbolTable[i].st_info))
+            {
+                case STT_NOTYPE:
+                    printf("'Symbol type is unspecified' ");
+                    break;
+                case STT_OBJECT:
+                    printf("'Symbol is a data object' ");
+                    break;
+                case STT_FUNC:
+                    printf("'Symbol is a code object' ");
+                    break;
+                case STT_SECTION:
+                    printf("'Symbol associated with a section' ");
+                    break;
+                case STT_FILE:
+                    printf("'Symbol's name is file name' ");
+                    break;
+                case STT_COMMON:
+                    printf("'Symbol is a common data object' ");
+                    break;
+                case STT_TLS:
+                    printf("'Symbol is thread-local data object' ");
+                    break;
+                case STT_NUM:
+                    printf("'Number of defined types' ");
+                    break;
+                case STT_LOOS:
+                    printf("'Start of OS-specific / Symbol is indirect code object' ");
+                    break;
+                    /*case STT_LOOS:
+                        printf("Start of OS-specific");
+                        break;
+                    case STT_GNU_IFUNC:
+                        printf("Symbol is indirect code object");
+                        break;*/
+                case STT_HIOS:
+                    printf("'End of OS-specific' ");
+                    break;
+                case STT_LOPROC:
+                    printf("'Start of processor-specific' ");
+                    break;
+                case STT_HIPROC:
+                    printf("'End of processor-specific' ");
+                    break;
+                default:
+                    exit(-3);
+            }
+            printf(")\n");
+
+            //affichage bind
+            unsigned char bind = ELF32_ST_BIND(symbolTable[i].st_info);
+            printf("  Bind: %d ( ", bind);
+            switch (bind)
+            {
+                case STB_LOCAL:
+                    printf("'Local symbol' ");
+                    break;
+                case STB_GLOBAL:
+                    printf("'Global symbol' ");
+                    break;
+                case STB_WEAK:
+                    printf("'Weak symbol' ");
+                    break;
+                case STB_NUM:
+                    printf("'Number of defined types' ");
+                    break;
+                case STB_LOOS:
+                    printf("'Start of OS-specific / Unique symbol' ");
+                    break;
+                    /*case STB_LOOS:
+                        printf("Start of OS-specific");
+                        break;
+                    case STB_GNU_UNIQUE:
+                        printf("Unique symbol");
+                        break;*/
+                case STB_HIOS:
+                    printf("'End of OS-specific' ");
+                    break;
+                case STB_LOPROC:
+                    printf("'Start of processor-specific' ");
+                    break;
+                case STB_HIPROC:
+                    printf("'End of processor-specific' ");
+                    break;
+                default:
+                    exit(-3);
+            }
+            printf(")\n");
+
+            //affichage Visibility
+            unsigned char visibility = ELF32_ST_VISIBILITY(symbolTable[i].st_other);
+            printf("  Visibility: %d (", visibility);
+            switch (visibility)
+            {
+                case STV_DEFAULT:
+                    printf("Default symbol visibility rules");
+                    break;
+                case STV_INTERNAL:
+                    printf("Processor specific hidden class");
+                    break;
+                case STV_HIDDEN:
+                    printf("Sym unavailable in other modules");
+                    break;
+                case STV_PROTECTED:
+                    printf("Not preemptible, not exported");
+                    break;
+                default:
+                    exit(-3);
+            }
+            printf(")\n");
+
+            //afficher
+            printf("  Ndx: ");
+            switch (symbolTable[i].st_shndx)
+            {
+                case SHN_UNDEF:
+                    printf("UNDEF");
+                    break;
+                case SHN_LORESERVE:
+                    printf("LORESERVE / LOPROC / BEFORE");
+                    break;
+                case SHN_AFTER:
+                    printf("AFTER");
+                    break;
+                case SHN_HIPROC:
+                    printf("HIPROC");
+                    break;
+                case SHN_LOOS:
+                    printf("LOOS");
+                    break;
+                case SHN_HIOS:
+                    printf("HIOS");
+                    break;
+                case SHN_ABS:
+                    printf("ABS");
+                    break;
+                case SHN_COMMON:
+                    printf("COMMON");
+                    break;
+                case SHN_XINDEX:
+                    printf("XINDEX / HIRESERVE");
+                    break;
+                default:
+                    printf("%d", symbolTable[i].st_shndx);
+                    break;
+            }
+
+            printf("\n");
+
+            //afficher nom
+            printf("  Symbol name: ");
+            if (type == STT_SECTION)
+            {
+                fseek(elfFile, strndx.sh_offset + sectionTable[symbolTable[i].st_shndx].sh_name, SEEK_SET);
+            }
+            else
+            {
+                fseek(elfFile, strtab.sh_offset + symbolTable[i].st_name, SEEK_SET);
+            }
+
+            char c = ' ';
+            while (c != '\0')
+            {
+                fread(&c, sizeof(char), 1, elfFile);
+                printf("%c", c);
+            }
+            printf("\n");
+        }
+    }
+
+    return symbolTable;
+}
+
 //int nbTableReimplantation(Elf32_Shdr *TableSection, Elf32_Ehdr header)
 //{
 //    int compteur = 0;
@@ -585,7 +823,7 @@ int main(int argc, char *argv[])
     FILE *elfFile;
     Elf32_Ehdr header[argc - 1];
     Elf32_Shdr *sectionTable[argc - 1];
-//    Elf32_Sym *symbolTable[argc - 1];
+    Elf32_Sym *symbolTable[argc - 1];
 //    Elf32_Rel *reimplantationTable[argc - 1];
 
     if (argc <= 1)
@@ -621,7 +859,9 @@ int main(int argc, char *argv[])
         sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
         rewind(elfFile);
         ShowSectionFromName(elfFile, sectionTable[i - 1], header[i - 1], ".group");
-//        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1]);
+        printf("\n");
+        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1], sectionTable[i - 1]);
+        (void) symbolTable;
 //        rewind(elfFile);
 //        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1]);
 //
