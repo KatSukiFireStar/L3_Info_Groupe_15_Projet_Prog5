@@ -299,17 +299,21 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
     {
         unsigned char byte;
         fread(&byte, sizeof(byte), 1, elfFile);
+
         fprintf(stdout, "%02hhx", byte);
-        if ((i + 1) % 4 == 0)
+
+        if ((i + 1) % 4 != 0)
         {
-            if ((i + 1) % 16 == 0)
-            {
-                fprintf(stdout, "\n");
-            }
-            else
-            {
-                fprintf(stdout, " ");
-            }
+            continue;
+        }
+
+        if ((i + 1) % 16 == 0)
+        {
+            fprintf(stdout, "\n");
+        }
+        else
+        {
+            fprintf(stdout, " ");
         }
     }
 }
