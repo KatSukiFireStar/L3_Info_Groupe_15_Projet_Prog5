@@ -568,65 +568,69 @@ Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     return sectionTable;
 }
 
-// void GetSectionsFromType()
+Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type)
+{
+    Elf32_Half count = 0;
+    for (Elf32_Half i = 0; i < header.e_shnum; i++)
+    {
+        if (sectionTable[i].sh_type == type)
+        {
+            count += sectionTable[i].sh_size / sectionTable[i].sh_entsize;
+        }
+    }
+    return count;
+}
 
 Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable)
 {
-    uint32_t symTableSize = 0;
-    for (int i = 0; i < header.e_shnum; i++)
-    {
-        if (sectionTable[i].sh_type == SHT_SYMTAB)
-        {
-            symTableSize += sectionTable[i].sh_size / sectionTable[i].sh_entsize;
-        }
-    }
+    Elf32_Half symTableSize = GetEntryCountFromType(header, sectionTable, SHT_SYMTAB);
 
     Elf32_Sym *symbolTable = malloc(sizeof(Elf32_Sym) * symTableSize);
 
-    for (int table = 0; table < header.e_shnum; table++)
+    for (Elf32_Half sectionIndex = 0; sectionIndex < header.e_shnum; sectionIndex++)
     {
-        Elf32_Shdr section = sectionTable[table];
+        Elf32_Shdr section = sectionTable[sectionIndex];
 
         if (section.sh_type != SHT_SYMTAB)
         {
             continue;
         }
 
-        uint32_t count = section.sh_size / section.sh_entsize;
+        Elf32_Half count = section.sh_size / section.sh_entsize;
 
-        printf("Symbols from table %d\n", table);
+        printf("Symbols from section index %d\n", sectionIndex);
 
         fseek(elfFile, section.sh_offset, SEEK_SET);
 
-        for (int i = 0; i < count; i++)
+        for (Elf32_Half symbolIndex = 0; symbolIndex < count; symbolIndex++)
         {
-            fread(&symbolTable[i].st_name, sizeof(Elf32_Word), 1, elfFile);
-            fread(&symbolTable[i].st_value, sizeof(Elf32_Addr), 1, elfFile);
-            fread(&symbolTable[i].st_size, sizeof(Elf32_Word), 1, elfFile);
-            fread(&symbolTable[i].st_info, sizeof(unsigned char), 1, elfFile);
-            fread(&symbolTable[i].st_other, sizeof(unsigned char), 1, elfFile);
-            fread(&symbolTable[i].st_shndx, sizeof(Elf32_Section), 1, elfFile);
+            fread(&symbolTable[symbolIndex].st_name, sizeof(Elf32_Word), 1, elfFile);
+            fread(&symbolTable[symbolIndex].st_value, sizeof(Elf32_Addr), 1, elfFile);
+            fread(&symbolTable[symbolIndex].st_size, sizeof(Elf32_Word), 1, elfFile);
+            fread(&symbolTable[symbolIndex].st_info, sizeof(unsigned char), 1, elfFile);
+            fread(&symbolTable[symbolIndex].st_other, sizeof(unsigned char), 1, elfFile);
+            fread(&symbolTable[symbolIndex].st_shndx, sizeof(Elf32_Section), 1, elfFile);
         }
         // affichage des symboles
 
         Elf32_Shdr strtab = sectionTable[GetSectionIndexByName(elfFile, sectionTable, header, ".strtab")];
         Elf32_Shdr strndx = sectionTable[header.e_shstrndx];
 
-        for (int i = 0; i < count; i++)
+        for (Elf32_Half symbolIndex = 0; symbolIndex < count; symbolIndex++)
         {
             //affichage numero
-            printf("Symbol %d\n", i);
+            printf("Symbol %d\n", symbolIndex);
 
             //affichage value
-            printf("  Value: \t%08x\n", symbolTable[i].st_value);
+            printf("  Value: \t%08x\n", symbolTable[symbolIndex].st_value);
 
             //affichage size
-            printf("  Size: \t%d\n", symbolTable[i].st_size);
+            printf("  Size: \t%d\n", symbolTable[symbolIndex].st_size);
 
             //affichage type
-            unsigned char type = ELF32_ST_TYPE(symbolTable[i].st_info);
+            unsigned char type = ELF32_ST_TYPE(symbolTable[symbolIndex].st_info);
             printf("  Type: \t%d ( ", type);
-            switch (ELF32_ST_TYPE(symbolTable[i].st_info))
+            switch (ELF32_ST_TYPE(symbolTable[symbolIndex].st_info))
             {
                 case STT_NOTYPE:
                     printf("'Symbol type is unspecified' ");
@@ -676,7 +680,7 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
             printf(")\n");
 
             //affichage bind
-            unsigned char bind = ELF32_ST_BIND(symbolTable[i].st_info);
+            unsigned char bind = ELF32_ST_BIND(symbolTable[symbolIndex].st_info);
             printf("  Bind: \t%d ( ", bind);
             switch (bind)
             {
@@ -716,7 +720,7 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
             printf(")\n");
 
             //affichage Visibility
-            unsigned char visibility = ELF32_ST_VISIBILITY(symbolTable[i].st_other);
+            unsigned char visibility = ELF32_ST_VISIBILITY(symbolTable[symbolIndex].st_other);
             printf("  Visibility: \t%d (", visibility);
             switch (visibility)
             {
@@ -738,8 +742,8 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
             printf(")\n");
 
             //afficher
-            printf("  Ndx: \t");
-            switch (symbolTable[i].st_shndx)
+            printf("  Ndx: \t\t");
+            switch (symbolTable[symbolIndex].st_shndx)
             {
                 case SHN_UNDEF:
                     printf("UNDEF");
@@ -769,7 +773,7 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
                     printf("XINDEX / HIRESERVE");
                     break;
                 default:
-                    printf("%d", symbolTable[i].st_shndx);
+                    printf("%d", symbolTable[symbolIndex].st_shndx);
                     break;
             }
 
@@ -779,11 +783,11 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
             printf("  Symbol name: \t");
             if (type == STT_SECTION)
             {
-                fseek(elfFile, strndx.sh_offset + sectionTable[symbolTable[i].st_shndx].sh_name, SEEK_SET);
+                fseek(elfFile, strndx.sh_offset + sectionTable[symbolTable[symbolIndex].st_shndx].sh_name, SEEK_SET);
             }
             else
             {
-                fseek(elfFile, strtab.sh_offset + symbolTable[i].st_name, SEEK_SET);
+                fseek(elfFile, strtab.sh_offset + symbolTable[symbolIndex].st_name, SEEK_SET);
             }
 
             char c = ' ';
