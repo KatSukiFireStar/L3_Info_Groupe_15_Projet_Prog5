@@ -10,12 +10,31 @@
 #include <stdio.h>
 #include <elf.h>
 
+#pragma region typdefs and defines
+
+/**
+ * Alloue un espace mémoire pour un tableau
+ * <br>
+ * Précondition :
+ * <br>
+ * - @p element doit être un type c
+ * <br>
+ * - @p size doit être positif et non nul
+ * @param element Type des éléments du tableau
+ * @param size Taille du tableau
+ */
+#define mallocArray(element, size) malloc(sizeof(element) * size)
+
 /** Représente une table des sections */
 typedef Elf32_Shdr *Elf32_ShdrTable;
 /** Représente une table des symboles */
 typedef Elf32_Sym *Elf32_SymTable;
 /** Représente une table des réimplémentations */
 typedef Elf32_Rel *Elf32_RelTable;
+
+#pragma endregion
+
+#pragma region Main methods
 
 /**
  * Affiche et extrait le header d'un fichier ELF
@@ -80,5 +99,13 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
  */
 Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
                                                   Elf32_SymTable symbolTable);
+
+#pragma endregion
+
+#pragma region Utils methods
+
+
+
+#pragma endregion
 
 #endif //PROJET_PROG_ELFFILE_H
