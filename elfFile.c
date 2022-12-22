@@ -885,21 +885,30 @@ int main(int argc, char *argv[])
     {
         elfFile = fopen(argv[i], "r");
 
+        printf("ELF Header: \n");
         header[i - 1] = ShowElfHeader(elfFile);
         rewind(elfFile);
         printf("\n");
+
+        printf("Section table: \n");
         sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
         rewind(elfFile);
-        ShowSectionFromName(elfFile, sectionTable[i - 1], header[i - 1], ".group");
         printf("\n");
+
+        // ShowSectionFromName(elfFile, sectionTable[i - 1], header[i - 1], ".group");
+
+        printf("Symbol table: \n");
         symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1], sectionTable[i - 1]);
-        (void) symbolTable;
-//        rewind(elfFile);
-        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(elfFile, header[i - 1], sectionTable[i - 1],
-                                                                        symbolTable[i - 1]);
-//
+        rewind(elfFile);
+        printf("\n");
+
+        printf("Reimplantation table: \n");
+        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(
+                elfFile, header[i - 1], sectionTable[i - 1], symbolTable[i - 1]);
+        rewind(elfFile);
+        printf("\n");
+
         (void) reimplantationTable;
-//        (void) symbolTable;
 
         fclose(elfFile);
     }
