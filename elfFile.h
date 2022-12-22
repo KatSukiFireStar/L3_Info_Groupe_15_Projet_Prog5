@@ -10,6 +10,13 @@
 #include <stdio.h>
 #include <elf.h>
 
+/** Représente une table des sections */
+typedef Elf32_Shdr *Elf32_ShdrTable;
+/** Représente une table des symboles */
+typedef Elf32_Sym *Elf32_SymTable;
+/** Représente une table des réimplémentations */
+typedef Elf32_Rel *Elf32_RelTable;
+
 /**
  * Affiche et extrait le header d'un fichier ELF
  * <br>
@@ -27,7 +34,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile);
  * @param header Header du fichier
  * @return Un tableau de SectionHeader correpondant à la table des sections
  */
-Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
+Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
 
 /**
  * Affiche le contenu d'une section elf
@@ -37,7 +44,7 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
  * @param sectionTable Table des section du fichier @p elfFile
  * @param index Index de la section
  */
-void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *sectionTable, int index);
+void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, int index);
 
 /**
  * Affiche le contenu d'une section elf
@@ -48,7 +55,7 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *sectionTable, int index);
  * @param header Header du fichier @p elfFile
  * @param name Nom de la section à afficher
  */
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name);
+void ShowSectionFromName(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Ehdr header, char *name);
 
 /**
  * Affiche la table des symboles ELF et des détails relatifs à chaque symboles de @p elfFile
@@ -59,7 +66,7 @@ void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr hea
  * @param sectionTable Table des sections du fichier @p elfFile
  * @return Un tableau de Symbol correpondant à la table des sections
  */
-Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable);
+Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable);
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
@@ -71,6 +78,7 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
  * @param symbolTable Table des symboles du fichier @p elfFile
  * @return Un tableau de Relocation correpondant à la table des sections
  */
-Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable, Elf32_Sym * symbolTable);
+Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
+                                                  Elf32_SymTable symbolTable);
 
 #endif //PROJET_PROG_ELFFILE_H

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
 #include "elfFile.h"
 
 Elf32_Ehdr ShowElfHeader(FILE *elfFile)
@@ -291,7 +292,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 
 }
 
-void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *sectionTable, int index)
+void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, int index)
 {
     Elf32_Shdr section = sectionTable[index];
 
@@ -319,9 +320,9 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *sectionTable, int index)
     }
 }
 
-int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name)
+int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name)
 {
-    Elf32_Shdr stringTable = table[header.e_shstrndx];
+    Elf32_Shdr stringTable = sectionTable[header.e_shstrndx];
 
     fseek(elfFile, stringTable.sh_offset, SEEK_SET);
 
@@ -352,7 +353,7 @@ int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, c
                 nameId = i - currentIndex - 1;
                 for (int j = 0; j < header.e_shentsize; j++)
                 {
-                    if (table[j].sh_name == nameId)
+                    if (sectionTable[j].sh_name == nameId)
                     {
                         return j;
                     }
@@ -373,16 +374,16 @@ int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, c
         exit(-2);
     }
 
-    printf("No table have the %s name", name);
+    printf("No sectionTable have the %s name", name);
     exit(-2);
 }
 
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name)
+void ShowSectionFromName(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Ehdr header, char *name)
 {
     ShowSectionFromIndex(elfFile, sectionTable, GetSectionIndexByName(elfFile, sectionTable, header, name));
 }
 
-Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
+Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 {
     Elf32_Shdr *sectionTable = malloc(sizeof(Elf32_Shdr) * header.e_shnum);
     fseek(elfFile, header.e_shoff, SEEK_SET);
@@ -542,7 +543,9 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     return sectionTable;
 }
 
-Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable)
+// void GetSectionsFromType()
+
+Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable)
 {
     uint32_t symTableSize = 0;
     for (int i = 0; i < header.e_shnum; i++)
@@ -771,7 +774,8 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
     return symbolTable;
 }
 
-Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable, Elf32_Sym * symbolTable)
+Elf32_RelTable
+ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_SymTable symbolTable)
 {
     uint32_t reimTableSize = 0;
 
