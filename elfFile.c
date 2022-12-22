@@ -11,6 +11,9 @@
 Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 {
     Elf32_Ehdr header;
+
+#pragma region Read
+
     fread(&header.e_ident, sizeof(unsigned char), EI_NIDENT, elfFile);
     fread(&header.e_type, sizeof(Elf32_Half), 1, elfFile);
     fread(&header.e_machine, sizeof(Elf32_Half), 1, elfFile);
@@ -25,7 +28,11 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     fread(&header.e_shentsize, sizeof(Elf32_Half), 1, elfFile);
     fread(&header.e_shnum, sizeof(Elf32_Half), 1, elfFile);
     fread(&header.e_shstrndx, sizeof(Elf32_Half), 1, elfFile);
-    // check ELF
+
+#pragma endregion
+
+#pragma region check ELF
+
     if (header.e_ident[EI_MAG0] != ELFMAG0 ||
         header.e_ident[EI_MAG1] != ELFMAG1 ||
         header.e_ident[EI_MAG2] != ELFMAG2 ||
@@ -34,9 +41,12 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
         exit(-1);
     }
 
-    printf("ELF Header: \n");
+#pragma endregion
+
+#pragma region display
+
     // afficher Magique
-    printf("  Magic: \t");
+    printf("  Magic: \t\t\t");
     for (int i = 0; i < EI_NIDENT; i++)
     {
         printf("%02hhx ", header.e_ident[i]);
@@ -44,7 +54,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher classe
-    printf("  Class: \t");
+    printf("  Class: \t\t\t");
     switch (header.e_ident[EI_CLASS])
     {
         case ELFCLASS32:
@@ -60,7 +70,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher Data
-    printf("  Data: \t");
+    printf("  Data: \t\t\t");
     switch (header.e_ident[EI_DATA])
     {
         case ELFDATA2LSB:
@@ -76,10 +86,22 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher version
-    printf("  Version: \t %d\n", header.e_ident[EI_VERSION]);
+    printf("  Version: \t\t\t%d", header.e_version);
+    switch (header.e_version)
+    {
+        case EV_NONE:
+            printf("(Invalid)");
+            break;
+        case EV_CURRENT:
+            printf("(Current)");
+            break;
+        default:
+            exit(-1);
+    }
+    printf("\n");
 
     // afficher OS/ABI
-    printf("  OS/ABI: \t");
+    printf("  OS/ABI: \t\t\t");
     switch (header.e_ident[EI_OSABI])
     {
         case ELFOSABI_NONE:
@@ -130,10 +152,10 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher Version ABI
-    printf("  ABI Version: \t%d\n", header.e_ident[EI_ABIVERSION]);
+    printf("  ABI Version: \t\t\t%d\n", header.e_ident[EI_ABIVERSION]);
 
     //afficher type
-    printf("  Type: \t");
+    printf("  Type: \t\t\t");
     switch (header.e_type)
     {
         case ET_NONE:
@@ -160,7 +182,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     //afficher machine
-    printf("  Machine: \t");
+    printf("  Machine: \t\t\t");
     switch (header.e_machine)
     {
         case EM_NONE:
@@ -201,21 +223,6 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     }
     printf("\n");
 
-    // afficher Version
-    printf("  Version: \t");
-    switch (header.e_version)
-    {
-        case EV_NONE:
-            printf("Invalid ELF version");
-            break;
-        case EV_CURRENT:
-            printf("0x%x ", header.e_version);
-            break;
-        default:
-            exit(-1);
-    }
-    printf("\n");
-
     // afficher Entry point address
     printf("  Entry point address:  \t0x%x\n", header.e_entry);
 
@@ -226,7 +233,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("  Start of section headers:  \t%d\n", header.e_shoff);
 
     // afficher Fanions
-    printf("  Flags: 0x%x (", header.e_flags);
+    printf("  Flags: \t\t\t0x%x (", header.e_flags);
     if ((header.e_flags & EF_PARISC_TRAPNIL) == EF_PARISC_TRAPNIL)
     {
         printf(" 'Trap nil pointer dereference'");
@@ -271,25 +278,26 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf(" )\n");
 
     // afficher Size of this header
-    printf("  Size of this header:  \t%d\n", header.e_ehsize);
+    printf("  Size of this header:  \t%d bytes\n", header.e_ehsize);
 
     //afficher Size of program headers
-    printf("  Size of program headers:  \t%d\n", header.e_phentsize);
+    printf("  Size of program headers:  \t%d bytes\n", header.e_phentsize);
 
     // afficher Number of program headers
     printf("  Number of program headers: \t%d\n", header.e_phnum);
 
     // afficher Size of section headers
-    printf("  Size of section headers:  \t%d\n", header.e_shentsize);
+    printf("  Size of section headers:  \t%d bytes\n", header.e_shentsize);
 
     // afficher Nombre of section header:
     printf("  Number of section header: \t%d\n", header.e_shnum);
 
     // afficher Section header string table index
-    printf("  Section header string table index: \t%d\n", header.e_shstrndx);
+    printf("  String table section index: \t%d\n", header.e_shstrndx);
+
+#pragma endregion
 
     return header;
-
 }
 
 void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, int index)
