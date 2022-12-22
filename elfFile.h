@@ -32,28 +32,29 @@ Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
  * <br>
  * Précondition : @p elfFile doit être ouvert en mode lecture
  * @param elfFile Fichier elf.
- * @param table Table des section du fichier @p elfFile
+ * @param sectionTable Table des section du fichier @p elfFile
  * @param index Index de la section
  */
-void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index);
+void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *sectionTable, int index);
 
 /**
  * Affiche le contenu d'une section elf
  * <br>
  * Précondition : @p elfFile doit être ouvert en mode lecture
  * @param elfFile Fichier elf.
- * @param table Table des section du fichier @p elfFile
+ * @param sectionTable Table des section du fichier @p elfFile
  * @param header Header du fichier @p elfFile
  * @param name Nom de la section à afficher
  */
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name);
+void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name);
 
 /**
  * Affiche la table des symboles ELF et des détails relatifs à chaque symboles de @p elfFile
  * <br>
  * Précondition : @p elfFile doit être ouvert en mode lecture
- * @param elfFile Fichier elf.
+ * @param elfFile Fichier elf
  * @param header Header du fichier @p elfFile
+ * @param sectionTable Table des sections du fichier @p elfFile
  * @return Un tableau de Symbol correpondant à la table des sections
  */
 Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable);
@@ -62,8 +63,10 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
  * <br>
  * Précondition : @p elfFile doit être ouvert en mode lecture
- * @param elfFile Fichier elf.
+ * @param elfFile Fichier elf
  * @param header Header du fichier @p elfFile
+ * @param sectionTable Table des sections du fichier @p elfFile
+ * @param symbolTable Table des symboles du fichier @p elfFile
  * @return Un tableau de Relocation correpondant à la table des sections
  */
 Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable, Elf32_Sym * symbolTable);

@@ -291,9 +291,9 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 
 }
 
-void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *table, int index)
+void ShowSectionFromIndex(FILE *elfFile, Elf32_Shdr *sectionTable, int index)
 {
-    Elf32_Shdr section = table[index];
+    Elf32_Shdr section = sectionTable[index];
 
     fseek(elfFile, section.sh_offset, SEEK_SET);
     for (int i = 0; i < section.sh_size; i++)
@@ -377,9 +377,9 @@ int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, c
     exit(-2);
 }
 
-void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *table, Elf32_Ehdr header, char *name)
+void ShowSectionFromName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name)
 {
-    ShowSectionFromIndex(elfFile, table, GetSectionIndexByName(elfFile, table, header, name));
+    ShowSectionFromIndex(elfFile, sectionTable, GetSectionIndexByName(elfFile, sectionTable, header, name));
 }
 
 Elf32_Shdr *ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
@@ -770,7 +770,6 @@ Elf32_Sym *ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Sh
 
     return symbolTable;
 }
-
 
 Elf32_Rel *ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_Shdr *sectionTable, Elf32_Sym * symbolTable)
 {
