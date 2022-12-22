@@ -104,7 +104,39 @@ Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr head
 
 #pragma region Utils methods
 
+/**
+ * Get the section index from his name
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf
+ * @param sectionTable Table des sections
+ * @param header Header du fichier @p elfFile
+ * @param name Nom de le section à rechercher
+ * @return L'index de la section @p name si elle existe. Sinon exit
+ */
+Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name);
 
+/**
+ * Affiche la chaîne de caractère depuis une table des strings
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf
+ * @param stringTable Table des strings
+ * @param offset Offset du string dans la table @p stringTable
+ */
+void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offset);
+
+/**
+ * Obtient le nombre d'entrée dans une / plusieurs section d'un type
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf
+ * @param header Header du fichier @p elfFile
+ * @param sectionTable Table des sections du fichier @p elfFile
+ * @param type Type de la section
+ * @return Le nombre d'entrée dans les sections de type @p type
+ */
+Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type);
 
 #pragma endregion
 
