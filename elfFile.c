@@ -396,6 +396,18 @@ void ShowSectionFromName(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Ehdr
     ShowSectionFromIndex(elfFile, sectionTable, GetSectionIndexByName(elfFile, sectionTable, header, name));
 }
 
+void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offset)
+{
+    fseek(elfFile, stringTable.sh_offset + offset, SEEK_SET);
+
+    char c;
+    do
+    {
+        fread(&c, sizeof(char), 1, elfFile);
+        printf("%c", c);
+    } while (c != '\0');
+}
+
 Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 {
     Elf32_Shdr *sectionTable = malloc(sizeof(Elf32_Shdr) * header.e_shnum);
