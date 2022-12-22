@@ -306,9 +306,9 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Wor
 
     fseek(elfFile, section.sh_offset, SEEK_SET);
 
-    Elf32_Word i = 0;
-    fprintf(stdout, "0x%08x ", i);
-    for (; i < section.sh_size; i++)
+    fprintf(stdout, "           00010203 04050607 08090a0b 0c0d0e0f\n"
+                    "0x00000000 ");
+    for (Elf32_Word i = 0; i < section.sh_size; i++)
     {
         unsigned char byte;
         fread(&byte, sizeof(unsigned char), 1, elfFile);
