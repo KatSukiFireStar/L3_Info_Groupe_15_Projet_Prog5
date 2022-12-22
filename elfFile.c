@@ -521,19 +521,19 @@ Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
         printf(" )\n");
 
         // L'adresse à  laquelle le premier octet de la section doit se trouver.
-        printf("  Section address: \t\t\t%x\n", sectionTable[sectionIndex].sh_addr);
+        printf("  Section address: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_addr);
 
 
-        printf("  Section offset: \t\t\t%x\n", sectionTable[sectionIndex].sh_offset);
+        printf("  Section offset: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_offset);
 
 
-        printf("  Section size: \t\t\t%x\n", sectionTable[sectionIndex].sh_size);
+        printf("  Section size: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_size);
 
         // La taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille.
-        printf("  Entry size if section holds table: \t%x\n", sectionTable[sectionIndex].sh_entsize);
+        printf("  Entry size if section holds table: \t0x%x\n", sectionTable[sectionIndex].sh_entsize);
 
 
-        printf("  Section flags: \t\t\t%x ( ", sectionTable[sectionIndex].sh_flags);
+        printf("  Section flags: \t\t\t0x%x ( ", sectionTable[sectionIndex].sh_flags);
         // Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus;
         if ((sectionTable[sectionIndex].sh_flags & SHF_WRITE) == SHF_WRITE)
             printf("'Write' ");
