@@ -803,75 +803,62 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
     return symbolTable;
 }
 
-Elf32_RelTable
-ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_SymTable symbolTable)
+Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
+                                                  Elf32_SymTable symbolTable)
 {
-    uint32_t reimTableSize = 0;
-
-    for (int i = 0; i < header.e_shnum; i++)
-    {
-        if (sectionTable[i].sh_type == SHT_REL)
-        {
-            reimTableSize += (sectionTable[i].sh_size / sectionTable[i].sh_entsize);
-        }
-    }
+    uint32_t reimTableSize = GetEntryCountFromType(header, sectionTable, SHT_REL);
 
     Elf32_Rel *reimplantationTable = malloc(sizeof(Elf32_Rel) * reimTableSize);
 
     Elf32_Shdr strtab = sectionTable[GetSectionIndexByName(elfFile, sectionTable, header, ".strtab")];
     Elf32_Shdr strndx = sectionTable[header.e_shstrndx];
 
-    int k = 0;
+    Elf32_Half symbolIndex = 0;
     // Pour chaque entrée de la table des sections
-    for (int i = 0; i < header.e_shnum; i++)
+    for (Elf32_Half tableIndex = 0; tableIndex < header.e_shnum; tableIndex++)
     {
-        if (sectionTable[i].sh_type != SHT_REL)
+        if (sectionTable[tableIndex].sh_type != SHT_REL)
         {
             continue;
         }
 
-        printf("Reimplantation from table %d\n", i);
+        printf("Reimplantation from table %d\n", tableIndex);
 
-        fseek(elfFile, sectionTable[i].sh_offset, SEEK_SET);
+        fseek(elfFile, sectionTable[tableIndex].sh_offset, SEEK_SET);
 
-        int tmp = k;
-        for (uint32_t j = 0; j < (sectionTable[i].sh_size / sectionTable[i].sh_entsize); j++)
+        Elf32_Half symbolIndexOffset = symbolIndex;
+        Elf32_Half symbolsInTable = sectionTable[tableIndex].sh_size / sectionTable[tableIndex].sh_entsize;
+
+        for (Elf32_Half i = 0; i < symbolsInTable; i++)
         {
-            fread(&reimplantationTable[k].r_offset, sizeof(Elf32_Addr), 1, elfFile);
-            fread(&reimplantationTable[k].r_info, sizeof(Elf32_Word), 1, elfFile);
-            k++;
+            fread(&reimplantationTable[symbolIndex].r_offset, sizeof(Elf32_Addr), 1, elfFile);
+            fread(&reimplantationTable[symbolIndex].r_info, sizeof(Elf32_Word), 1, elfFile);
+            symbolIndex++;
         }
 
-        k = tmp;
-        for (uint32_t j = 0; j < (sectionTable[i].sh_size / sectionTable[i].sh_entsize); j++)
+        symbolIndex = symbolIndexOffset;
+        for (Elf32_Half i = 0; i < symbolsInTable; i++)
         {
-            printf("Reimplantation %d\n", k);
+            printf("Reimplantation %d\n", symbolIndex);
 
-            printf("  Offset: \t%08x\n", reimplantationTable[k].r_offset);
-            printf("  Info: \t%08x\n", reimplantationTable[k].r_info);
+            printf("  Offset: \t0x%08x\n", reimplantationTable[symbolIndex].r_offset);
+            printf("  Info: \t%0x08x\n", reimplantationTable[symbolIndex].r_info);
 
-            printf("  Type: \t%d\n", ELF32_R_TYPE(reimplantationTable[k].r_info));
-            Elf32_Sym sym = symbolTable[ELF32_R_SYM(reimplantationTable[k].r_info)];
-            printf("  Symbol value: %08x\n", sym.st_value);
+            printf("  Type: \t%d\n", ELF32_R_TYPE(reimplantationTable[symbolIndex].r_info));
+            Elf32_Sym sym = symbolTable[ELF32_R_SYM(reimplantationTable[symbolIndex].r_info)];
+            printf("  Symbol value: 0x%08x\n", sym.st_value);
             printf("  Symbol name: \t");
             unsigned char type = ELF32_ST_TYPE(sym.st_info);
             if (type == STT_SECTION)
             {
-                fseek(elfFile, strndx.sh_offset + sectionTable[sym.st_shndx].sh_name, SEEK_SET);
+                ShowStringFromIndex(elfFile, strndx, sectionTable[sym.st_shndx].sh_name);
             }
             else
             {
-                fseek(elfFile, strtab.sh_offset + sym.st_name, SEEK_SET);
-            }
-
-            char c = ' ';
-            while (c != '\0')
-            {
-                fread(&c, sizeof(char), 1, elfFile);
-                printf("%c", c);
+                ShowStringFromIndex(elfFile, strtab, sym.st_name);
             }
             printf("\n\n");
-            k++;
+            symbolIndex++;
         }
     }
 
@@ -924,7 +911,10 @@ int main(int argc, char *argv[])
         rewind(elfFile);
         printf("\n");
 
-        // ShowSectionFromName(elfFile, sectionTable[i - 1], header[i - 1], ".group");
+        printf("Section .shstrtab\n");
+        ShowSectionFromName(elfFile, sectionTable[i - 1], header[i - 1], ".shstrtab");
+        rewind(elfFile);
+        printf("\n");
 
         printf("Symbol table: \n");
         symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1], sectionTable[i - 1]);
