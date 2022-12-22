@@ -5,6 +5,8 @@
 #ifndef PROJET_PROG_ELFFILE_H
 #define PROJET_PROG_ELFFILE_H
 
+/** @file */
+
 #include <stdio.h>
 #include <elf.h>
 
