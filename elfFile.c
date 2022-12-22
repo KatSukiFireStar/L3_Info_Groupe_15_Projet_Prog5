@@ -410,7 +410,7 @@ void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offse
 
 Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 {
-    Elf32_ShdrTable sectionTable = malloc(sizeof(Elf32_Shdr) * header.e_shnum);
+    Elf32_ShdrTable sectionTable = mallocArray(Elf32_Shdr, header.e_shnum);
     fseek(elfFile, header.e_shoff, SEEK_SET);
 
 #pragma region Read
@@ -585,7 +585,7 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
 {
     Elf32_Half symTableSize = GetEntryCountFromType(header, sectionTable, SHT_SYMTAB);
 
-    Elf32_Sym *symbolTable = malloc(sizeof(Elf32_Sym) * symTableSize);
+    Elf32_Sym *symbolTable = mallocArray(Elf32_Sym, symTableSize);
 
     for (Elf32_Half sectionIndex = 0; sectionIndex < header.e_shnum; sectionIndex++)
     {
@@ -808,7 +808,7 @@ Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr head
 {
     uint32_t reimTableSize = GetEntryCountFromType(header, sectionTable, SHT_REL);
 
-    Elf32_Rel *reimplantationTable = malloc(sizeof(Elf32_Rel) * reimTableSize);
+    Elf32_Rel *reimplantationTable = mallocArray(Elf32_Rel, reimTableSize);
 
     Elf32_Shdr strtab = sectionTable[GetSectionIndexByName(elfFile, sectionTable, header, ".strtab")];
     Elf32_Shdr strndx = sectionTable[header.e_shstrndx];
