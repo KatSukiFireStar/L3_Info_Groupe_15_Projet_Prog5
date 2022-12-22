@@ -410,63 +410,63 @@ void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offse
 
 Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
 {
-    Elf32_Shdr *sectionTable = malloc(sizeof(Elf32_Shdr) * header.e_shnum);
+    Elf32_ShdrTable sectionTable = malloc(sizeof(Elf32_Shdr) * header.e_shnum);
     fseek(elfFile, header.e_shoff, SEEK_SET);
 
+#pragma region Read
+
     // Lecture de la table des sections
-    for (int i = 0; i < header.e_shnum; i++)
+    for (Elf32_Half sectionIndex = 0; sectionIndex < header.e_shnum; sectionIndex++)
     {
         // Lire le nom de la section
-        fread(&sectionTable[i].sh_name, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_name, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire le type de la section
-        fread(&sectionTable[i].sh_type, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_type, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire le type de la section
-        fread(&sectionTable[i].sh_flags, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_flags, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire l'adresse de la section
-        fread(&sectionTable[i].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
 
         // Lire la position de la section
-        fread(&sectionTable[i].sh_offset, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_offset, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de la section
-        fread(&sectionTable[i].sh_size, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_size, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire l'indice de la table des en-têtes de sections
-        fread(&sectionTable[i].sh_link, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_link, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire les informations supplémentaires
-        fread(&sectionTable[i].sh_info, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_info, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de l'alignement
-        fread(&sectionTable[i].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de l'entrée
-        fread(&sectionTable[i].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
+        fread(&sectionTable[sectionIndex].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
     }
 
-    Elf32_Shdr stringTable = sectionTable[header.e_shstrndx];
+#pragma endregion
+
+    Elf32_Shdr strndx = sectionTable[header.e_shstrndx];
+
+#pragma region Display
 
     // Affichage des informations de la table des sections
-    for (int i = 0; i < header.e_shnum; i++)
+    for (Elf32_Half sectionIndex = 0; sectionIndex < header.e_shnum; sectionIndex++)
     {
-        printf("Section %d\n", i);
-        printf("  Section name: \t");
-        fseek(elfFile, stringTable.sh_offset + sectionTable[i].sh_name, SEEK_SET);
+        printf("Section %d\n", sectionIndex);
+        printf("  Section name: \t\t\t");
 
-        char c = ' ';
-        while (c != '\0')
-        {
-            fread(&c, sizeof(char), 1, elfFile);
-            printf("%c", c);
-        }
+        ShowStringFromIndex(elfFile, strndx, sectionTable[sectionIndex].sh_name);
 
         printf("\n");
 
-        printf("  Section type: \t%u ( ", sectionTable[i].sh_type);
-        switch (sectionTable[i].sh_type)
+        printf("  Section type: \t\t\t%u ( ", sectionTable[sectionIndex].sh_type);
+        switch (sectionTable[sectionIndex].sh_type)
         {
             case SHT_NULL:
                 printf("Section header table entry unused");
@@ -521,49 +521,49 @@ Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
         printf(" )\n");
 
         // L'adresse à  laquelle le premier octet de la section doit se trouver.
-        printf("  Section address: \t%x\n", sectionTable[i].sh_addr);
+        printf("  Section address: \t\t\t%x\n", sectionTable[sectionIndex].sh_addr);
 
 
-        printf("  Section offset: \t%x\n", sectionTable[i].sh_offset);
+        printf("  Section offset: \t\t\t%x\n", sectionTable[sectionIndex].sh_offset);
 
 
-        printf("  Section size: \t%x\n", sectionTable[i].sh_size);
-
+        printf("  Section size: \t\t\t%x\n", sectionTable[sectionIndex].sh_size);
 
         // La taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille.
-        printf("  Entry size if section holds table: \t%x\n", sectionTable[i].sh_entsize);
+        printf("  Entry size if section holds table: \t%x\n", sectionTable[sectionIndex].sh_entsize);
 
 
-        printf("  Section flags: \t%x ( ", sectionTable[i].sh_flags);
+        printf("  Section flags: \t\t\t%x ( ", sectionTable[sectionIndex].sh_flags);
         // Cette section contient des données qu'il devrait être possible d'écrire durant l'exécution du processus;
-        if ((sectionTable[i].sh_flags & SHF_WRITE) == SHF_WRITE)
+        if ((sectionTable[sectionIndex].sh_flags & SHF_WRITE) == SHF_WRITE)
             printf("'Write' ");
 
         // La section fait partie de l'image mémoire du programme à exécuter.");
-        if ((sectionTable[i].sh_flags & SHF_ALLOC) == SHF_ALLOC)
+        if ((sectionTable[sectionIndex].sh_flags & SHF_ALLOC) == SHF_ALLOC)
             printf("'Alloc' ");
 
         // La section contient du code exécutable.\n");
-        if ((sectionTable[i].sh_flags & SHF_EXECINSTR) == SHF_EXECINSTR)
+        if ((sectionTable[sectionIndex].sh_flags & SHF_EXECINSTR) == SHF_EXECINSTR)
             printf("'Executable' ");
 
         // Tous les bits contenus dans ce masque sont réservés à des sémantiques spécifiques au processeur
-        if ((sectionTable[i].sh_flags & SHF_MASKPROC) == SHF_MASKPROC)
+        if ((sectionTable[sectionIndex].sh_flags & SHF_MASKPROC) == SHF_MASKPROC)
             printf("'Processor-specific' ");
 
         printf(")\n");
 
         // Lien vers un indice de la table des en-têtes de  sections,
-        printf("  Link to another section: %d\n", sectionTable[i].sh_link);
+        printf("  Link to another section: \t\t%d\n", sectionTable[sectionIndex].sh_link);
 
         // Informations supplémentaires, dépendant du type de section.
-        printf("  Additional section information: %d\n", sectionTable[i].sh_info);
+        printf("  Additional section information: \t%d\n", sectionTable[sectionIndex].sh_info);
 
         // La taille de l'alignement, exprimée en puissance de 2.
-        printf("  Section alignment (exponent of 2): %u\n", sectionTable[i].sh_addralign);
-
+        printf("  Section alignment (exponent of 2): \t%u\n", sectionTable[sectionIndex].sh_addralign);
         printf("\n");
     }
+
+#pragma endregion
 
     return sectionTable;
 }
