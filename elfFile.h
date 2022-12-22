@@ -44,7 +44,7 @@ Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
  * @param sectionTable Table des section du fichier @p elfFile
  * @param index Index de la section
  */
-void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, int index);
+void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Word index);
 
 /**
  * Affiche le contenu d'une section elf

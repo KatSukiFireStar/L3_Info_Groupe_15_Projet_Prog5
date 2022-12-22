@@ -300,15 +300,18 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     return header;
 }
 
-void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, int index)
+void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Word index)
 {
     Elf32_Shdr section = sectionTable[index];
 
     fseek(elfFile, section.sh_offset, SEEK_SET);
-    for (int i = 0; i < section.sh_size; i++)
+
+    Elf32_Word i = 0;
+    fprintf(stdout, "0x%08x ", i);
+    for (; i < section.sh_size; i++)
     {
         unsigned char byte;
-        fread(&byte, sizeof(byte), 1, elfFile);
+        fread(&byte, sizeof(unsigned char), 1, elfFile);
 
         fprintf(stdout, "%02hhx", byte);
 
@@ -319,27 +322,29 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, int index
 
         if ((i + 1) % 16 == 0)
         {
-            fprintf(stdout, "\n");
+            fprintf(stdout, "\n0x%08x ", i + 1);
         }
         else
         {
             fprintf(stdout, " ");
         }
     }
+
+    fprintf(stdout, "\n");
 }
 
-int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name)
+Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name)
 {
     Elf32_Shdr stringTable = sectionTable[header.e_shstrndx];
 
     fseek(elfFile, stringTable.sh_offset, SEEK_SET);
 
-    int nameId = -1;
+    Elf32_Word nameId = -1;
 
     int skip = 0;
-    int currentIndex = 0;
+    Elf32_Word currentIndex = 0;
 
-    for (int i = 1; i <= stringTable.sh_size; i++)
+    for (Elf32_Word stringOffset = 1; stringOffset <= stringTable.sh_size; stringOffset++)
     {
         char currentChar;
         fread(&currentChar, sizeof(char), 1, elfFile);
@@ -358,12 +363,12 @@ int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr he
         {
             if (currentChar == '\0')
             {
-                nameId = i - currentIndex - 1;
-                for (int j = 0; j < header.e_shentsize; j++)
+                nameId = stringOffset - currentIndex - 1;
+                for (Elf32_Half sectionIndex = 0; sectionIndex < header.e_shentsize; sectionIndex++)
                 {
-                    if (sectionTable[j].sh_name == nameId)
+                    if (sectionTable[sectionIndex].sh_name == nameId)
                     {
-                        return j;
+                        return sectionIndex;
                     }
                 }
             }
@@ -382,7 +387,7 @@ int GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr he
         exit(-2);
     }
 
-    printf("No sectionTable have the %s name", name);
+    printf("No section have the %s name", name);
     exit(-2);
 }
 
