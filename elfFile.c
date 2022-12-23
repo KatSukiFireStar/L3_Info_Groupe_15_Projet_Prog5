@@ -86,19 +86,19 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher version
-    printf("  Version: \t\t\t%d", header.e_version);
+    printf("  Version: \t\t\t%d ", header.e_version);
     switch (header.e_version)
     {
         case EV_NONE:
-            printf("(Invalid)");
+            printf("Invalid");
             break;
         case EV_CURRENT:
-            printf("(Current)");
+            printf("Current");
             break;
         default:
             exit(-1);
     }
-    printf("\n");
+    printf(")\n");
 
     // afficher OS/ABI
     printf("  OS/ABI: \t\t\t");
