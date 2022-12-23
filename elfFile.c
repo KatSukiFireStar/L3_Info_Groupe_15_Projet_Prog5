@@ -351,7 +351,7 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Wor
     for (Elf32_Word i = 0; i < section.sh_size; i++)
     {
         unsigned char byte;
-        fread(&byte, sizeof(unsigned char), 1, elfFile);
+        freadEndian(&byte, sizeof(unsigned char), 1, elfFile);
 
         fprintf(stdout, "%02hhx", byte);
 
@@ -387,7 +387,7 @@ Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_
     for (Elf32_Word stringOffset = 1; stringOffset <= stringTable.sh_size; stringOffset++)
     {
         char currentChar;
-        fread(&currentChar, sizeof(char), 1, elfFile);
+        freadEndian(&currentChar, sizeof(char), 1, elfFile);
 
         if (skip == 1)
         {
@@ -443,7 +443,7 @@ void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offse
     char c;
     do
     {
-        fread(&c, sizeof(char), 1, elfFile);
+        freadEndian(&c, sizeof(char), 1, elfFile);
         printf("%c", c);
     } while (c != '\0');
 }
@@ -459,34 +459,34 @@ Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     for (Elf32_Half sectionIndex = 0; sectionIndex < header.e_shnum; sectionIndex++)
     {
         // Lire le nom de la section
-        fread(&sectionTable[sectionIndex].sh_name, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_name, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire le type de la section
-        fread(&sectionTable[sectionIndex].sh_type, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_type, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire le type de la section
-        fread(&sectionTable[sectionIndex].sh_flags, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_flags, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire l'adresse de la section
-        fread(&sectionTable[sectionIndex].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
 
         // Lire la position de la section
-        fread(&sectionTable[sectionIndex].sh_offset, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_offset, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de la section
-        fread(&sectionTable[sectionIndex].sh_size, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_size, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire l'indice de la table des en-têtes de sections
-        fread(&sectionTable[sectionIndex].sh_link, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_link, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire les informations supplémentaires
-        fread(&sectionTable[sectionIndex].sh_info, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_info, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de l'alignement
-        fread(&sectionTable[sectionIndex].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de l'entrée
-        fread(&sectionTable[sectionIndex].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
     }
 
 #pragma endregion
