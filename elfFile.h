@@ -138,6 +138,34 @@ void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offse
  */
 Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type);
 
+/**
+ * Initialise la variable @p needReverse en fonction de l'endian de la machine et de @p fileEndian
+ * @param fileEndian Endian du fichier. Si différent de ELFDATA2MSB ou ELFDATA2LSB, @p fileEndian prendra la valeur 0
+ */
+void CheckMachineEndian(unsigned char fileEndian);
+
+/**
+ * Permet de lire le fichier elf en fonction de la variable @p needReverse
+ * @param ptr Emplacement de stockage des données
+ * @param size Taille de l’élément en octets
+ * @param number Nombre maximal d’éléments à lire
+ * @param file Pointeur vers la structure FILE
+ * @return Retourne le nombre d’éléments complets lus par la fonction,
+ * qui peut être inférieur à count si une erreur se produit,
+ * ou si elle rencontre la fin du fichier avant d’atteindre count.
+ */
+size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restrict file);
+
+#pragma endregion
+
+#pragma region Global variables
+
+/**
+ * Indique si les valeurs lues doivent être inversées
+ * (fichier en big et machine en little ou inverse)
+ */
+int needReverse;
+
 #pragma endregion
 
 #endif //PROJET_PROG_ELFFILE_H

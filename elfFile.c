@@ -8,6 +8,46 @@
 
 #include "elfFile.h"
 
+#pragma region Endian
+
+int needReverse = 0;
+
+void CheckMachineEndian(unsigned char fileEndian)
+{
+    uint32_t one = 1;
+    int isBig = (*(uint8_t *) &one) == 0;
+
+    needReverse = ((isBig && (fileEndian != ELFDATA2MSB)) ||
+                   (!isBig && (fileEndian != ELFDATA2LSB)));
+}
+
+size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restrict file)
+{
+    size_t result = fread(ptr, size, number, file);
+
+    if (!needReverse)
+        return result;
+
+    switch (size)
+    {
+        case 2:
+        {
+            uint16_t *intPtr = (uint16_t *) ptr;
+            *intPtr = ((((*intPtr) & 0xFF) << 8) | (((*intPtr) >> 8) & 0xFF));
+        }
+        case 4:
+        {
+            uint32_t *intPtr = (uint32_t *) ptr;
+            *intPtr = ((((*intPtr) & 0xFF) << 24) | ((((*intPtr) >> 8) & 0xFF) << 16) |
+                       ((((*intPtr) >> 16) & 0xFF) << 8) | (((*intPtr) >> 24) & 0xFF));
+        }
+    }
+
+    return result;
+}
+
+#pragma endregion
+
 Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 {
     Elf32_Ehdr header;
