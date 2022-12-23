@@ -54,20 +54,20 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 
 #pragma region Read
 
-    fread(&header.e_ident, sizeof(unsigned char), EI_NIDENT, elfFile);
-    fread(&header.e_type, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_machine, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_version, sizeof(Elf32_Word), 1, elfFile);
-    fread(&header.e_entry, sizeof(Elf32_Addr), 1, elfFile);
-    fread(&header.e_phoff, sizeof(Elf32_Off), 1, elfFile);
-    fread(&header.e_shoff, sizeof(Elf32_Off), 1, elfFile);
-    fread(&header.e_flags, sizeof(Elf32_Word), 1, elfFile);
-    fread(&header.e_ehsize, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_phentsize, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_phnum, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_shentsize, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_shnum, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_shstrndx, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_ident, sizeof(unsigned char), EI_NIDENT, elfFile);
+    freadEndian(&header.e_type, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_machine, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_version, sizeof(Elf32_Word), 1, elfFile);
+    freadEndian(&header.e_entry, sizeof(Elf32_Addr), 1, elfFile);
+    freadEndian(&header.e_phoff, sizeof(Elf32_Off), 1, elfFile);
+    freadEndian(&header.e_shoff, sizeof(Elf32_Off), 1, elfFile);
+    freadEndian(&header.e_flags, sizeof(Elf32_Word), 1, elfFile);
+    freadEndian(&header.e_ehsize, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_phentsize, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_phnum, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_shentsize, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_shnum, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_shstrndx, sizeof(Elf32_Half), 1, elfFile);
 
 #pragma endregion
 
