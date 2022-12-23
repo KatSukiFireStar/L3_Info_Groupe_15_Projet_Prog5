@@ -644,12 +644,12 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
 
         for (Elf32_Half symbolIndex = 0; symbolIndex < count; symbolIndex++)
         {
-            fread(&symbolTable[symbolIndex].st_name, sizeof(Elf32_Word), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_value, sizeof(Elf32_Addr), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_size, sizeof(Elf32_Word), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_info, sizeof(unsigned char), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_other, sizeof(unsigned char), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_shndx, sizeof(Elf32_Section), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_name, sizeof(Elf32_Word), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_value, sizeof(Elf32_Addr), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_size, sizeof(Elf32_Word), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_info, sizeof(unsigned char), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_other, sizeof(unsigned char), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_shndx, sizeof(Elf32_Section), 1, elfFile);
         }
         // affichage des symboles
 
@@ -833,7 +833,7 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
             char c = ' ';
             while (c != '\0')
             {
-                fread(&c, sizeof(char), 1, elfFile);
+                freadEndian(&c, sizeof(char), 1, elfFile);
                 printf("%c", c);
             }
             printf("\n\n");
