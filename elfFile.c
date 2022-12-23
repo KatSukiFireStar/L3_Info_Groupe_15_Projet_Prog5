@@ -871,8 +871,8 @@ Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr head
 
         for (Elf32_Half i = 0; i < symbolsInTable; i++)
         {
-            fread(&reimplantationTable[symbolIndex].r_offset, sizeof(Elf32_Addr), 1, elfFile);
-            fread(&reimplantationTable[symbolIndex].r_info, sizeof(Elf32_Word), 1, elfFile);
+            freadEndian(&reimplantationTable[symbolIndex].r_offset, sizeof(Elf32_Addr), 1, elfFile);
+            freadEndian(&reimplantationTable[symbolIndex].r_info, sizeof(Elf32_Word), 1, elfFile);
             symbolIndex++;
         }
 
