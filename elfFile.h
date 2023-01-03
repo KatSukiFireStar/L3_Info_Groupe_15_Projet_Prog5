@@ -34,6 +34,65 @@ typedef Elf32_Rel *Elf32_RelTable;
 
 #pragma endregion
 
+#pragma region Structure
+
+/** Représente les données de fusion des sections de 2 fichiers */
+typedef struct
+{
+    /** Nouveaux indices des sections du deuxième fichier */
+    Elf32_Word *newIndices;
+    /** Offset des concaténations du premier fichiers. -1 s'il n'y a pas de concaténation */
+    Elf32_Off *concatenationOffset;
+    /** Chemin vers un fichier temporaire qui contiens les sections */
+    char *tmpFile;
+    /** Offsets des sections dans le fichier temporaire */
+    Elf32_Off *tmpOffsets;
+
+} Elf32_SectionFusion;
+
+/**
+ * Crée une nouvelle instance de Elf32_SectionFusion
+ * @param sectionSize1 Taille de la section du premier fichier
+ * @param sectionSize2 Taille de la section du deuxième fichier
+ * @return Une Elf32_SectionFusion avec ses tableaux alloués (hormis @p tmpOffsets) et un chemin de fichier temporaire
+ * généré automatiquement
+ */
+inline Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2)
+{
+    Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
+    for (int i = 0; i < sectionSize1; i++)
+    {
+        concatenationOffset[i] = -1;
+    }
+    Elf32_SectionFusion sf = {
+            mallocArray(Elf32_Word, sectionSize2),
+            mallocArray(Elf32_Off, sectionSize1),
+            tmpnam(NULL), NULL
+    };
+    return sf;
+}
+
+/**
+ * Désaloue les tableaux de @p fusion et supprime le fichier temporaire
+ * @param fusion Elf32_SectionFusion à libérer
+ */
+inline void FreeSectionFusion(Elf32_SectionFusion fusion)
+{
+    free(fusion.newIndices);
+    free(fusion.concatenationOffset);
+    remove(fusion.tmpFile);
+    free(fusion.tmpFile);
+}
+
+typedef struct
+{
+    Elf32_Word *newIndices;
+    Elf32_SymTable symbolTable;
+    char *strtab;
+} Elf32_SymbolFusion;
+
+#pragma endregion
+
 #pragma region Main methods
 
 /**
@@ -165,6 +224,28 @@ size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restric
  * (fichier en big et machine en little ou inverse)
  */
 int needReverse;
+
+#pragma endregion
+
+#pragma region Fusion methods
+
+/**
+ * Fusionne les tables de sections.
+ * <br>
+ * Précondition : chaque fichiers de @p elfFiles doit être ouvert
+ * @param elfFiles Fichiers elf à fusionner. ATTENTION : le fichier elfFiles[0] va être modifié
+ * @param elfHeaders Headers des 2 fichiers
+ * @param sectionTables Table des sections des 2 fichiers elf
+ * @return Résultat de la fusion
+ */
+Elf32_SectionFusion FusionSections(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2],
+                                   Elf32_ShdrTable sectionTables[2]);
+
+//Elf32_SymbolFusion FusionSymbols(Elf32_Ehdr elfHeaders[2], Elf32_SymTable symbolTables[2],
+//                                 Elf32_SectionFusion sectionFusion);
+//
+//Elf32_RelTable FusionReimplantation(Elf32_Ehdr elfHeaders[2], Elf32_RelTable reimplantationTables[2],
+//                          Elf32_SectionFusion sectionFusion, Elf32_SymbolFusion symbolFusion);
 
 #pragma endregion
 
