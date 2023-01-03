@@ -8,26 +8,66 @@
 
 #include "elfFile.h"
 
+#pragma region Endian
+
+int needReverse = 0;
+
+void CheckMachineEndian(unsigned char fileEndian)
+{
+    uint32_t one = 1;
+    int isBig = (*(uint8_t *) &one) == 0;
+
+    needReverse = ((isBig && (fileEndian != ELFDATA2MSB)) ||
+                   (!isBig && (fileEndian != ELFDATA2LSB)));
+}
+
+size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restrict file)
+{
+    size_t result = fread(ptr, size, number, file);
+
+    if (!needReverse)
+        return result;
+
+    switch (size)
+    {
+        case 2:
+        {
+            uint16_t *intPtr = (uint16_t *) ptr;
+            *intPtr = ((((*intPtr) & 0xFF) << 8) | (((*intPtr) >> 8) & 0xFF));
+        }
+        case 4:
+        {
+            uint32_t *intPtr = (uint32_t *) ptr;
+            *intPtr = ((((*intPtr) & 0xFF) << 24) | ((((*intPtr) >> 8) & 0xFF) << 16) |
+                       ((((*intPtr) >> 16) & 0xFF) << 8) | (((*intPtr) >> 24) & 0xFF));
+        }
+    }
+
+    return result;
+}
+
+#pragma endregion
+
 Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 {
     Elf32_Ehdr header;
 
 #pragma region Read
 
-    fread(&header.e_ident, sizeof(unsigned char), EI_NIDENT, elfFile);
-    fread(&header.e_type, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_machine, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_version, sizeof(Elf32_Word), 1, elfFile);
-    fread(&header.e_entry, sizeof(Elf32_Addr), 1, elfFile);
-    fread(&header.e_phoff, sizeof(Elf32_Off), 1, elfFile);
-    fread(&header.e_shoff, sizeof(Elf32_Off), 1, elfFile);
-    fread(&header.e_flags, sizeof(Elf32_Word), 1, elfFile);
-    fread(&header.e_ehsize, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_phentsize, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_phnum, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_shentsize, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_shnum, sizeof(Elf32_Half), 1, elfFile);
-    fread(&header.e_shstrndx, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_ident, sizeof(unsigned char), EI_NIDENT, elfFile);
+    freadEndian(&header.e_type, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_machine, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_version, sizeof(Elf32_Word), 1, elfFile);
+    freadEndian(&header.e_entry, sizeof(Elf32_Addr), 1, elfFile);
+    freadEndian(&header.e_phoff, sizeof(Elf32_Off), 1, elfFile);
+    freadEndian(&header.e_shoff, sizeof(Elf32_Off), 1, elfFile);
+    freadEndian(&header.e_flags, sizeof(Elf32_Word), 1, elfFile);
+    freadEndian(&header.e_ehsize, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_phentsize, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_phnum, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_shentsize, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_shnum, sizeof(Elf32_Half), 1, elfFile);
+    freadEndian(&header.e_shstrndx, sizeof(Elf32_Half), 1, elfFile);
 
 #pragma endregion
 
@@ -311,7 +351,7 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Wor
     for (Elf32_Word i = 0; i < section.sh_size; i++)
     {
         unsigned char byte;
-        fread(&byte, sizeof(unsigned char), 1, elfFile);
+        freadEndian(&byte, sizeof(unsigned char), 1, elfFile);
 
         fprintf(stdout, "%02hhx", byte);
 
@@ -347,7 +387,7 @@ Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_
     for (Elf32_Word stringOffset = 1; stringOffset <= stringTable.sh_size; stringOffset++)
     {
         char currentChar;
-        fread(&currentChar, sizeof(char), 1, elfFile);
+        freadEndian(&currentChar, sizeof(char), 1, elfFile);
 
         if (skip == 1)
         {
@@ -403,7 +443,7 @@ void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offse
     char c;
     do
     {
-        fread(&c, sizeof(char), 1, elfFile);
+        freadEndian(&c, sizeof(char), 1, elfFile);
         printf("%c", c);
     } while (c != '\0');
 }
@@ -419,34 +459,34 @@ Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header)
     for (Elf32_Half sectionIndex = 0; sectionIndex < header.e_shnum; sectionIndex++)
     {
         // Lire le nom de la section
-        fread(&sectionTable[sectionIndex].sh_name, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_name, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire le type de la section
-        fread(&sectionTable[sectionIndex].sh_type, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_type, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire le type de la section
-        fread(&sectionTable[sectionIndex].sh_flags, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_flags, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire l'adresse de la section
-        fread(&sectionTable[sectionIndex].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_addr, sizeof(Elf32_Addr), 1, elfFile);
 
         // Lire la position de la section
-        fread(&sectionTable[sectionIndex].sh_offset, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_offset, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de la section
-        fread(&sectionTable[sectionIndex].sh_size, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_size, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire l'indice de la table des en-têtes de sections
-        fread(&sectionTable[sectionIndex].sh_link, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_link, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire les informations supplémentaires
-        fread(&sectionTable[sectionIndex].sh_info, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_info, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de l'alignement
-        fread(&sectionTable[sectionIndex].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_addralign, sizeof(Elf32_Word), 1, elfFile);
 
         // Lire la taille de l'entrée
-        fread(&sectionTable[sectionIndex].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
+        freadEndian(&sectionTable[sectionIndex].sh_entsize, sizeof(Elf32_Word), 1, elfFile);
     }
 
 #pragma endregion
@@ -604,12 +644,12 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
 
         for (Elf32_Half symbolIndex = 0; symbolIndex < count; symbolIndex++)
         {
-            fread(&symbolTable[symbolIndex].st_name, sizeof(Elf32_Word), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_value, sizeof(Elf32_Addr), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_size, sizeof(Elf32_Word), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_info, sizeof(unsigned char), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_other, sizeof(unsigned char), 1, elfFile);
-            fread(&symbolTable[symbolIndex].st_shndx, sizeof(Elf32_Section), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_name, sizeof(Elf32_Word), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_value, sizeof(Elf32_Addr), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_size, sizeof(Elf32_Word), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_info, sizeof(unsigned char), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_other, sizeof(unsigned char), 1, elfFile);
+            freadEndian(&symbolTable[symbolIndex].st_shndx, sizeof(Elf32_Section), 1, elfFile);
         }
         // affichage des symboles
 
@@ -793,7 +833,7 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
             char c = ' ';
             while (c != '\0')
             {
-                fread(&c, sizeof(char), 1, elfFile);
+                freadEndian(&c, sizeof(char), 1, elfFile);
                 printf("%c", c);
             }
             printf("\n\n");
@@ -831,8 +871,8 @@ Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr head
 
         for (Elf32_Half i = 0; i < symbolsInTable; i++)
         {
-            fread(&reimplantationTable[symbolIndex].r_offset, sizeof(Elf32_Addr), 1, elfFile);
-            fread(&reimplantationTable[symbolIndex].r_info, sizeof(Elf32_Word), 1, elfFile);
+            freadEndian(&reimplantationTable[symbolIndex].r_offset, sizeof(Elf32_Addr), 1, elfFile);
+            freadEndian(&reimplantationTable[symbolIndex].r_info, sizeof(Elf32_Word), 1, elfFile);
             symbolIndex++;
         }
 

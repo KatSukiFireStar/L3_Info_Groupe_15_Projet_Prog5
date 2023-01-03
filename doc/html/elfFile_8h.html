@@ -65,7 +65,8 @@ $(function() {
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">elfFile.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -108,6 +109,15 @@ Functions</h2></td></tr>
 <tr class="separator:acd03bf7615ce15f2c30f540e22de08be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae960326a7cdebf3af94ee2ff87076d7c"><td class="memItemLeft" align="right" valign="top">Elf32_Half&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#ae960326a7cdebf3af94ee2ff87076d7c">GetEntryCountFromType</a> (Elf32_Ehdr header, <a class="el" href="elfFile_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> sectionTable, Elf32_Half type)</td></tr>
 <tr class="separator:ae960326a7cdebf3af94ee2ff87076d7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88bf933dd8e43ab559d8539c7c67b3b6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a88bf933dd8e43ab559d8539c7c67b3b6">CheckMachineEndian</a> (unsigned char fileEndian)</td></tr>
+<tr class="separator:a88bf933dd8e43ab559d8539c7c67b3b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0479d547af675b99a4dd3df59d5d3604"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a0479d547af675b99a4dd3df59d5d3604">freadEndian</a> (void *restrict ptr, size_t size, size_t number, FILE *restrict file)</td></tr>
+<tr class="separator:a0479d547af675b99a4dd3df59d5d3604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ab377c00452ebed00f3024890d27ddb7e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#ab377c00452ebed00f3024890d27ddb7e">needReverse</a></td></tr>
+<tr class="separator:ab377c00452ebed00f3024890d27ddb7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a5a6fb16fa1bb3f3085c48b7106a5be59" name="a5a6fb16fa1bb3f3085c48b7106a5be59"></a>
@@ -199,6 +209,80 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a88bf933dd8e43ab559d8539c7c67b3b6" name="a88bf933dd8e43ab559d8539c7c67b3b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88bf933dd8e43ab559d8539c7c67b3b6">&#9670;&nbsp;</a></span>CheckMachineEndian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CheckMachineEndian </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char&#160;</td>
+          <td class="paramname"><em>fileEndian</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Initialise la variable <code>needReverse</code> en fonction de l'endian de la machine et de <code>fileEndian</code> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fileEndian</td><td>Endian du fichier. Si différent de ELFDATA2MSB ou ELFDATA2LSB, <code>fileEndian</code> prendra la valeur 0 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0479d547af675b99a4dd3df59d5d3604" name="a0479d547af675b99a4dd3df59d5d3604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0479d547af675b99a4dd3df59d5d3604">&#9670;&nbsp;</a></span>freadEndian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t freadEndian </td>
+          <td>(</td>
+          <td class="paramtype">void *restrict&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>number</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FILE *restrict&#160;</td>
+          <td class="paramname"><em>file</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Permet de lire le fichier elf en fonction de la variable <code>needReverse</code> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>Emplacement de stockage des données </td></tr>
+    <tr><td class="paramname">size</td><td>Taille de l’élément en octets </td></tr>
+    <tr><td class="paramname">number</td><td>Nombre maximal d’éléments à lire </td></tr>
+    <tr><td class="paramname">file</td><td>Pointeur vers la structure FILE </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Retourne le nombre d’éléments complets lus par la fonction, qui peut être inférieur à count si une erreur se produit, ou si elle rencontre la fin du fichier avant d’atteindre count. </dd></dl>
+
+</div>
+</div>
 <a id="ae960326a7cdebf3af94ee2ff87076d7c" name="ae960326a7cdebf3af94ee2ff87076d7c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae960326a7cdebf3af94ee2ff87076d7c">&#9670;&nbsp;</a></span>GetEntryCountFromType()</h2>
 
@@ -586,6 +670,22 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Un tableau de Symbol correpondant à la table des sections </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ab377c00452ebed00f3024890d27ddb7e" name="ab377c00452ebed00f3024890d27ddb7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab377c00452ebed00f3024890d27ddb7e">&#9670;&nbsp;</a></span>needReverse</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int needReverse</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Indique si les valeurs lues doivent être inversées (fichier en big et machine en little ou inverse) </p>
 
 </div>
 </div>
