@@ -105,7 +105,7 @@ Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr head
 #pragma region Utils methods
 
 /**
- * Get the section index from his name
+ * Obtient l'index de la section avec son nom
  * <br>
  * Précondition : @p elfFile doit être ouvert en mode lecture
  * @param elfFile Fichier elf
