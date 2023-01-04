@@ -28,18 +28,23 @@ size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restric
     if (!needReverse)
         return result;
 
-    switch (size)
+    for (int i = 0; i < number; i++)
     {
-        case 2:
+        switch (size)
         {
-            uint16_t *intPtr = (uint16_t *) ptr;
-            *intPtr = ((((*intPtr) & 0xFF) << 8) | (((*intPtr) >> 8) & 0xFF));
-        }
-        case 4:
-        {
-            uint32_t *intPtr = (uint32_t *) ptr;
-            *intPtr = ((((*intPtr) & 0xFF) << 24) | ((((*intPtr) >> 8) & 0xFF) << 16) |
-                       ((((*intPtr) >> 16) & 0xFF) << 8) | (((*intPtr) >> 24) & 0xFF));
+            case 2:
+            {
+                uint16_t *intPtr = (uint16_t *) ptr;
+                intPtr += i;
+                *intPtr = ((((*intPtr) & 0xFF) << 8) | (((*intPtr) >> 8) & 0xFF));
+            }
+            case 4:
+            {
+                uint32_t *intPtr = (uint32_t *) ptr;
+                intPtr += i;
+                *intPtr = ((((*intPtr) & 0xFF) << 24) | ((((*intPtr) >> 8) & 0xFF) << 16) |
+                           ((((*intPtr) >> 16) & 0xFF) << 8) | (((*intPtr) >> 24) & 0xFF));
+            }
         }
     }
 
@@ -126,7 +131,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
     printf("\n");
 
     // afficher version
-    printf("  Version: \t\t\t%d ", header.e_version);
+    printf("  Version: \t\t\t%d (", header.e_version);
     switch (header.e_version)
     {
         case EV_NONE:
