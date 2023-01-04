@@ -60,6 +60,7 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile)
 #pragma region Read
 
     freadEndian(&header.e_ident, sizeof(unsigned char), EI_NIDENT, elfFile);
+    CheckMachineEndian(header.e_ident[EI_DATA]);
     freadEndian(&header.e_type, sizeof(Elf32_Half), 1, elfFile);
     freadEndian(&header.e_machine, sizeof(Elf32_Half), 1, elfFile);
     freadEndian(&header.e_version, sizeof(Elf32_Word), 1, elfFile);
