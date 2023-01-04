@@ -45,8 +45,6 @@ typedef struct
     Elf32_Off *concatenationOffset;
     /** Chemin vers un fichier temporaire qui contiens les sections */
     char *tmpFile;
-    /** Offsets des sections dans le fichier temporaire */
-    Elf32_Off *tmpOffsets;
 
 } Elf32_SectionFusion;
 
@@ -59,16 +57,20 @@ typedef struct
  */
 inline Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2)
 {
+    Elf32_Word *newIndices = mallocArray(Elf32_Word, sectionSize2);
+    for (int i = 0; i < sectionSize2; i++)
+    {
+        newIndices[i] = i;
+    }
+
     Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
     for (int i = 0; i < sectionSize1; i++)
     {
         concatenationOffset[i] = -1;
     }
-    Elf32_SectionFusion sf = {
-            mallocArray(Elf32_Word, sectionSize2),
-            mallocArray(Elf32_Off, sectionSize1),
-            tmpnam(NULL), NULL
-    };
+
+
+    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL)};
     return sf;
 }
 
@@ -233,7 +235,7 @@ int needReverse;
  * Fusionne les tables de sections.
  * <br>
  * Précondition : chaque fichiers de @p elfFiles doit être ouvert
- * @param elfFiles Fichiers elf à fusionner. ATTENTION : le fichier elfFiles[0] va être modifié
+ * @param elfFiles Fichiers elf à fusionner
  * @param elfHeaders Headers des 2 fichiers
  * @param sectionTables Table des sections des 2 fichiers elf
  * @return Résultat de la fusion
