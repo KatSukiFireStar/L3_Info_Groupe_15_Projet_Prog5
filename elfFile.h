@@ -166,7 +166,7 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_
 Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
                                           Elf32_SymTable symbolTable);
 
-void ExtractElfInformation(FILE *elfFile);
+Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path);
 
 #pragma endregion
 

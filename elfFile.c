@@ -923,12 +923,16 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_
     }
 }
 
-void ExtractElfInformation(FILE *elfFile)
+Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path)
 {
     Elf32_Ehdr header = ExtractHeader(elfFile);
     Elf32_ShdrTable sectionTable = ExtractSectionTable(elfFile, header);
     Elf32_SymTable symbolTable = ExtractSymbolsTable(elfFile, header, sectionTable);
     Elf32_RelTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable, symbolTable);
+
+    Elf32_Structure structure = NewElf32_Structure(path, header, sectionTable, symbolTable, reimplatationTable);
+
+    return structure;
 }
 
 void help()
@@ -951,10 +955,7 @@ int main(int argc, char *argv[])
     int command;
 
     FILE *elfFile;
-    Elf32_Ehdr header[argc - 1];
-    Elf32_Shdr *sectionTable[argc - 1];
-    Elf32_Sym *symbolTable[argc - 1];
-    Elf32_Rel *reimplantationTable[argc - 1];
+    Elf32_Structure structureElf[2]; // Le tableau a une taille de 2 car on ne fusionne que 2 fichiers
 
     if (argc <= 1)
     {
@@ -979,54 +980,55 @@ int main(int argc, char *argv[])
     // Permet de recuperer toutes les informations d'un fichier
     // et les stocks dans des variables
     // A la fin, le fichier est fermé et on ouvre le fichier suivant
+    for (int i = 1; i < argc; i++){
+        elfFile = fopen(argv[i],"r");
+        structureElf[i - 1] = ExtractElfInformation(elfFile, argv[i]);
+        fclose(elfFile);
+    }
+
     while (!fin)
     {
         help();
         command = getchar();
-        for (int i = 1; i < argc; i++)
+        switch (command)
         {
-            elfFile = fopen(argv[i], "r");
-            switch (command)
-            {
-                case 'q':
-                    fin = 1;
-                    break;
-                case 'h':
-                    printf("ELF Header: \n");
-                    ShowElfHeader(header[i - 1]);
-                    printf("\n");
-                    break;
-                case 's':
-                    printf("Section table: \n");
-                    ShowSectionTableAndDetails(elfFile, header[i - 1], sectionTable[i - 1]);
-                    printf("\n");
-                    break;
-                case 'y':
-                    printf("Symbol table: \n");
-                    ShowSymbolsTableAndDetails(elfFile, header[i - 1], sectionTable[i - 1], symbolTable[i - 1]);
-                    printf("\n");
-                    break;
-                case 'r':
-                    printf("Reimplantation table: \n");
-                    ShowReimplantationTablesAndDetails(
-                            elfFile, header[i - 1], sectionTable[i - 1], symbolTable[i - 1],
-                            reimplantationTable[i - 1]);
-                    printf("\n");
-                    break;
-                default:
-                    fprintf(stderr, "La commande n'est pas reconnu!\n");
-                    invalidCommand = 1;
-            }
-            if (command != '\n')
-                fgets(buffer, 128, stdin);
-            fclose(elfFile);
-
-            if (fin || invalidCommand)
-            {
-                invalidCommand = 0;
+            case 'q':
+                fin = 1;
                 break;
-            }
+            case 'h':
+                printf("ELF Header: \n");
+                ShowElfHeader();
+
+                printf("\n");
+                break;
+            case 's':
+                printf("Section table: \n");
+                ShowSectionTableAndDetails(elfFile,);
+                printf("\n");
+                break;
+            case 'y':
+                printf("Symbol table: \n");
+                ShowSymbolsTableAndDetails(elfFile, );
+                printf("\n");
+                break;
+            case 'r':
+                printf("Reimplantation table: \n");
+                ShowReimplantationTablesAndDetails(elfFile,);
+                printf("\n");
+                break;
+            default:
+                fprintf(stderr, "La commande n'est pas reconnu!\n");
+                invalidCommand = 1;
         }
+        if (command != '\n')
+            fgets(buffer, 128, stdin);
+
+        if (fin || invalidCommand)
+        {
+            invalidCommand = 0;
+            break;
+        }
+
 
     }
 //    for (int i = 1; i < argc; i++)
