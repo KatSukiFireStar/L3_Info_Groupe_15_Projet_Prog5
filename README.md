@@ -58,7 +58,7 @@ Mardi 20 decembre: Fin du travail sur la phase 1
 - Babakar Diagne et Mohamed Sbartai: Extraction et affichage des tables de
 réimplantations
 - Corenthin Zozor et Flavien Gonin: Correction du code et gestion des conflits 
-entres les branches + merge des différentes branches sur la branche de dev + merge de 
+entre les branches + merge des différentes branches sur la branche de dev + merge de 
 la branche de dev sur le main à la fin de la phase 1 + Création des taches de travail
 pour la phase 2 + Ajout de la documentation dans le fichier .h
 
@@ -73,15 +73,28 @@ Mercredi 4 janvier:
 
 - Medhi Chedad et Mhammad Hajj: Debut de la fonction pour la fusion des sections
 - Babakar Diagne et Mohamed Sbartai: Debut de la fonction pour la fusion des symboles
-- Corenthin Zozor et Flavien Gonin: Separation affichage et extraction des valeurs + création
-des structures qui seront utilisés plus tard + correction du programme à la suite de l'audit de code
-
+- Corenthin Zozor et Flavien Gonin: Separation affichage et extraction des valeurs + ajout
+des commandes au niveau applicatif + création des structures qui seront utilisés plus tard + 
+correction du programme à la suite de l'audit de code + Création des tests pour la phase 1
 
 ## Liste des fonctionnalités
 
+- Test plusieurs conditions avant de lancer l'application
+  - L'application test s'il y a bien au moins deux fichiers passés en paramètres
+  - L'application test aussi si les fichiers peuvent être ouverts
+- Extrait toutes les données des fichiers passées en paramètres
 - Affichage des informations des fichiers passer en paramètres
 
 ## Liste des tests
+
+- Test de comparaison des headers 
+  - On compare notre header avec le header afficher par readelf
+- Test de comparaison des tables de sections
+  - On compare notre table des sections avec la table des sections par readelf
+- Test de comparaison des tables de symboles
+  - On compare notre table des symboles avec la table des symboles par readelf
+- Test de comparaison des tables de reimplantation
+  - On compare notre table de reimplantation avec la table de reimplantation de readelf
 
 ## Liste des bugs connus
 

@@ -949,12 +949,17 @@ void help()
 
 int main(int argc, char *argv[])
 {
+
+#pragma region DeclarationVariables
     int fin = 0;
     int command;
 
     FILE *elfFile;
-    Elf32_Structure structureElfs[2]; // Le tableau a une taille de 2 car on ne fusionne que 2 fichiers
+    Elf32_Structure structureElfs[2]; // Le tableau a une taille de 2, car on ne fusionne que 2 fichiers
 
+#pragma endregion
+
+#pragma region ConditionsArguments
     if (argc <= 1)
     {
         fprintf(stderr, "Vous n'avez pas mis de fichier en paramètres!");
@@ -975,6 +980,10 @@ int main(int argc, char *argv[])
         }
     }
 
+#pragma endregion
+
+#pragma region ExtractInformations
+
     // Permet de recuperer toutes les informations d'un fichier
     // et les stocks dans des variables
     // A la fin, le fichier est fermé et on ouvre le fichier suivant
@@ -985,8 +994,13 @@ int main(int argc, char *argv[])
         fclose(elfFile);
     }
 
+#pragma endregion
+
+#pragma region Commande&GestionBuffer
+
     while (!fin)
     {
+#pragma region Commande
         help();
         command = getchar();
         switch (command)
@@ -1027,7 +1041,9 @@ int main(int argc, char *argv[])
             default:
                 fprintf(stderr, "La commande n'est pas reconnu!\n");
         }
+#pragma endregion
 
+#pragma region GestionBuffer
         char buffer[128];
         if (command != '\n')
         {
@@ -1044,7 +1060,11 @@ int main(int argc, char *argv[])
             }
 
         }
+#pragma endregion
+
     }
+
+#pragma endregion
 
     return 0;
 }
