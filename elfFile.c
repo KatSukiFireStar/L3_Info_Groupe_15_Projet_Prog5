@@ -644,8 +644,6 @@ Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrT
 
         Elf32_Half count = section.sh_size / section.sh_entsize;
 
-        printf("Symbols from section index %d\n", sectionIndex);
-
         fseek(elfFile, section.sh_offset, SEEK_SET);
 
         for (Elf32_Half symbolIndex = 0; symbolIndex < count; symbolIndex++)
@@ -870,11 +868,9 @@ Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf3
             continue;
         }
 
-        printf("Reimplantation from table %d\n", tableIndex);
-
         fseek(elfFile, sectionTable[tableIndex].sh_offset, SEEK_SET);
 
-        Elf32_Half symbolIndexOffset = symbolIndex;
+        // Elf32_Half symbolIndexOffset = symbolIndex;
         Elf32_Half symbolsInTable = sectionTable[tableIndex].sh_size / sectionTable[tableIndex].sh_entsize;
 
         for (Elf32_Half i = 0; i < symbolsInTable; i++)
@@ -903,7 +899,7 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_
         printf("Reimplantation %d\n", symbolIndex);
 
         printf("  Offset: \t0x%08x\n", reimplantationTable[symbolIndex].r_offset);
-        printf("  Info: \t%0x08x\n", reimplantationTable[symbolIndex].r_info);
+        printf("  Info: \t0x%08x\n", reimplantationTable[symbolIndex].r_info);
 
         printf("  Type: \t%d\n", ELF32_R_TYPE(reimplantationTable[symbolIndex].r_info));
         Elf32_Sym sym = symbolTable[ELF32_R_SYM(reimplantationTable[symbolIndex].r_info)];
@@ -946,16 +942,18 @@ void help()
     fprintf(stderr, "q\t: Quitter ce programme\n");
 }
 
+#define LoopOnEachArgs(action) for (int i = 1; i < argc; i++) \
+{                                                             \
+    action                                                    \
+}
 
 int main(int argc, char *argv[])
 {
-    char buffer[128];
     int fin = 0;
-    int invalidCommand = 0;
     int command;
 
     FILE *elfFile;
-    Elf32_Structure structureElf[2]; // Le tableau a une taille de 2 car on ne fusionne que 2 fichiers
+    Elf32_Structure structureElfs[2]; // Le tableau a une taille de 2 car on ne fusionne que 2 fichiers
 
     if (argc <= 1)
     {
@@ -980,9 +978,10 @@ int main(int argc, char *argv[])
     // Permet de recuperer toutes les informations d'un fichier
     // et les stocks dans des variables
     // A la fin, le fichier est fermé et on ouvre le fichier suivant
-    for (int i = 1; i < argc; i++){
-        elfFile = fopen(argv[i],"r");
-        structureElf[i - 1] = ExtractElfInformation(elfFile, argv[i]);
+    for (int i = 1; i < argc; i++)
+    {
+        elfFile = fopen(argv[i], "r");
+        structureElfs[i - 1] = ExtractElfInformation(elfFile, argv[i]);
         fclose(elfFile);
     }
 
@@ -997,74 +996,50 @@ int main(int argc, char *argv[])
                 break;
             case 'h':
                 printf("ELF Header: \n");
-                ShowElfHeader();
+                LoopOnEachArgs(ShowElfHeader(structureElfs[i - 1].header);)
 
                 printf("\n");
                 break;
             case 's':
                 printf("Section table: \n");
-                ShowSectionTableAndDetails(elfFile,);
+                LoopOnEachArgs(ShowSectionTableAndDetails(fopen(structureElfs[i - 1].path, "r"),
+                                                          structureElfs[i - 1].header,
+                                                          structureElfs[i - 1].sectionTable);)
                 printf("\n");
                 break;
             case 'y':
                 printf("Symbol table: \n");
-                ShowSymbolsTableAndDetails(elfFile, );
+                LoopOnEachArgs(ShowSymbolsTableAndDetails(fopen(structureElfs[i - 1].path, "r"),
+                                                          structureElfs[i - 1].header,
+                                                          structureElfs[i - 1].sectionTable,
+                                                          structureElfs[i - 1].symbolTable);)
                 printf("\n");
                 break;
             case 'r':
                 printf("Reimplantation table: \n");
-                ShowReimplantationTablesAndDetails(elfFile,);
+                LoopOnEachArgs(ShowReimplantationTablesAndDetails(fopen(structureElfs[i - 1].path, "r"),
+                                                          structureElfs[i - 1].header,
+                                                          structureElfs[i - 1].sectionTable,
+                                                          structureElfs[i - 1].symbolTable,
+                                                          structureElfs[i - 1].reimplantationTable);)
                 printf("\n");
                 break;
             default:
                 fprintf(stderr, "La commande n'est pas reconnu!\n");
-                invalidCommand = 1;
         }
+
+        char buffer[128];
         if (command != '\n')
-            fgets(buffer, 128, stdin);
-
-        if (fin || invalidCommand)
         {
-            invalidCommand = 0;
-            break;
+            fgets(buffer, 128, stdin);
         }
 
-
+        if (!fin && getchar() != '\n')
+        {
+            fprintf(stdout, "Press enter to continue!");
+            fgets(buffer, 128, stdin);
+        }
     }
-//    for (int i = 1; i < argc; i++)
-//    {
-//        elfFile = fopen(argv[i], "r");
-//
-//        printf("ELF Header: \n");
-//        header[i - 1] = ShowElfHeader(elfFile);
-//        rewind(elfFile);
-//        printf("\n");
-//
-//        printf("Section table: \n");
-//        sectionTable[i - 1] = ShowSectionTableAndDetails(elfFile, header[i - 1]);
-//        rewind(elfFile);
-//        printf("\n");
-//
-//        printf("Section .shstrtab\n");
-//        ShowSectionFromName(elfFile, sectionTable[i - 1], header[i - 1], ".shstrtab");
-//        rewind(elfFile);
-//        printf("\n");
-//
-//        printf("Symbol table: \n");
-//        symbolTable[i - 1] = ShowSymbolsTableAndDetails(elfFile, header[i - 1], sectionTable[i - 1]);
-//        rewind(elfFile);
-//        printf("\n");
-//
-//        printf("Reimplantation table: \n");
-//        reimplantationTable[i - 1] = ShowReimplantationTablesAndDetails(
-//                elfFile, header[i - 1], sectionTable[i - 1], symbolTable[i - 1]);
-//        rewind(elfFile);
-//        printf("\n");
-//
-//    (void) reimplantationTable;
-//
-//        fclose(elfFile);
-//    }
 
     return 0;
 }
