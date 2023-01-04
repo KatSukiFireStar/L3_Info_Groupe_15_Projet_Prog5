@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "elfFile.h"
+#include "elfStructure.h"
 
 #pragma region Endian
 

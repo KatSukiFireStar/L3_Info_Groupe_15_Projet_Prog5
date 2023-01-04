@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <elf.h>
 
+#include "elfStructure.h"
+
 #pragma region typdefs and defines
 
 /**
@@ -24,13 +26,6 @@
  * @param size Taille du tableau
  */
 #define mallocArray(element, size) malloc(sizeof(element) * size)
-
-/** Représente une table des sections */
-typedef Elf32_Shdr *Elf32_ShdrTable;
-/** Représente une table des symboles */
-typedef Elf32_Sym *Elf32_SymTable;
-/** Représente une table des réimplémentations */
-typedef Elf32_Rel *Elf32_RelTable;
 
 #pragma endregion
 
