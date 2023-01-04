@@ -67,7 +67,8 @@ Mardi 3 janvier:
 - Medhi Chedad et Mhammad Hajj: Debut de comprehension sur la fusion des sections
 - Babakar Diagne et Mohamed Sbartai: Debut de comprehension sur la fusion des symboles
 - Corenthin Zozor et Flavien Gonin: Debut de comprehension sur la fusion des tables
-de réimplantations + Repartition des taches de travail + Gestion du git
+de réimplantations + Repartition des taches de travail + Gestion du git + Ajout des 
+vérifications pour le big/little endian
 
 Mercredi 4 janvier:
 
@@ -75,7 +76,9 @@ Mercredi 4 janvier:
 - Babakar Diagne et Mohamed Sbartai: Debut de la fonction pour la fusion des symboles
 - Corenthin Zozor et Flavien Gonin: Separation affichage et extraction des valeurs + ajout
 des commandes au niveau applicatif + création des structures qui seront utilisés plus tard + 
-correction du programme à la suite de l'audit de code + Création des tests pour la phase 1
+correction du programme à la suite de l'audit de code + Création des tests pour la phase 1 + 
+Redefinition de la documentation des fonctions dans le fichier elfFile.h + Correction du code 
+sur la fusion des sections
 
 ## Liste des fonctionnalités
 
