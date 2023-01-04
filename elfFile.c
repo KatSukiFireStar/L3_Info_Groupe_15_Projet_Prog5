@@ -906,6 +906,54 @@ Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr head
 }
 
 
+Elf32_SectionFusion FusionSections(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], Elf32_ShdrTable sectionTables[2]){
+    //section merge structur
+    Elf32_SectionFusion fu = NewSectionFusion(elfHeaders[0].e_shnum,elfHeaders[1].e_shnum);
+    // open the tmp files to do the merge
+    fopen(fu.tmpFile,"w");
+    // tables of string
+    Elf32_Shdr stringTable1 = *sectionTables[elfHeaders[0].e_shstrndx];
+    Elf32_Shdr stringTable2 = *sectionTables[elfHeaders[1].e_shstrndx];
+    //compare the types of sections
+    for(Elf32_Half i=0; i<elfHeaders[1].e_shstrndx; i++)
+    {
+        int mtype=0;
+        for(Elf32_Half j=0; j<elfHeaders[2].e_shstrndx; j++)
+        {
+            int fusion=0;
+            if(sectionTables[1][i].sh_type == sectionTables[2][j].sh_type)
+            {
+                fseek(elfFiles[0], elfHeaders[0].e_shoff + sectionTables[0][i].sh_name, SEEK_SET);
+                fseek(elfFiles[1], elfHeaders[1].e_shoff + sectionTables[1][j].sh_name, SEEK_SET);
+
+                //comparing the carcters
+
+                char c1, c2;
+                do
+                {
+                    freadEndian(&c1, sizeof(char), 1, elfFiles[1]);
+                    freadEndian(&c2, sizeof(char), 1, elfFiles[2] );
+                    if(c1!=c2)
+                    {
+                        fusion = 0;
+                        break;
+                    }
+                } while (c1 != '\0' || c2!='\0');
+
+                fusion = 1;
+            }
+
+            if (fusion)
+                Fusion();
+            else
+                Foo();
+
+            break;
+        }
+    }
+}
+
+
 int main(int argc, char *argv[])
 {
     FILE *elfFile;
