@@ -8,4 +8,4 @@ elfFile: elfStructure.o elfFile.o
 %.o: %.h %.c
 
 clean:
-	rm -f elfFile elfFile.o
+	rm -f elfFile elfFile.o elfStructure.o
