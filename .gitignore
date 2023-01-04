@@ -5,3 +5,7 @@
 
 elfFile
 *.o
+a.h
+doc_elf.txt
+.gitignore
+trashbin.txt
