@@ -43,7 +43,9 @@ typedef Elf32_Rel *Elf32_RelTable;
  * @param elfFile Fichier elf.
  * @return Le header de @p elfFile
  */
-Elf32_Ehdr ShowElfHeader(FILE *elfFile);
+void ShowElfHeader(Elf32_Ehdr header);
+
+Elf32_Ehdr ExtractHeader(FILE *elfFile);
 
 /**
  * Affiche la table des sections ELF et des détails relatifs à chaque section de @p elfFile
@@ -53,7 +55,9 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile);
  * @param header Header du fichier
  * @return Un tableau de SectionHeader correpondant à la table des sections
  */
-Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
+void ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable);
+
+Elf32_ShdrTable ExtractSectionTable(FILE *elfFile, Elf32_Ehdr header);
 
 /**
  * Affiche le contenu d'une section elf
@@ -85,7 +89,10 @@ void ShowSectionFromName(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Ehdr
  * @param sectionTable Table des sections du fichier @p elfFile
  * @return Un tableau de Symbol correpondant à la table des sections
  */
-Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable);
+void
+ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_SymTable symbolTable);
+
+Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable);
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
@@ -97,8 +104,13 @@ Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf3
  * @param symbolTable Table des symboles du fichier @p elfFile
  * @return Un tableau de Relocation correpondant à la table des sections
  */
-Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                                  Elf32_SymTable symbolTable);
+void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
+                                        Elf32_SymTable symbolTable, Elf32_RelTable reimplantationTable);
+
+Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
+                                          Elf32_SymTable symbolTable);
+
+void ExtractElfInformation(FILE *elfFile);
 
 #pragma endregion
 

@@ -2,7 +2,6 @@
 
 ### La gestion de ce README a été éffectué par Corenthin Zozor et Flavien Gonin.
 
-
 ## Mode d'emploi
 
 
@@ -13,7 +12,7 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel:
 
 ### Feuille d'appel
 
-| Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai | Mehdi                   |
+| Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai | Mehdi Chedad            |
 |------------|--------------|---------------|-----------------|----------------|-----------------|-------------------------|
 | 15/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel              |
 | 16/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | **Absent** l'après-midi |
@@ -21,7 +20,7 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel:
 | 19/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
 | 20/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
 | 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
-| 04/01/2023 |              |               |                 |                |                 |                         |
+| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
 | 05/01/2023 |              |               |                 |                |                 |                         |
 | 06/01/2023 |              |               |                 |                |                 |                         |
 | 07/01/2023 |              |               |                 |                |                 |                         |
@@ -65,10 +64,18 @@ pour la phase 2 + Ajout de la documentation dans le fichier .h
 
 Mardi 3 janvier:
 
-- Medhi Chedad et Mhammad Hajj: Debut de comprehension sur la fusion des symboles
-- Babakar Diagne et Mohamed Sbartai: Debut de comprehension sur la fusion des sections
+- Medhi Chedad et Mhammad Hajj: Debut de comprehension sur la fusion des sections
+- Babakar Diagne et Mohamed Sbartai: Debut de comprehension sur la fusion des symboles
 - Corenthin Zozor et Flavien Gonin: Debut de comprehension sur la fusion des tables
 de réimplantations + Repartition des taches de travail + Gestion du git
+
+Mercredi 4 janvier:
+
+- Medhi Chedad et Mhammad Hajj: Debut de la fonction pour la fusion des sections
+- Babakar Diagne et Mohamed Sbartai: Debut de la fonction pour la fusion des symboles
+- Corenthin Zozor et Flavien Gonin: Separation affichage et extraction des valeurs + création
+des structures qui seront utilisés plus tard + correction du programme à la suite de l'audit de code
+
 
 ## Liste des fonctionnalités
 
