@@ -1034,10 +1034,15 @@ int main(int argc, char *argv[])
             fgets(buffer, 128, stdin);
         }
 
-        if (!fin && getchar() != '\n')
+        if (!fin)
         {
             fprintf(stdout, "Press enter to continue!");
-            fgets(buffer, 128, stdin);
+            int c = getchar();
+            while (c != '\n'){
+                fgets(buffer, 128, stdin);
+                c = getchar();
+            }
+
         }
     }
 
