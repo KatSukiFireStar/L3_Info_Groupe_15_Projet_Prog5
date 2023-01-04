@@ -905,7 +905,24 @@ Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr head
     return reimplantationTable;
 }
 
+Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2)
+{
+    Elf32_Word *newIndices = mallocArray(Elf32_Word, sectionSize2);
+    for (int i = 0; i < sectionSize2; i++)
+    {
+        newIndices[i] = i;
+    }
 
+    Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
+    for (int i = 0; i < sectionSize1; i++)
+    {
+        concatenationOffset[i] = -1;
+    }
+
+
+    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL)};
+    return sf;
+}
 Elf32_SectionFusion FusionSections(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], Elf32_ShdrTable sectionTables[2]){
     //section merge structure
     Elf32_SectionFusion fu = NewSectionFusion(elfHeaders[0].e_shnum,elfHeaders[1].e_shnum);

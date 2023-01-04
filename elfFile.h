@@ -55,24 +55,7 @@ typedef struct
  * @return Une Elf32_SectionFusion avec ses tableaux alloués (hormis @p tmpOffsets) et un chemin de fichier temporaire
  * généré automatiquement
  */
-inline Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2)
-{
-    Elf32_Word *newIndices = mallocArray(Elf32_Word, sectionSize2);
-    for (int i = 0; i < sectionSize2; i++)
-    {
-        newIndices[i] = i;
-    }
-
-    Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
-    for (int i = 0; i < sectionSize1; i++)
-    {
-        concatenationOffset[i] = -1;
-    }
-
-
-    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL)};
-    return sf;
-}
+Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2);
 
 /**
  * Désaloue les tableaux de @p fusion et supprime le fichier temporaire
