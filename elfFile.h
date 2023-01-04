@@ -223,8 +223,8 @@ int needReverse;
  * @param sectionTables Table des sections des 2 fichiers elf
  * @return Résultat de la fusion
  */
-Elf32_SectionFusion FusionSections(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2],
-                                   Elf32_ShdrTable sectionTables[2]);
+//Elf32_SectionFusion FusionSections(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2],
+//                                   Elf32_ShdrTable sectionTables[2]);
 
 //Elf32_SymbolFusion FusionSymbols(Elf32_Ehdr elfHeaders[2], Elf32_SymTable symbolTables[2],
 //                                 Elf32_SectionFusion sectionFusion);
