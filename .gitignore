@@ -9,3 +9,12 @@ a.h
 doc_elf.txt
 .gitignore
 trashbin.txt
+fusionsym.h
+fusionsym.c
+.vscode/tasks.json
+.vscode/settings.json
+.gitignore
+string_table.txt
+a.c
+.vscode/launch.json
+elf.h
