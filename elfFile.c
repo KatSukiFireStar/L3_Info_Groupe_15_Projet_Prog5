@@ -1066,5 +1066,7 @@ int main(int argc, char *argv[])
 
 #pragma endregion
 
+    LoopOnEachArgs(FreeElf32_Structure(structureElfs[i - 1]););
+
     return 0;
 }

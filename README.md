@@ -21,7 +21,7 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel:
 | 20/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
 | 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
 | 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
-| 05/01/2023 |              |               |                 |                |                 |                         |
+| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
 | 06/01/2023 |              |               |                 |                |                 |                         |
 | 07/01/2023 |              |               |                 |                |                 |                         |
 | 08/01/2023 |              |               |                 |                |                 |                         |
@@ -79,6 +79,11 @@ des commandes au niveau applicatif + création des structures qui seront utilis�
 correction du programme à la suite de l'audit de code + Création des tests pour la phase 1 + 
 Redefinition de la documentation des fonctions dans le fichier elfFile.h + Correction du code 
 sur la fusion des sections
+
+Jeudi 5 janvier:
+- Medhi Chedad et Mhammad Hajj: Travaille sur la fonction pour la fusion des sections
+- Babakar Diagne et Mohamed Sbartai: Travaille sur la fonction pour la fusion des symboles
+- Corenthin Zozor et Flavien Gonin: Correction du code pour la fusion des sections
 
 ## Liste des fonctionnalités
 
