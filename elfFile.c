@@ -951,6 +951,7 @@ int main(int argc, char *argv[])
 {
 
 #pragma region DeclarationVariables
+
     int fin = 0;
     int command;
 
@@ -960,6 +961,7 @@ int main(int argc, char *argv[])
 #pragma endregion
 
 #pragma region ConditionsArguments
+
     if (argc <= 1)
     {
         fprintf(stderr, "Vous n'avez pas mis de fichier en paramètres!");
@@ -1000,7 +1002,9 @@ int main(int argc, char *argv[])
 
     while (!fin)
     {
+
 #pragma region Commande
+
         help();
         command = getchar();
         switch (command)
@@ -1041,9 +1045,11 @@ int main(int argc, char *argv[])
             default:
                 fprintf(stderr, "La commande n'est pas reconnu!\n");
         }
+
 #pragma endregion
 
 #pragma region GestionBuffer
+
         char buffer[128];
         if (command != '\n')
         {
@@ -1060,13 +1066,18 @@ int main(int argc, char *argv[])
             }
 
         }
+
 #pragma endregion
 
     }
 
 #pragma endregion
 
+#pragma region LiberationStructure
+
     LoopOnEachArgs(FreeElf32_Structure(structureElfs[i - 1]););
+
+#pragma endregion
 
     return 0;
 }
