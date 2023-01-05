@@ -921,9 +921,8 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_
 
 Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path)
 {
-    int sectionCount = 0;
-    int symbolCount = 0;
-    int reimplantationCount = 0;
+    int sectionCount;
+    int symbolCount, reimplantationCount = 0;
     Elf32_Ehdr header = ExtractHeader(elfFile);
     Elf32_ShdrTable sectionTable = ExtractSectionTable(elfFile, header);
     Elf32_SymTable symbolTable = ExtractSymbolsTable(elfFile, header, sectionTable, &symbolCount);
