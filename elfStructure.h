@@ -28,6 +28,6 @@ typedef struct
 Elf32_Structure NewElf32_Structure(char *path,Elf32_Ehdr header,Elf32_ShdrTable sectionTable,
                                           Elf32_SymTable symbolTable,Elf32_RelTable reimplantationTable);
 
-Elf32_Structure FreeElf32_Structure(Elf32_Structure structure);
+void FreeElf32_Structure(Elf32_Structure structure);
 
 #endif //PROJET_PROG_ELFSTRUCTURE_H
