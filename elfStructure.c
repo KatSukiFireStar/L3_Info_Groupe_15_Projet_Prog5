@@ -13,7 +13,6 @@ Elf32_Structure NewElf32_Structure(char *path, Elf32_Ehdr header, Elf32_ShdrTabl
 
 void FreeElf32_Structure(Elf32_Structure structure)
 {
-    free(structure.path);
     free(structure.sectionTable);
     free(structure.symbolTable);
     free(structure.reimplantationTable);

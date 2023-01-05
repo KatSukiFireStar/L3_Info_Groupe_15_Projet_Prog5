@@ -933,13 +933,13 @@ Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path)
 
 void help()
 {
-    fprintf(stderr, "Aide: \n");
-    fprintf(stderr, "Saisir l'une des commandes suivantes\n\n");
-    fprintf(stderr, "h\t: Afficher le header des fichier en paramètres\n");
-    fprintf(stderr, "s\t: Afficher la table des sections des fichier en paramètres\n");
-    fprintf(stderr, "y\t: Afficher la table des symboles des fichier en paramètres\n");
-    fprintf(stderr, "r\t: Afficher la table de reimplantation des fichier en paramètres\n");
-    fprintf(stderr, "q\t: Quitter ce programme\n");
+    fprintf(stdout, "Aide: \n");
+    fprintf(stdout, "Saisir l'une des commandes suivantes\n\n");
+    fprintf(stdout, "h\t: Afficher le header des fichier en paramètres\n");
+    fprintf(stdout, "s\t: Afficher la table des sections des fichier en paramètres\n");
+    fprintf(stdout, "y\t: Afficher la table des symboles des fichier en paramètres\n");
+    fprintf(stdout, "r\t: Afficher la table de reimplantation des fichier en paramètres\n");
+    fprintf(stdout, "q\t: Quitter ce programme\n");
 }
 
 #define LoopOnEachArgs(action) for (int i = 1; i < argc; i++) \
