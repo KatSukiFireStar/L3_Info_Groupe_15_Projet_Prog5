@@ -569,16 +569,16 @@ void ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTabl
         printf(" )\n");
 
         // L'adresse à  laquelle le premier octet de la section doit se trouver.
-        printf("  Section address: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_addr);
+        printf("  Section address: \t\t\t0x%08x\n", sectionTable[sectionIndex].sh_addr);
 
 
-        printf("  Section offset: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_offset);
+        printf("  Section offset: \t\t\t0x%08x\n", sectionTable[sectionIndex].sh_offset);
 
 
-        printf("  Section size: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_size);
+        printf("  Section size: \t\t\t0x%08x\n", sectionTable[sectionIndex].sh_size);
 
         // La taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille.
-        printf("  Entry size if section holds table: \t0x%x\n", sectionTable[sectionIndex].sh_entsize);
+        printf("  Entry size if section holds table: \t0x%08x\n", sectionTable[sectionIndex].sh_entsize);
 
 
         printf("  Section flags: \t\t\t0x%x ( ", sectionTable[sectionIndex].sh_flags);

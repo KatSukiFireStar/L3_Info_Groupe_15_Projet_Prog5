@@ -83,7 +83,9 @@ sur la fusion des sections
 Jeudi 5 janvier:
 - Medhi Chedad et Mhammad Hajj: Travaille sur la fonction pour la fusion des sections
 - Babakar Diagne et Mohamed Sbartai: Travaille sur la fonction pour la fusion des symboles
-- Corenthin Zozor et Flavien Gonin: Correction du code pour la fusion des sections
+- Corenthin Zozor et Flavien Gonin: Correction du code pour la fusion des sections + ajout de 
+la commande de fusion + Travaille sur les fonctions de tests + Recuperation
+fichier fusionné donné par le prof
 
 ## Liste des fonctionnalités
 
