@@ -939,6 +939,7 @@ void help()
     fprintf(stdout, "s\t: Afficher la table des sections des fichier en paramètres\n");
     fprintf(stdout, "y\t: Afficher la table des symboles des fichier en paramètres\n");
     fprintf(stdout, "r\t: Afficher la table de reimplantation des fichier en paramètres\n");
+    fprintf(stdout, "f\t: Fusionne les header(temporaire)\n");
     fprintf(stdout, "q\t: Quitter ce programme\n");
 }
 
@@ -981,16 +982,17 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
     Elf32_Half numbersectiontmp=0;
     //compare sections
     for(Elf32_Half i=0; i<elfHeaders[0].e_shstrndx; i++) {
+        int sectioncreated =0;
         for (Elf32_Half j = 0; j < elfHeaders[1].e_shstrndx; j++) {
             int fusion;
             // compare if the two sections have the same type PROGBITS
             if ( sectionTables[0][i].sh_type==SHT_PROGBITS && sectionTables[1][j].sh_type == SHT_PROGBITS) {
                 fusion = 1;
-
+            // offset of the first section in header
                 Elf32_Shdr strtab[2];
                 strtab[0] = sectionTables[0][elfHeaders[0].e_shstrndx];
                 strtab[1] = sectionTables[1][elfHeaders[1].e_shstrndx];
-
+            // fseek on the first section
                 fseek(elfFiles[0], strtab[0].sh_offset + sectionTables[0][i].sh_name, SEEK_SET);
                 fseek(elfFiles[1], strtab[1].sh_offset + sectionTables[1][j].sh_name, SEEK_SET);
             // if they have the same type we check if they have the same name
@@ -1003,54 +1005,59 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
                         break;
                     }
                 } while (c1 != '\0' || c2 != '\0');
-            // they have the same name and the same type => we merge them
             }
             else
             {
+                // no merge fusion stay 0
                 fusion = 0;
             }
+            // fseek on the section table
+            fseek(elfFiles[0], sectionTables[0][i].sh_offset, SEEK_SET);
+            fseek(elfFiles[1], sectionTables[1][j].sh_offset, SEEK_SET);
             // merge
             if (fusion)
             {
-                // the index of the section merged turn to 1
+                //section created
+                sectioncreated=1;
+                // the index of the section merged in the second file turn to 1
                 mergedindex[j]=1;
                 // the number of sections in the second file is missing one
                 numbersection2--;
                 //we write the section from the first file to the tmp file
-                fseek(elfFiles[0], elfHeaders[0].e_shoff + sectionTables[0][i].sh_name, SEEK_SET);
                 char c1;
+                int i=0;
                 do {
                     freadEndian(&c1, sizeof(char), 1, elfFiles[0]);
                     fwrite(&c1, sizeof(char), 1, elfFileW);
-                } while (c1 != '\0');
+                    i++;
+                } while (i<sectionTables[0][i].sh_size);
                 // we write the section from the second file to the tmp file
-                fseek(elfFiles[1], elfHeaders[1].e_shoff + sectionTables[1][j].sh_name, SEEK_SET);
                 char c2;
+                int j=0;
                 do {
                     freadEndian(&c2, sizeof(char), 1, elfFiles[1]);
                     fwrite(&c2, sizeof(char), 1, elfFileW);
-                } while (c2 != '\0');
+                } while (j<sectionTables[1][j].sh_size);
                 // we get the size of the section from the first file to calculate the offset of the merged section
                 Elf32_Word sectionsize = sectionTables[0][i].sh_size;
                 // we add it to the structure
                 fu.concatenationOffset[i] = sectionsize;
                 // the number of section in the tmp file increased by 1
                 numbersectiontmp++;
+                break;
             }
-            // no merge, the type or the name is different
-            else
-            {
-                // we write the section from the first file to tmp file
-                fseek(elfFiles[0], elfHeaders[0].e_shoff + sectionTables[0][i].sh_name, SEEK_SET);
-                fseek(elfFiles[1], elfHeaders[1].e_shoff + sectionTables[1][j].sh_name, SEEK_SET);
-                char c1;
-                do {
-                    freadEndian(&c1, sizeof(char), 1, elfFiles[1]);
-                    fwrite(&c1, sizeof(char), 1, elfFileW);
-                } while (c1 != '\0');
-                // the number of the sections in tmp increased
-                numbersectiontmp++;
-            }
+        }
+        if(sectioncreated==0){
+            // we write the section from the first file to tmp file
+            char c1;
+            int i=0;
+            do {
+                freadEndian(&c1, sizeof(char), 1, elfFiles[1]);
+                fwrite(&c1, sizeof(char), 1, elfFileW);
+                i++;
+            } while (sectionTables[0][i].sh_size);
+            // the number of the sections in tmp increased
+            numbersectiontmp++;
         }
 
     }
@@ -1076,6 +1083,11 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
 }
 
 
+void DoFusionCommand(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables){
+    Elf32_SectionFusion fusion = FusionSections(elfFiles,elfHeaders , sectionTables);
+    printf("%s\n", fusion.tmpFile);
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -1085,6 +1097,7 @@ int main(int argc, char *argv[])
     int command;
 
     FILE *elfFile;
+    FILE *elfFiles[2];
     Elf32_Structure structureElfs[2]; // Le tableau a une taille de 2, car on ne fusionne que 2 fichiers
 
 #pragma endregion
@@ -1171,8 +1184,23 @@ int main(int argc, char *argv[])
                                                           structureElfs[i - 1].reimplantationTable);)
                 printf("\n");
                 break;
+            case 'f':
+                elfFiles[0] = fopen(argv[1], "r");
+                elfFiles[1] = fopen(argv[2], "r");
+                Elf32_Ehdr headers[2];
+                headers[0] = structureElfs[0].header;
+                headers[1] = structureElfs[1].header;
+                Elf32_ShdrTable sectiontables[2];
+                sectiontables[0] = structureElfs[0].sectionTable;
+                sectiontables[1] = structureElfs[1].sectionTable;
+
+                DoFusionCommand(elfFiles, headers, sectiontables);
+
+                fclose(elfFiles[0]);
+                fclose(elfFiles[1]);
+                break;
             default:
-                fprintf(stderr, "La commande n'est pas reconnu!\n");
+                fprintf(stdout, "La commande n'est pas reconnu!\n");
         }
 
 #pragma endregion
@@ -1199,6 +1227,7 @@ int main(int argc, char *argv[])
 #pragma endregion
 
     }
+
 
 #pragma endregion
 
