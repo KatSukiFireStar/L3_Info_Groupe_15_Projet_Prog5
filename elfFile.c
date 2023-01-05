@@ -2,6 +2,7 @@
 // Created by Pyrolink on 14/12/2022.
 //
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -974,26 +975,24 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
     // open the tmp files with the name elfileW to do the merge in it
     FILE *elfFileW = fopen(fu.tmpFile, "w");
     // table to know which index is merged in the second file
-    Elf32_Word *mergedindex = mallocArray(Elf32_Word, elfHeaders[1].e_shnum);
+    bool *mergedindex = mallocArray(Elf32_Word, elfHeaders[1].e_shnum);
     for (int i = 0; i < elfHeaders[1].e_shnum; i++)
     {
-        mergedindex[i] = -1;
+        mergedindex[i] = false;
     }
-    // number of section of the second file (to calculate the new number of section of the second file after the merge)
-    Elf32_Half numbersection2 = elfHeaders[1].e_shnum;
     // number of sections in tmp file (to calculate the new index of the second file)
     Elf32_Half numbersectiontmp = 0;
     //compare sections
     for (Elf32_Half i = 0; i < elfHeaders[0].e_shnum; i++)
     {
-        int sectioncreated = 0;
+        bool sectioncreated = false;
         for (Elf32_Half j = 0; j < elfHeaders[1].e_shnum; j++)
         {
-            int fusion;
+            bool fusion;
             // compare if the two sections have the same type PROGBITS
             if (sectionTables[0][i].sh_type == SHT_PROGBITS && sectionTables[1][j].sh_type == SHT_PROGBITS)
             {
-                fusion = 1;
+                fusion = true;
                 // create our table of string
                 Elf32_Shdr strtab[2];
                 strtab[0] = sectionTables[0][elfHeaders[0].e_shstrndx];
@@ -1009,7 +1008,7 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
                     freadEndian(&c2, sizeof(char), 1, elfFiles[1]);
                     if (c1 != c2)
                     {
-                        fusion = 0;
+                        fusion = false;
                         break;
                     }
                 } while (c1 != '\0' || c2 != '\0');
@@ -1017,7 +1016,7 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
             else
             {
                 // no merge fusion stay 0
-                fusion = 0;
+                fusion = false;
             }
             // fseek on the sections
             fseek(elfFiles[0], sectionTables[0][i].sh_offset, SEEK_SET);
@@ -1026,11 +1025,9 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
             if (fusion)
             {
                 //section created
-                sectioncreated = 1;
+                sectioncreated = true;
                 // the index of the section merged in the second file turn to 1
-                mergedindex[j] = 1;
-                // the number of sections in the second file is missing one
-                numbersection2--;
+                mergedindex[j] = true;
                 //we write the section from the first file to the tmp file
                 char c;
                 int nb = 0;
@@ -1049,17 +1046,15 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
                     fwrite(&c, sizeof(char), 1, elfFileW);
                     nb++;
                 } while (nb < sectionTables[1][j].sh_size);
-                // we get the size of the section from the first file to calculate the offset of the merged section
-                Elf32_Word sectionsize = sectionTables[0][i].sh_size;
                 // we add it to the structure
-                fu.concatenationOffset[i] = sectionsize;
+                fu.concatenationOffset[i] = sectionTables[0][i].sh_size;
                 // the number of section in the tmp file increased by 1
                 numbersectiontmp++;
                 break;
             }
         }
         // if the section is not merged we create it here
-        if (sectioncreated == 0)
+        if (sectioncreated == false)
         {
             // we write the section from the first file to tmp file
             char c;
@@ -1076,9 +1071,9 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
 
     }
     // add the Sections not merged of the second file
-    for (Elf32_Half i = 0; i < numbersection2; i++)
+    for (Elf32_Half i = 0; i < elfHeaders[1].e_shnum; i++)
     {
-        if (mergedindex[i] == -1)
+        if (mergedindex[i] == false)
         {
             // the new index of the sections
             fu.newIndices[i] = numbersectiontmp;
