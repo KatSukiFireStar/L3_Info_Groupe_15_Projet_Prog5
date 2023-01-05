@@ -3,9 +3,9 @@ CFLAGS=-g -Wall -Werror -Wno-unknown-pragmas
 
 all: elfFile
 
-elfFile: elfFile.o
+elfFile: elfStructure.o elfFile.o
 
-%.o: %.c %.h
+%.o: %.h %.c
 
 clean:
-	rm -f elfFile elfFile.o
+	rm -f elfFile elfFile.o elfStructure.o
