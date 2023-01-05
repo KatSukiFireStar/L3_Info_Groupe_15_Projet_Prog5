@@ -628,7 +628,7 @@ Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable
     return count;
 }
 
-Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable)
+Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable, int *symbolCount)
 {
     Elf32_Half symTableSize = GetEntryCountFromType(header, sectionTable, SHT_SYMTAB);
 
@@ -656,7 +656,7 @@ Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrT
             freadEndian(&symbolTable[symbolIndex].st_shndx, sizeof(Elf32_Section), 1, elfFile);
         }
     }
-
+    *symbolCount = symTableSize;
     return symbolTable;
 }
 
@@ -856,7 +856,7 @@ ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sec
 }
 
 Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                          Elf32_SymTable symbolTable)
+                                          Elf32_SymTable symbolTable, int *reimplantationCount)
 {
     uint32_t reimTableSize = GetEntryCountFromType(header, sectionTable, SHT_REL);
     Elf32_Rel *reimplantationTable = mallocArray(Elf32_Rel, reimTableSize);
@@ -880,7 +880,7 @@ Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf3
             symbolIndex++;
         }
     }
-
+    *reimplantationCount = reimTableSize;
     return reimplantationTable;
 }
 
@@ -921,12 +921,17 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_
 
 Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path)
 {
+    int sectionCount;
+    int symbolCount = 0;
+    int reimplantationCount = 0;
     Elf32_Ehdr header = ExtractHeader(elfFile);
     Elf32_ShdrTable sectionTable = ExtractSectionTable(elfFile, header);
-    Elf32_SymTable symbolTable = ExtractSymbolsTable(elfFile, header, sectionTable);
-    Elf32_RelTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable, symbolTable);
-
-    Elf32_Structure structure = NewElf32_Structure(path, header, sectionTable, symbolTable, reimplatationTable);
+    Elf32_SymTable symbolTable = ExtractSymbolsTable(elfFile, header, sectionTable, &symbolCount);
+    Elf32_RelTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable, symbolTable,
+                                                                   &reimplantationCount);
+    sectionCount = header.e_shnum;
+    Elf32_Structure structure = NewElf32_Structure(path, header, sectionTable, symbolTable, reimplatationTable,
+                                                   sectionCount, symbolCount, reimplantationCount);
 
     return structure;
 }
@@ -964,12 +969,12 @@ int main(int argc, char *argv[])
 
     if (argc <= 1)
     {
-        fprintf(stderr, "Vous n'avez pas mis de fichier en paramètres!");
+        fprintf(stderr, "Vous n'avez pas mis de fichier en paramètres!\n");
         return -3;
     }
 //    else if (argc <= 2)
 //    {
-//        fprintf(stderr, "Vous n'avez mis qu'un seul fichier en paramètres!");
+//        fprintf(stderr, "Vous n'avez mis qu'un seul fichier en paramètres!\n");
 //        return -4;
 //    }
 
@@ -977,7 +982,7 @@ int main(int argc, char *argv[])
     {
         if (access(argv[i], R_OK))
         {
-            fprintf(stderr, "Le fichier %s ne peut pas etre ouvert!", argv[i]);
+            fprintf(stderr, "Le fichier %s ne peut pas etre ouvert!\n", argv[i]);
             return -5;
         }
     }
@@ -1036,10 +1041,10 @@ int main(int argc, char *argv[])
             case 'r':
                 printf("Reimplantation table: \n");
                 LoopOnEachArgs(ShowReimplantationTablesAndDetails(fopen(structureElfs[i - 1].path, "r"),
-                                                          structureElfs[i - 1].header,
-                                                          structureElfs[i - 1].sectionTable,
-                                                          structureElfs[i - 1].symbolTable,
-                                                          structureElfs[i - 1].reimplantationTable);)
+                                                                  structureElfs[i - 1].header,
+                                                                  structureElfs[i - 1].sectionTable,
+                                                                  structureElfs[i - 1].symbolTable,
+                                                                  structureElfs[i - 1].reimplantationTable);)
                 printf("\n");
                 break;
             default:
@@ -1060,7 +1065,8 @@ int main(int argc, char *argv[])
         {
             fprintf(stdout, "Press enter to continue!");
             int c = getchar();
-            while (c != '\n'){
+            while (c != '\n')
+            {
                 fgets(buffer, 128, stdin);
                 c = getchar();
             }

@@ -167,7 +167,7 @@ ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sec
  * @param sectionTable Table des sections du fichier @p elfFile
  * @return La table des symboles de @p elfFile
  */
-Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable);
+Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable, int *symbolCount);
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
@@ -193,7 +193,7 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_
  * @return Un tableau de Relocation correspondant à la table des sections
  */
 Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                          Elf32_SymTable symbolTable);
+                                          Elf32_SymTable symbolTable, int *reimplantationCount);
 
 
 /**
@@ -291,7 +291,7 @@ Elf32_SectionFusion FusionSections(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2],
 Elf32_SymbolFusion FusionSymbols(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], Elf32_SymTable symbolTables[2],
                                  Elf32_SectionFusion sectionFusion);
 //
-//Elf32_RelTable FusionReimplantation(Elf32_Ehdr elfHeaders[2], Elf32_RelTable reimplantationTables[2],
+//Elf32_RelTable FusionReimplantation(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], Elf32_RelTable reimplantationTables[2],
 //                          Elf32_SectionFusion sectionFusion, Elf32_SymbolFusion symbolFusion);
 
 #pragma endregion
