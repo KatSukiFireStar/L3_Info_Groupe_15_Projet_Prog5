@@ -972,6 +972,7 @@ void FreeSectionFusion(Elf32_SectionFusion fusion)
     free(fusion.newIndices);
     free(fusion.concatenationOffset);
     //remove(fusion.tmpFile);
+    // ToDo: decommenter la ligne
 }
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)
