@@ -67,6 +67,12 @@ typedef struct
     char *strtab;
 } Elf32_SymbolFusion;
 
+typedef struct
+{
+    Elf32_Word *newIndices;
+    Elf32_RelTable reimplantationTable;
+} Elf32_RelFusion;
+
 #pragma endregion
 
 #pragma region Main methods

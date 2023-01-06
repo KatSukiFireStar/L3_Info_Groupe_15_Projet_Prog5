@@ -946,6 +946,77 @@ Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path)
     return structure;
 }
 
+Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure, Elf32_SectionFusion sectionFusion,
+                                     Elf32_SymbolFusion symbolFusion)
+{
+    Elf32_RelFusion fusion;
+
+    int nbTotal = structure[0].reimplantationCount + structure[1].reimplantationCount;
+
+    fusion.newIndices = mallocArray(Elf32_Word, structure[1].reimplantationCount);
+
+    for (int i = 0; i < structure[1].reimplantationCount; i++)
+    {
+        fusion.newIndices[i] = i;
+    }
+
+    for (int reimI0 = 0; reimI0 < structure[0].reimplantationCount; reimI0++)
+    {
+        for (int reimI1 = 0; reimI1 < structure[0].reimplantationCount; reimI1++)
+        {
+            bool haveFusion = true;
+
+            Elf32_Shdr strtab[2];
+            strtab[0] = structure[0].sectionTable[structure[0].header.e_shstrndx];
+            strtab[1] = structure[1].sectionTable[structure[1].header.e_shstrndx];
+            // get the name of each section by adding the offset of name to the offset of the string table
+            fseek(elfFiles[0], strtab[0].sh_offset + structure[0].sectionTable[reimI0].sh_name, SEEK_SET);
+            fseek(elfFiles[1], strtab[1].sh_offset + structure[0].sectionTable[reimI1].sh_name, SEEK_SET);
+
+            char c1, c2;
+            do
+            {
+                freadEndian(&c1, sizeof(char), 1, elfFiles[0]);
+                freadEndian(&c2, sizeof(char), 1, elfFiles[1]);
+
+                if (c1 != c2)
+                {
+                    haveFusion = false;
+                    break;
+                }
+            } while (c1 != '\0' || c2 != '\0');
+
+            if (haveFusion)
+            {
+                fusion.newIndices[reimI1] = reimI0;
+                nbTotal--;
+                break;
+            }
+        }
+    }
+
+    fusion.reimplantationTable = mallocArray(Elf32_RelTable, nbTotal);
+
+    int currentOffset = 0;
+    for (int reimI0 = 0; reimI0 < structure[0].reimplantationCount; reimI0++)
+    {
+        fusion.reimplantationTable[reimI0] = structure[0].reimplantationTable[reimI0];
+        int symbolIndex = ELF32_R_SYM(fusion.reimplantationTable[reimI0].r_info);
+
+        // fusion.reimplantationTable[reimI0].r_offset
+
+        for (int reimI1 = 0; reimI1 < structure[0].reimplantationCount; reimI1++)
+        {
+            if (fusion.newIndices[reimI1] != reimI0)
+            {
+                continue;
+            }
+
+
+        }
+    }
+}
+
 void help()
 {
     fprintf(stdout, "Aide: \n");
@@ -1004,11 +1075,14 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
     {
         bool sectioncreated = false;
         // verify that the type of the first section is PROGBITS
-        if(sectionTables[0][i].sh_type == SHT_PROGBITS) {
-            for (Elf32_Half j = 0; j < elfHeaders[1].e_shnum; j++) {
+        if (sectionTables[0][i].sh_type == SHT_PROGBITS)
+        {
+            for (Elf32_Half j = 0; j < elfHeaders[1].e_shnum; j++)
+            {
                 bool fusion;
                 // compare if the two sections have the same type PROGBITS
-                if (sectionTables[1][j].sh_type == SHT_PROGBITS) {
+                if (sectionTables[1][j].sh_type == SHT_PROGBITS)
+                {
                     fusion = true;
                     // create our table of string
                     Elf32_Shdr strtab[2];
@@ -1019,15 +1093,19 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
                     fseek(elfFiles[1], strtab[1].sh_offset + sectionTables[1][j].sh_name, SEEK_SET);
                     // if they have the same type we check if they have the same name
                     char c1, c2;
-                    do {
+                    do
+                    {
                         freadEndian(&c1, sizeof(char), 1, elfFiles[0]);
                         freadEndian(&c2, sizeof(char), 1, elfFiles[1]);
-                        if (c1 != c2) {
+                        if (c1 != c2)
+                        {
                             fusion = false;
                             break;
                         }
                     } while (c1 != '\0' || c2 != '\0');
-                } else {
+                }
+                else
+                {
                     // no merge fusion stay 0
                     fusion = false;
                 }
@@ -1035,7 +1113,8 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
                 fseek(elfFiles[0], sectionTables[0][i].sh_offset, SEEK_SET);
                 fseek(elfFiles[1], sectionTables[1][j].sh_offset, SEEK_SET);
                 // merge
-                if (fusion) {
+                if (fusion)
+                {
                     //section created
                     sectioncreated = true;
                     // the index of the section merged in the second file turn to 1
@@ -1044,7 +1123,8 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
                     numbersection2--;
                     char c;
                     int nb = 0;
-                    do {
+                    do
+                    {
                         freadEndian(&c, sizeof(char), 1, elfFiles[0]);
                         fwrite(&c, sizeof(char), 1, elfFileW);
                         nb++;
@@ -1052,7 +1132,8 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
 
                     // we write the section from the second file to the tmp file
                     nb = 0;
-                    do {
+                    do
+                    {
                         freadEndian(&c, sizeof(char), 1, elfFiles[1]);
                         fwrite(&c, sizeof(char), 1, elfFileW);
                         nb++;
