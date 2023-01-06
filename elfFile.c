@@ -569,16 +569,16 @@ void ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTabl
         printf(" )\n");
 
         // L'adresse à  laquelle le premier octet de la section doit se trouver.
-        printf("  Section address: \t\t\t0x%08x\n", sectionTable[sectionIndex].sh_addr);
+        printf("  Section address: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_addr);
 
 
-        printf("  Section offset: \t\t\t0x%08x\n", sectionTable[sectionIndex].sh_offset);
+        printf("  Section offset: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_offset);
 
 
-        printf("  Section size: \t\t\t0x%08x\n", sectionTable[sectionIndex].sh_size);
+        printf("  Section size: \t\t\t0x%x\n", sectionTable[sectionIndex].sh_size);
 
         // La taille de l'entrée, pour les sections qui contiennent une table d'entrées de même taille.
-        printf("  Entry size if section holds table: \t0x%08x\n", sectionTable[sectionIndex].sh_entsize);
+        printf("  Entry size if section holds table: \t0x%x\n", sectionTable[sectionIndex].sh_entsize);
 
 
         printf("  Section flags: \t\t\t0x%x ( ", sectionTable[sectionIndex].sh_flags);
@@ -627,6 +627,12 @@ Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable
     }
     return count;
 }
+
+
+
+
+
+
 
 Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable)
 {
@@ -939,12 +945,164 @@ void help()
     fprintf(stdout, "s\t: Afficher la table des sections des fichier en paramètres\n");
     fprintf(stdout, "y\t: Afficher la table des symboles des fichier en paramètres\n");
     fprintf(stdout, "r\t: Afficher la table de reimplantation des fichier en paramètres\n");
+    fprintf(stdout, "f\t: Fusionne les header(temporaire)\n");
     fprintf(stdout, "q\t: Quitter ce programme\n");
 }
 
 #define LoopOnEachArgs(action) for (int i = 1; i < argc; i++) \
 {                                                             \
     action                                                    \
+}
+
+Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2)
+{
+    Elf32_Word *newIndices = mallocArray(Elf32_Word, sectionSize2);
+    for (int i = 0; i < sectionSize2; i++)
+    {
+        newIndices[i] = i;
+    }
+
+    Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
+    for (int i = 0; i < sectionSize1; i++)
+    {
+        concatenationOffset[i] = -1;
+    }
+
+
+    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL)};
+    return sf;
+}
+
+Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables)
+{
+    //create the section merge structure
+    Elf32_SectionFusion fu = NewSectionFusion(elfHeaders[0].e_shnum, elfHeaders[1].e_shnum);
+    // open the tmp files with the name elfileW to do the merge in it
+    FILE *elfFileW = fopen(fu.tmpFile, "w");
+    // table to know which index is merged in the second file
+    Elf32_Word *mergedindex = mallocArray(Elf32_Word, elfHeaders[1].e_shnum);
+    for (int i = 0; i < elfHeaders[1].e_shnum; i++)
+    {
+        mergedindex[i] = -1;
+    }
+    // number of section of the second file (to calculate the new number of section of the second file after the merge)
+    Elf32_Half numbersection2 = elfHeaders[1].e_shnum;
+    // number of sections in tmp file (to calculate the new index of the second file)
+    Elf32_Half numbersectiontmp = 0;
+    //compare sections
+    for (Elf32_Half i = 0; i < elfHeaders[0].e_shnum; i++)
+    {
+        int sectioncreated = 0;
+        for (Elf32_Half j = 0; j < elfHeaders[1].e_shnum; j++)
+        {
+            int fusion;
+            // compare if the two sections have the same type PROGBITS
+            if (sectionTables[0][i].sh_type == SHT_PROGBITS && sectionTables[1][j].sh_type == SHT_PROGBITS)
+            {
+                fusion = 1;
+                // create our table of string
+                Elf32_Shdr strtab[2];
+                strtab[0] = sectionTables[0][elfHeaders[0].e_shstrndx];
+                strtab[1] = sectionTables[1][elfHeaders[1].e_shstrndx];
+                // get the name of each section by adding the offset of name to the offset of the string table
+                fseek(elfFiles[0], strtab[0].sh_offset + sectionTables[0][i].sh_name, SEEK_SET);
+                fseek(elfFiles[1], strtab[1].sh_offset + sectionTables[1][j].sh_name, SEEK_SET);
+                // if they have the same type we check if they have the same name
+                char c1, c2;
+                do
+                {
+                    freadEndian(&c1, sizeof(char), 1, elfFiles[0]);
+                    freadEndian(&c2, sizeof(char), 1, elfFiles[1]);
+                    if (c1 != c2)
+                    {
+                        fusion = 0;
+                        break;
+                    }
+                } while (c1 != '\0' || c2 != '\0');
+            }
+            else
+            {
+                // no merge fusion stay 0
+                fusion = 0;
+            }
+            // fseek on the sections
+            fseek(elfFiles[0], sectionTables[0][i].sh_offset, SEEK_SET);
+            fseek(elfFiles[1], sectionTables[1][j].sh_offset, SEEK_SET);
+            // merge
+            if (fusion)
+            {
+                //section created
+                sectioncreated = 1;
+                // the index of the section merged in the second file turn to 1
+                mergedindex[j] = 1;
+                // the number of sections in the second file is missing one
+                numbersection2--;
+                //we write the section from the first file to the tmp file
+                char c;
+                int nb = 0;
+                do
+                {
+                    freadEndian(&c, sizeof(char), 1, elfFiles[0]);
+                    fwrite(&c, sizeof(char), 1, elfFileW);
+                    nb++;
+                } while (nb < sectionTables[0][i].sh_size);
+
+                // we write the section from the second file to the tmp file
+                nb = 0;
+                do
+                {
+                    freadEndian(&c, sizeof(char), 1, elfFiles[1]);
+                    fwrite(&c, sizeof(char), 1, elfFileW);
+                    nb++;
+                } while (nb < sectionTables[1][j].sh_size);
+                // we get the size of the section from the first file to calculate the offset of the merged section
+                Elf32_Word sectionsize = sectionTables[0][i].sh_size;
+                // we add it to the structure
+                fu.concatenationOffset[i] = sectionsize;
+                // the number of section in the tmp file increased by 1
+                numbersectiontmp++;
+                break;
+            }
+        }
+        // if the section is not merged we create it here
+        if (sectioncreated == 0)
+        {
+            // we write the section from the first file to tmp file
+            char c;
+            int nb = 0;
+            do
+            {
+                freadEndian(&c, sizeof(char), 1, elfFiles[0]);
+                fwrite(&c, sizeof(char), 1, elfFileW);
+                nb++;
+            } while (nb < sectionTables[0][i].sh_size);
+            // the number of the sections in tmp increased
+            numbersectiontmp++;
+        }
+
+    }
+    // add the Sections not merged of the second file
+    for (Elf32_Half i = 0; i < numbersection2; i++)
+    {
+        if (mergedindex[i] == -1)
+        {
+            // the new index of the sections
+            fu.newIndices[i] = numbersectiontmp;
+            // number sections in tmp file increased
+            numbersectiontmp++;
+            fseek(elfFiles[1], sectionTables[1][i].sh_offset, SEEK_SET);
+            char c;
+            int nb = 0;
+            do
+            {
+                freadEndian(&c, sizeof(char), 1, elfFiles[1]);
+                fwrite(&c, sizeof(char), 1, elfFileW);
+                nb++;
+            } while (nb < sectionTables[1][i].sh_size);
+        }
+    }
+    fclose(elfFileW);
+    return fu;
 }
 
 
@@ -1109,9 +1267,10 @@ char * GetSymbolName(Elf32_Ehdr header,Elf32_ShdrTable sectionTable, Elf32_SymTa
         return nom;
 }
 
-Elf32_SymbolFusion FusionSymbols(FILE *elfFile[2], Elf32_Ehdr elfHeaders[2], Elf32_ShdrTable sectionTable[2], Elf32_SymTable symbolTables[2]){
-    Elf32_Half symTableSize1 = GetEntryCountFromType(elfHeaders[0], sectionTable, SHT_SYMTAB);
-    Elf32_Half symTableSize2 = GetEntryCountFromType(elfHeaders[1], sectionTable, SHT_SYMTAB);
+
+Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTable, Elf32_SectionFusion sectionFusion, Elf32_SymTable *symbolTables){
+    Elf32_Half symTableSize1 = GetEntryCountFromType(elfHeaders[0], sectionTable[0], SHT_SYMTAB);
+    Elf32_Half symTableSize2 = GetEntryCountFromType(elfHeaders[1], sectionTable[1], SHT_SYMTAB);
     Elf32_SymTable fusionTable=mallocArray(Elf32_Sym, symTableSize1 + symTableSize2);
     int i;
     int j;
@@ -1155,6 +1314,7 @@ Elf32_SymbolFusion FusionSymbols(FILE *elfFile[2], Elf32_Ehdr elfHeaders[2], Elf
 
                 /* si un symbole défini dans l’une des deux tables apparaıt comme non défini dans l’autre, 
                 seule la définition devra apparaitre dans la table de sortie*/
+
                 if (symbolTables[0][k].st_shndx == SHN_UNDEF && symbolTables[1][k].st_shndx != SHN_UNDEF){
                     
                         fusionTable[k].st_name = symbolTables[1][k].st_name;
@@ -1208,8 +1368,9 @@ Elf32_SymbolFusion FusionSymbols(FILE *elfFile[2], Elf32_Ehdr elfHeaders[2], Elf
             }
             name=getSymbolName(elfFile[i], sectionTable[i],symbolTables[i], k,elfFile[i]);
             if(strstr(strtab,name)!=NULL){
-                strtab +=getSymbolName(elfFile[i], sectionTable[i],symbolTables[i], k,elfFile[i]);
-                strtab+='\0';
+                //On concaténe name à strtab
+                strcat(strtab,name);
+                name=strcat(strtab," ");
             }
             }
         }
@@ -1243,8 +1404,17 @@ int isGlobalSymbol1InTable2(Elf32_SymTable tableSym[2] , Elf32_ShdrTable section
     return 0;
 }
 
+void DoFusionCommand(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables)
+{
+    Elf32_SectionFusion fusion = FusionSections(elfFiles, elfHeaders, sectionTables);
+    printf("%s\n", fusion.tmpFile);
+    
+}
 
+void DoFusionSymbolCommand(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables,Elf32_SymTable *symbolTables){
+    Elf32_SymbolFusion fusion = FusionSymbols(elfFiles,elfHeaders,sectionTables,symbolTables );
 
+}
 
 
 
@@ -1257,6 +1427,7 @@ int main(int argc, char *argv[])
     int command;
 
     FILE *elfFile;
+    FILE *elfFiles[2];
     Elf32_Structure structureElfs[2]; // Le tableau a une taille de 2, car on ne fusionne que 2 fichiers
 
 #pragma endregion
@@ -1337,14 +1508,47 @@ int main(int argc, char *argv[])
             case 'r':
                 printf("Reimplantation table: \n");
                 LoopOnEachArgs(ShowReimplantationTablesAndDetails(fopen(structureElfs[i - 1].path, "r"),
-                                                          structureElfs[i - 1].header,
-                                                          structureElfs[i - 1].sectionTable,
-                                                          structureElfs[i - 1].symbolTable,
-                                                          structureElfs[i - 1].reimplantationTable);)
+                                                                  structureElfs[i - 1].header,
+                                                                  structureElfs[i - 1].sectionTable,
+                                                                  structureElfs[i - 1].symbolTable,
+                                                                  structureElfs[i - 1].reimplantationTable);)
                 printf("\n");
                 break;
+            case 'f':
+                elfFiles[0] = fopen(argv[1], "r");
+                elfFiles[1] = fopen(argv[2], "r");
+                Elf32_Ehdr headers[2];
+                headers[0] = structureElfs[0].header;
+                headers[1] = structureElfs[1].header;
+                Elf32_ShdrTable sectiontables[2];
+                sectiontables[0] = structureElfs[0].sectionTable;
+                sectiontables[1] = structureElfs[1].sectionTable;
+
+                DoFusionCommand(elfFiles, headers, sectiontables);
+
+                fclose(elfFiles[0]);
+                fclose(elfFiles[1]);
+                break;
+            case 'fs':
+                elfFiles[0] = fopen(argv[1], "r");
+                elfFiles[1] = fopen(argv[2], "r");
+                Elf32_Ehdr headers[2];
+                headers[0] = structureElfs[0].header;
+                headers[1] = structureElfs[1].header;
+                Elf32_ShdrTable sectiontables[2];
+                sectiontables[0] = structureElfs[0].sectionTable;
+                sectiontables[1] = structureElfs[1].sectionTable;
+                Elf32_ShdrTable symbolTables[2];
+                symbolTables[0] = structureElfs[0]. symbolTable;
+                symbolTables[1] = structureElfs[1]. symbolTable;
+                DoFusionSymbolCommand(elfFiles,headers,sectiontables,symbolTables);
+                
+                fclose(elfFiles[0]);
+                fclose(elfFiles[1]);
+                break;
+
             default:
-                fprintf(stderr, "La commande n'est pas reconnu!\n");
+                fprintf(stdout, "La commande n'est pas reconnu!\n");
         }
 
 #pragma endregion
@@ -1361,7 +1565,8 @@ int main(int argc, char *argv[])
         {
             fprintf(stdout, "Press enter to continue!");
             int c = getchar();
-            while (c != '\n'){
+            while (c != '\n')
+            {
                 fgets(buffer, 128, stdin);
                 c = getchar();
             }
@@ -1371,6 +1576,7 @@ int main(int argc, char *argv[])
 #pragma endregion
 
     }
+
 
 #pragma endregion
 
