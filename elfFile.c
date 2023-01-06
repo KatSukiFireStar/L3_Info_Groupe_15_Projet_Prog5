@@ -976,7 +976,7 @@ void FreeSectionFusion(Elf32_SectionFusion fusion)
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)
 {
-    Elf32_Half numbersection2 = structure[0].header.e_shnum;
+    Elf32_Half numbersection2 = structure[1].header.e_shnum;
     //create the section merge structure
     Elf32_SectionFusion fu = NewSectionFusion(structure[0].header.e_shnum, structure[1].header.e_shnum);
     // open the tmp files with the name elfileW to do the merge in it
@@ -998,7 +998,7 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)
             for (Elf32_Half j = 0; j < structure[1].header.e_shnum; j++) {
                 bool fusion;
                 // compare if the two sections have the same type PROGBITS
-                if (structure[0].sectionTable[j].sh_type== SHT_PROGBITS) {
+                if (structure[1].sectionTable[j].sh_type== SHT_PROGBITS) {
                     fusion = true;
                     // create our table of string
                     Elf32_Shdr strtab[2];
