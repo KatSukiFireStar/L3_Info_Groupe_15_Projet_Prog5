@@ -50,24 +50,7 @@ typedef struct
  * @return Une Elf32_SectionFusion avec ses tableaux alloués (hormis @p tmpOffsets) et un chemin de fichier temporaire
  * généré automatiquement
  */
-inline Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2)
-{
-    Elf32_Word *newIndices = mallocArray(Elf32_Word, sectionSize2);
-    for (int i = 0; i < sectionSize2; i++)
-    {
-        newIndices[i] = i;
-    }
-
-    Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
-    for (int i = 0; i < sectionSize1; i++)
-    {
-        concatenationOffset[i] = -1;
-    }
-
-
-    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL)};
-    return sf;
-}
+Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2);
 
 /**
  * Désaloue les tableaux de @p fusion et supprime le fichier temporaire
@@ -80,6 +63,7 @@ inline void FreeSectionFusion(Elf32_SectionFusion fusion)
     remove(fusion.tmpFile);
     free(fusion.tmpFile);
 }
+
 
 typedef struct
 {
@@ -285,11 +269,9 @@ int needReverse;
  * @param sectionTables Table des sections des 2 fichiers elf
  * @return Résultat de la fusion
  */
-Elf32_SectionFusion FusionSections(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2],
-                                   Elf32_ShdrTable sectionTables[2]);
+Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables);
 
-Elf32_SymbolFusion FusionSymbols(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2],Elf32_ShdrTable sectionTable[2],
- Elf32_SymTable symbolTables[2]);
+Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Ehdr *elfHeaders, Elf32_SectionFusion sectionTable,Elf32_SymTable *symbolTables );
 //
 //Elf32_RelTable FusionReimplantation(Elf32_Ehdr elfHeaders[2], Elf32_RelTable reimplantationTables[2],
 //                          Elf32_SectionFusion sectionFusion, Elf32_SymbolFusion symbolFusion);
