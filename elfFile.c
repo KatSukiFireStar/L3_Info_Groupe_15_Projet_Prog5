@@ -9,6 +9,7 @@
 
 #include "elfFile.h"
 #include "elfStructure.h"
+#include "utils.h"
 
 #pragma region Define
 
@@ -638,6 +639,19 @@ Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable
     return count;
 }
 
+Elf32_Half GetSectionCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type)
+{
+    Elf32_Half count = 0;
+    for (Elf32_Half i = 0; i < header.e_shnum; i++)
+    {
+        if (sectionTable[i].sh_type == type)
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
 Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable, int *symbolCount)
 {
     Elf32_Half symTableSize = GetEntryCountFromType(header, sectionTable, SHT_SYMTAB);
@@ -846,31 +860,25 @@ ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sec
         printf("  Symbol name: \t");
         if (type == STT_SECTION)
         {
-            fseek(elfFile, strndx.sh_offset + sectionTable[symbolTable[symbolIndex].st_shndx].sh_name, SEEK_SET);
+            ShowStringFromIndex(elfFile, strndx, sectionTable[symbolTable[symbolIndex].st_shndx].sh_name);
         }
         else
         {
-            fseek(elfFile, strtab.sh_offset + symbolTable[symbolIndex].st_name, SEEK_SET);
+            ShowStringFromIndex(elfFile, strtab, symbolTable[symbolIndex].st_name);
         }
 
-        char c = ' ';
-        while (c != '\0')
-        {
-            freadEndian(&c, sizeof(char), 1, elfFile);
-            printf("%c", c);
-        }
         printf("\n\n");
     }
 
 
 }
 
-Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                          Elf32_SymTable symbolTable, int *reimplantationCount)
+Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
+                                           Elf32_SymTable symbolTable, int *reimplantationCount)
 {
-    uint32_t reimTableSize = GetEntryCountFromType(header, sectionTable, SHT_REL);
-    Elf32_Rel *reimplantationTable = mallocArray(Elf32_Rel, reimTableSize);
-    Elf32_Half symbolIndex = 0;
+    Elf32_Half reimTableSize = GetSectionCountFromType(header, sectionTable, SHT_REL);
+    Elf32_ReimTable reimplantationTable = mallocArray(Elf32_Rel, reimTableSize);
+    Elf32_Half reimplantationIndex = 0;
     for (Elf32_Half tableIndex = 0; tableIndex < header.e_shnum; tableIndex++)
     {
         if (sectionTable[tableIndex].sh_type != SHT_REL)
@@ -883,49 +891,57 @@ Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf3
         // Elf32_Half symbolIndexOffset = symbolIndex;
         Elf32_Half symbolsInTable = sectionTable[tableIndex].sh_size / sectionTable[tableIndex].sh_entsize;
 
+        reimplantationTable[reimplantationIndex].section = tableIndex;
+
         for (Elf32_Half i = 0; i < symbolsInTable; i++)
         {
-            freadEndian(&reimplantationTable[symbolIndex].r_offset, sizeof(Elf32_Addr), 1, elfFile);
-            freadEndian(&reimplantationTable[symbolIndex].r_info, sizeof(Elf32_Word), 1, elfFile);
-            symbolIndex++;
+            freadEndian(&reimplantationTable[reimplantationIndex].reimplantation[i].r_offset,
+                        sizeof(Elf32_Addr), 1, elfFile);
+            freadEndian(&reimplantationTable[reimplantationIndex].reimplantation[i].r_info,
+                        sizeof(Elf32_Word), 1, elfFile);
         }
+
+        reimplantationIndex++;
     }
     *reimplantationCount = reimTableSize;
     return reimplantationTable;
 }
 
-void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                        Elf32_SymTable symbolTable, Elf32_RelTable reimplantationTable)
+void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Structure structure)
 {
-    uint32_t reimTableSize = GetEntryCountFromType(header, sectionTable, SHT_REL);
+    Elf32_Shdr strtab = structure.sectionTable[GetSectionIndexByName(elfFile, structure.sectionTable, structure.header,
+                                                                     ".strtab")];
+    Elf32_Shdr strndx = structure.sectionTable[structure.header.e_shstrndx];
 
-    Elf32_Shdr strtab = sectionTable[GetSectionIndexByName(elfFile, sectionTable, header, ".strtab")];
-    Elf32_Shdr strndx = sectionTable[header.e_shstrndx];
-
-    Elf32_Half symbolIndex = 0;
-
-    for (Elf32_Half i = 0; i < reimTableSize; i++)
+    for (int i = 0; i < structure.reimplantationCount; i++)
     {
-        printf("Reimplantation %d\n", symbolIndex);
+        Elf32_Reim reim = structure.reimplantationTable[i];
+        Elf32_Shdr section = structure.sectionTable[reim.section];
+        Elf32_Half entityInTable = section.sh_size / section.sh_entsize;
 
-        printf("  Offset: \t0x%08x\n", reimplantationTable[symbolIndex].r_offset);
-        printf("  Info: \t0x%08x\n", reimplantationTable[symbolIndex].r_info);
+        printf("Table %d de nom : ", i);
+        ShowStringFromIndex(elfFile, strtab, section.sh_name);
 
-        printf("  Type: \t%d\n", ELF32_R_TYPE(reimplantationTable[symbolIndex].r_info));
-        Elf32_Sym sym = symbolTable[ELF32_R_SYM(reimplantationTable[symbolIndex].r_info)];
-        printf("  Symbol value: 0x%08x\n", sym.st_value);
-        printf("  Symbol name: \t");
-        unsigned char type = ELF32_ST_TYPE(sym.st_info);
-        if (type == STT_SECTION)
+        for (int j = 0; j < entityInTable; j++)
         {
-            ShowStringFromIndex(elfFile, strndx, sectionTable[sym.st_shndx].sh_name);
+            printf("  Offset: \t0x%08x\n", reim.reimplantation[j].r_offset);
+            printf("  Info: \t0x%08x\n", reim.reimplantation[j].r_info);
+            printf("  Type: \t%d\n", ELF32_R_TYPE(reim.reimplantation[j].r_info));
+
+            Elf32_Sym sym = structure.symbolTable[ELF32_R_SYM(reim.reimplantation[j].r_info)];
+            printf("  Symbol value: 0x%08x\n", sym.st_value);
+            printf("  Symbol name: \t");
+            unsigned char type = ELF32_ST_TYPE(sym.st_info);
+            if (type == STT_SECTION)
+            {
+                ShowStringFromIndex(elfFile, strndx, structure.sectionTable[sym.st_shndx].sh_name);
+            }
+            else
+            {
+                ShowStringFromIndex(elfFile, strtab, sym.st_name);
+            }
+            printf("\n\n");
         }
-        else
-        {
-            ShowStringFromIndex(elfFile, strtab, sym.st_name);
-        }
-        printf("\n\n");
-        symbolIndex++;
     }
 }
 
@@ -937,8 +953,8 @@ Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path)
     Elf32_Ehdr header = ExtractHeader(elfFile);
     Elf32_ShdrTable sectionTable = ExtractSectionTable(elfFile, header);
     Elf32_SymTable symbolTable = ExtractSymbolsTable(elfFile, header, sectionTable, &symbolCount);
-    Elf32_RelTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable, symbolTable,
-                                                                   &reimplantationCount);
+    Elf32_ReimTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable, symbolTable,
+                                                                    &reimplantationCount);
     sectionCount = header.e_shnum;
     Elf32_Structure structure = NewElf32_Structure(path, header, sectionTable, symbolTable, reimplatationTable,
                                                    sectionCount, symbolCount, reimplantationCount);
@@ -995,26 +1011,62 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
         }
     }
 
-    fusion.reimplantationTable = mallocArray(Elf32_RelTable, nbTotal);
+    fusion.reimplantationTable = mallocArray(Elf32_RelaTable, nbTotal);
 
-    int currentOffset = 0;
     for (int reimI0 = 0; reimI0 < structure[0].reimplantationCount; reimI0++)
     {
-        fusion.reimplantationTable[reimI0] = structure[0].reimplantationTable[reimI0];
-        int symbolIndex = ELF32_R_SYM(fusion.reimplantationTable[reimI0].r_info);
+        Elf32_Reim reim0 = structure[0].reimplantationTable[reimI0];
+        Elf32_Shdr section0 = structure[0].sectionTable[reim0.section];
+        Elf32_Half entityInTable0 = section0.sh_size / section0.sh_entsize;
 
-        // fusion.reimplantationTable[reimI0].r_offset
-
-        for (int reimI1 = 0; reimI1 < structure[0].reimplantationCount; reimI1++)
+        for (int i = 0; i < entityInTable0; i++)
         {
-            if (fusion.newIndices[reimI1] != reimI0)
-            {
-                continue;
-            }
-
-
+            fusion.reimplantationTable[reimI0].reimplantation[i] = reim0.reimplantation[i];
         }
     }
+
+    int currentIndex = structure[0].reimplantationCount;
+    for (int reimI1 = 0; reimI1 < structure[1].reimplantationCount; reimI1++)
+    {
+        if (fusion.newIndices[reimI1] < structure[0].reimplantationCount)
+        {
+            continue;
+        }
+
+        Elf32_Reim reim1 = structure[1].reimplantationTable[reimI1];
+        Elf32_Shdr section1 = structure[1].sectionTable[reim1.section];
+        Elf32_Half entityInTable1 = section1.sh_size / section1.sh_entsize;
+        int newSectionIndex = sectionFusion.newIndices[reim1.section];
+
+        int offset;
+        if (newSectionIndex < structure[0].sectionCount)
+        {
+            offset = sectionFusion.concatenationOffset[newSectionIndex];
+        }
+        else
+        {
+            offset = -1;
+        }
+
+        for (int i = 0; i < entityInTable1; i++)
+        {
+            fusion.reimplantationTable[currentIndex].reimplantation[i] = reim1.reimplantation[i];
+
+            if (offset >= 0)
+            {
+                fusion.reimplantationTable[currentIndex].reimplantation[i].r_offset += offset;
+            }
+
+            int lastSymIndex = ELF32_R_SYM(reim1.reimplantation[i].r_info);
+            int newSymIndex = symbolFusion.newIndices[lastSymIndex];
+            reim1.reimplantation[i].r_info &= ~(0xf << 8);
+            reim1.reimplantation[i].r_info |= (newSymIndex << 8);
+        }
+
+        currentIndex++;
+    }
+
+    return fusion;
 }
 
 void help()
@@ -1027,32 +1079,6 @@ void help()
     fprintf(stdout, "r\t: Afficher la table de reimplantation des fichier en paramètres\n");
     fprintf(stdout, "f\t: Fusionne les header(temporaire)\n");
     fprintf(stdout, "q\t: Quitter ce programme\n");
-}
-
-
-Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2)
-{
-    Elf32_Word *newIndices = mallocArray(Elf32_Word, sectionSize2);
-    for (int i = 0; i < sectionSize2; i++)
-    {
-        newIndices[i] = i;
-    }
-
-    Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
-    for (int i = 0; i < sectionSize1; i++)
-    {
-        concatenationOffset[i] = -1;
-    }
-
-    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL), 0};
-    return sf;
-}
-
-void FreeSectionFusion(Elf32_SectionFusion fusion)
-{
-    free(fusion.newIndices);
-    free(fusion.concatenationOffset);
-    //remove(fusion.tmpFile);
 }
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables)
@@ -1294,10 +1320,7 @@ int main(int argc, char *argv[])
             case 'r':
                 printf("Reimplantation table: \n");
                 LoopOnEachArgs(ShowReimplantationTablesAndDetails(fopen(structureElfs[i - 1].path, "r"),
-                                                                  structureElfs[i - 1].header,
-                                                                  structureElfs[i - 1].sectionTable,
-                                                                  structureElfs[i - 1].symbolTable,
-                                                                  structureElfs[i - 1].reimplantationTable);)
+                                                                  structureElfs[i - 1]);)
                 printf("\n");
                 break;
             case 'f':
