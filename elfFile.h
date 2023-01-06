@@ -40,6 +40,8 @@ typedef struct
     Elf32_Off *concatenationOffset;
     /** Chemin vers un fichier temporaire qui contiens les sections */
     char *tmpFile;
+    /** Nombre de section dans la fusion*/
+    Elf32_Half numberSection;
 
 } Elf32_SectionFusion;
 
@@ -56,13 +58,7 @@ Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word section
  * Désaloue les tableaux de @p fusion et supprime le fichier temporaire
  * @param fusion Elf32_SectionFusion à libérer
  */
-inline void FreeSectionFusion(Elf32_SectionFusion fusion)
-{
-    free(fusion.newIndices);
-    free(fusion.concatenationOffset);
-    remove(fusion.tmpFile);
-    free(fusion.tmpFile);
-}
+void FreeSectionFusion(Elf32_SectionFusion fusion);
 
 typedef struct
 {
