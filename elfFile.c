@@ -891,7 +891,9 @@ Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf
         // Elf32_Half symbolIndexOffset = symbolIndex;
         Elf32_Half symbolsInTable = sectionTable[tableIndex].sh_size / sectionTable[tableIndex].sh_entsize;
 
+        reimplantationTable[reimplantationIndex].nbRel = symbolsInTable;
         reimplantationTable[reimplantationIndex].section = tableIndex;
+        reimplantationTable[reimplantationIndex].reimplantation = malloc(sizeof(Elf32_RelaTable) * symbolsInTable);
 
         for (Elf32_Half i = 0; i < symbolsInTable; i++)
         {
