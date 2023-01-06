@@ -970,6 +970,7 @@ Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word section
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables)
 {
+    Elf32_Half numbersection2 = elfHeaders[1].e_shnum;
     //create the section merge structure
     Elf32_SectionFusion fu = NewSectionFusion(elfHeaders[0].e_shnum, elfHeaders[1].e_shnum);
     // open the tmp files with the name elfileW to do the merge in it
@@ -1029,6 +1030,7 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
                 // the index of the section merged in the second file turn to 1
                 mergedindex[j] = true;
                 //we write the section from the first file to the tmp file
+                numbersection2--;
                 char c;
                 int nb = 0;
                 do
@@ -1090,14 +1092,23 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
             } while (nb < sectionTables[1][i].sh_size);
         }
     }
+    Elf32_Half numberSecionFusion = elfHeaders[0].e_shnum + numbersection2; // à voir plus tard comment l'utiliser
     fclose(elfFileW);
     return fu;
 }
 
 
-void DoFusionCommand(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables)
+void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure)
 {
-    Elf32_SectionFusion fusion = FusionSections(elfFiles, elfHeaders, sectionTables);
+    Elf32_Ehdr headers[2];
+    headers[0] = structure[0].header;
+    headers[1] = structure[1].header;
+    Elf32_ShdrTable sectionTables[2];
+    sectionTables[0] = structure[0].sectionTable;
+    sectionTables[1] = structure[1].sectionTable;
+
+    Elf32_SectionFusion fusion = FusionSections(elfFiles, headers, sectionTables);
+
     printf("%s\n", fusion.tmpFile);
 }
 
@@ -1200,14 +1211,8 @@ int main(int argc, char *argv[])
             case 'f':
                 elfFiles[0] = fopen(argv[1], "r");
                 elfFiles[1] = fopen(argv[2], "r");
-                Elf32_Ehdr headers[2];
-                headers[0] = structureElfs[0].header;
-                headers[1] = structureElfs[1].header;
-                Elf32_ShdrTable sectiontables[2];
-                sectiontables[0] = structureElfs[0].sectionTable;
-                sectiontables[1] = structureElfs[1].sectionTable;
 
-                DoFusionCommand(elfFiles, headers, sectiontables);
+                DoFusionCommand(elfFiles, structureElfs);
 
                 fclose(elfFiles[0]);
                 fclose(elfFiles[1]);
