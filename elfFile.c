@@ -963,8 +963,7 @@ Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word section
         concatenationOffset[i] = -1;
     }
 
-    Elf32_SectionFusion sf = {newIndices, concatenationOffset, NULL, 0};
-    mkstemp(sf.tmpFile);
+    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL), 0};
     return sf;
 }
 
@@ -972,7 +971,7 @@ void FreeSectionFusion(Elf32_SectionFusion fusion)
 {
     free(fusion.newIndices);
     free(fusion.concatenationOffset);
-    remove(fusion.tmpFile);
+    //remove(fusion.tmpFile);
 }
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables)
@@ -994,72 +993,66 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
     for (Elf32_Half i = 0; i < elfHeaders[0].e_shnum; i++)
     {
         bool sectioncreated = false;
-        for (Elf32_Half j = 0; j < elfHeaders[1].e_shnum; j++)
-        {
-            bool fusion;
-            // compare if the two sections have the same type PROGBITS
-            if (sectionTables[0][i].sh_type == SHT_PROGBITS && sectionTables[1][j].sh_type == SHT_PROGBITS)
-            {
-                fusion = true;
-                // create our table of string
-                Elf32_Shdr strtab[2];
-                strtab[0] = sectionTables[0][elfHeaders[0].e_shstrndx];
-                strtab[1] = sectionTables[1][elfHeaders[1].e_shstrndx];
-                // get the name of each section by adding the offset of name to the offset of the string table
-                fseek(elfFiles[0], strtab[0].sh_offset + sectionTables[0][i].sh_name, SEEK_SET);
-                fseek(elfFiles[1], strtab[1].sh_offset + sectionTables[1][j].sh_name, SEEK_SET);
-                // if they have the same type we check if they have the same name
-                char c1, c2;
-                do
-                {
-                    freadEndian(&c1, sizeof(char), 1, elfFiles[0]);
-                    freadEndian(&c2, sizeof(char), 1, elfFiles[1]);
-                    if (c1 != c2)
-                    {
-                        fusion = false;
-                        break;
-                    }
-                } while (c1 != '\0' || c2 != '\0');
-            }
-            else
-            {
-                // no merge fusion stay 0
-                fusion = false;
-            }
-            // fseek on the sections
-            fseek(elfFiles[0], sectionTables[0][i].sh_offset, SEEK_SET);
-            fseek(elfFiles[1], sectionTables[1][j].sh_offset, SEEK_SET);
-            // merge
-            if (fusion)
-            {
-                //section created
-                sectioncreated = true;
-                // the index of the section merged in the second file turn to 1
-                mergedindex[j] = true;
-                //we write the section from the first file to the tmp file
-                numbersection2--;
-                char c;
-                int nb = 0;
-                do
-                {
-                    freadEndian(&c, sizeof(char), 1, elfFiles[0]);
-                    fwrite(&c, sizeof(char), 1, elfFileW);
-                    nb++;
-                } while (nb < sectionTables[0][i].sh_size);
+        // verify that the type of the first section is PROGBITS
+        if(sectionTables[0][i].sh_type == SHT_PROGBITS) {
+            for (Elf32_Half j = 0; j < elfHeaders[1].e_shnum; j++) {
+                bool fusion;
+                // compare if the two sections have the same type PROGBITS
+                if (sectionTables[1][j].sh_type == SHT_PROGBITS) {
+                    fusion = true;
+                    // create our table of string
+                    Elf32_Shdr strtab[2];
+                    strtab[0] = sectionTables[0][elfHeaders[0].e_shstrndx];
+                    strtab[1] = sectionTables[1][elfHeaders[1].e_shstrndx];
+                    // get the name of each section by adding the offset of name to the offset of the string table
+                    fseek(elfFiles[0], strtab[0].sh_offset + sectionTables[0][i].sh_name, SEEK_SET);
+                    fseek(elfFiles[1], strtab[1].sh_offset + sectionTables[1][j].sh_name, SEEK_SET);
+                    // if they have the same type we check if they have the same name
+                    char c1, c2;
+                    do {
+                        freadEndian(&c1, sizeof(char), 1, elfFiles[0]);
+                        freadEndian(&c2, sizeof(char), 1, elfFiles[1]);
+                        if (c1 != c2) {
+                            fusion = false;
+                            break;
+                        }
+                    } while (c1 != '\0' || c2 != '\0');
+                } else {
+                    // no merge fusion stay 0
+                    fusion = false;
+                }
+                // fseek on the sections
+                fseek(elfFiles[0], sectionTables[0][i].sh_offset, SEEK_SET);
+                fseek(elfFiles[1], sectionTables[1][j].sh_offset, SEEK_SET);
+                // merge
+                if (fusion) {
+                    //section created
+                    sectioncreated = true;
+                    // the index of the section merged in the second file turn to 1
+                    mergedindex[j] = true;
+                    //we write the section from the first file to the tmp file
+                    numbersection2--;
+                    char c;
+                    int nb = 0;
+                    do {
+                        freadEndian(&c, sizeof(char), 1, elfFiles[0]);
+                        fwrite(&c, sizeof(char), 1, elfFileW);
+                        nb++;
+                    } while (nb < sectionTables[0][i].sh_size);
 
-                // we write the section from the second file to the tmp file
-                nb = 0;
-                do
-                {
-                    freadEndian(&c, sizeof(char), 1, elfFiles[1]);
-                    fwrite(&c, sizeof(char), 1, elfFileW);
-                    nb++;
-                } while (nb < sectionTables[1][j].sh_size);
-                // we add it to the structure
-                fu.concatenationOffset[i] = sectionTables[0][i].sh_size;
-                // the number of section in the tmp file increased by 1
-                numbersectiontmp++;
-                break;
+                    // we write the section from the second file to the tmp file
+                    nb = 0;
+                    do {
+                        freadEndian(&c, sizeof(char), 1, elfFiles[1]);
+                        fwrite(&c, sizeof(char), 1, elfFileW);
+                        nb++;
+                    } while (nb < sectionTables[1][j].sh_size);
+                    // we add it to the structure
+                    fu.concatenationOffset[i] = sectionTables[0][i].sh_size;
+                    // the number of section in the tmp file increased by 1
+                    numbersectiontmp++;
+                    break;
+                }
             }
         }
         // if the section is not merged we create it here
