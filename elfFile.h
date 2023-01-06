@@ -12,69 +12,6 @@
 
 #include "elfStructure.h"
 
-#pragma region typdefs and defines
-
-/**
- * Alloue un espace mémoire pour un tableau
- * <br>
- * Précondition :
- * <br>
- * - @p element doit être un type c
- * <br>
- * - @p size doit être positif et non nul
- * @param element Type des éléments du tableau
- * @param size Taille du tableau
- */
-#define mallocArray(element, size) malloc(sizeof(element) * size)
-
-#pragma endregion
-
-#pragma region Structure
-
-/** Représente les données de fusion des sections de 2 fichiers */
-typedef struct
-{
-    /** Nouveaux indices des sections du deuxième fichier */
-    Elf32_Word *newIndices;
-    /** Offset des concaténations du premier fichiers. -1 s'il n'y a pas de concaténation */
-    Elf32_Off *concatenationOffset;
-    /** Chemin vers un fichier temporaire qui contiens les sections */
-    char *tmpFile;
-    /** Nombre de section dans la fusion*/
-    Elf32_Half numberSection;
-
-} Elf32_SectionFusion;
-
-/**
- * Crée une nouvelle instance de Elf32_SectionFusion
- * @param sectionSize1 Taille de la section du premier fichier
- * @param sectionSize2 Taille de la section du deuxième fichier
- * @return Une Elf32_SectionFusion avec ses tableaux alloués (hormis @p tmpOffsets) et un chemin de fichier temporaire
- * généré automatiquement
- */
-Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word sectionSize2);
-
-/**
- * Désaloue les tableaux de @p fusion et supprime le fichier temporaire
- * @param fusion Elf32_SectionFusion à libérer
- */
-void FreeSectionFusion(Elf32_SectionFusion fusion);
-
-typedef struct
-{
-    Elf32_Word *newIndices;
-    Elf32_SymTable symbolTable;
-    char *strtab;
-} Elf32_SymbolFusion;
-
-typedef struct
-{
-    Elf32_Word *newIndices;
-    Elf32_RelTable reimplantationTable;
-} Elf32_RelFusion;
-
-#pragma endregion
-
 #pragma region Main methods
 
 /**
@@ -164,8 +101,7 @@ Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrT
  * @param symbolTable Table des symboles du fichier @p elfFile
  * @param reimplantationTable Table de relocation du fichier @p elfFile à afficher
  */
-void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                        Elf32_SymTable symbolTable, Elf32_RelTable reimplantationTable);
+void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Structure structure);
 
 /**
  * Extrait la table de relocation d'un fichier ELF
@@ -177,8 +113,8 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_
  * @param symbolTable Table des symboles du fichier @p elfFile
  * @return Un tableau de Relocation correspondant à la table des sections
  */
-Elf32_RelTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                          Elf32_SymTable symbolTable, int *reimplantationCount);
+Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
+                                           Elf32_SymTable symbolTable, int *reimplantationCount);
 
 
 /**
@@ -270,14 +206,14 @@ int needReverse;
  * @param sectionTables Table des sections des 2 fichiers elf
  * @return Résultat de la fusion
  */
-//Elf32_SectionFusion FusionSections(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2],
-//                                   Elf32_ShdrTable sectionTables[2]);
+Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders,
+                                   Elf32_ShdrTable *sectionTables);
 
 Elf32_SymbolFusion FusionSymbols(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], Elf32_SymTable symbolTables[2],
                                  Elf32_SectionFusion sectionFusion);
-//
-//Elf32_RelTable FusionReimplantation(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], Elf32_RelTable reimplantationTables[2],
-//                          Elf32_SectionFusion sectionFusion, Elf32_SymbolFusion symbolFusion);
+
+Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure, Elf32_SectionFusion sectionFusion,
+                                     Elf32_SymbolFusion symbolFusion);
 
 #pragma endregion
 
