@@ -1,4 +1,6 @@
-﻿namespace Test;
+﻿using System.Diagnostics;
+
+namespace Test;
 
 public static class Utils
 {
@@ -16,6 +18,8 @@ public static class Utils
 
 		return result;
 	}
+
+	public static string ReadOutput(this Process p) => p.StandardOutput.ReadToEnd().Replace("\0", "");
 
 	public static string Format(this string s) => s.Trim().ToLower();
 	public static string[] Separate(this string s) => s.Split(':').Select(Format).ToArray();

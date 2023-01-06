@@ -11,8 +11,10 @@ public class ElfDisplayTest
 
 	private readonly ProcessStartInfo _readelfStart;
 	private Process? _readelfProcess;
-	private const string _HEADER_ARG = "-h";
-	private const string _SECTION_ARG = "-S";
+	private static readonly (string HEADER, string SECTION, string SYMBOL) READELF_ARGS =
+		("-h", "-S", "-s");
+	private static readonly (char HEADER, char SECTION, char SYMBOL) ELF_FILE_ARGS =
+		('h', 's', 'y');
 
 	public ElfDisplayTest()
 	{
@@ -51,7 +53,7 @@ public class ElfDisplayTest
 		_elfFileProcess = Process.Start(_elfFileStart);
 
 		_readelfStart.ArgumentList.Clear();
-		_readelfStart.ArgumentList.Add(_HEADER_ARG);
+		_readelfStart.ArgumentList.Add(READELF_ARGS.HEADER);
 		_readelfStart.ArgumentList.Add(Utils.TEST_FILE);
 		_readelfProcess = Process.Start(_readelfStart);
 
@@ -122,6 +124,7 @@ public class ElfDisplayTest
 			.Where(l => !(l[0] == "version" && l[1].Contains("0x")))
 			.Where(l => l.Length == 2)
 			.ToDictionary(l => l[0], l => l[1]);
+
 		Dictionary<string, string> elfFileResult = _elfFileProcess.StandardOutput.ReadLines()
 			.Skip(9)
 			.Take(18)
@@ -160,7 +163,7 @@ public class ElfDisplayTest
 	{
 		_elfFileProcess = Process.Start(_elfFileStart);
 
-		SetArg(_SECTION_ARG);
+		SetArg(READELF_ARGS.SECTION);
 		_readelfProcess = Process.Start(_readelfStart);
 
 
@@ -546,10 +549,10 @@ public class ElfDisplayTest
 			})
 			.ToArray();
 
-		for (int i = 0; i < 9; i++)
-			_elfFileProcess.StandardOutput.ReadLine();
+		string elfFileContent = _elfFileProcess.StandardOutput.ReadToEnd();
+		const string FIRST_SECTION = "Section 0";
 
-		string[][] elfFileResult = _elfFileProcess.StandardOutput.ReadToEnd()
+		string[][] elfFileResult = elfFileContent[elfFileContent.IndexOf(FIRST_SECTION)..]
 			.Replace("\0", "")
 			.Split("\n\n")
 			.SkipLast(2)
@@ -659,5 +662,731 @@ public class ElfDisplayTest
 
 			Assert.AreEqual(expectedValue, actualValue);
 		}*/
+	}
+
+	[TestMethod]
+	public void SymbolTable()
+	{
+		_elfFileProcess = Process.Start(_elfFileStart);
+
+		SetArg(READELF_ARGS.SYMBOL);
+		_readelfProcess = Process.Start(_readelfStart);
+
+
+		Assert.IsNotNull(_elfFileProcess);
+		Assert.IsNotNull(_readelfProcess);
+
+		ExecuteAndClose(ELF_FILE_ARGS.SYMBOL);
+
+		string readelfOutput = _readelfProcess.ReadOutput();
+		string elfFileOutput = _elfFileProcess.ReadOutput();
+
+		/*
+		   Symbol table '.symtab' contains 59 entries:
+		   Num:    Value  Size Type    Bind   Vis      Ndx Name
+		   0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND
+		   1: 00000000     0 FILE    LOCAL  DEFAULT  ABS elfFile.c
+		   2: 00000000     0 SECTION LOCAL  DEFAULT    2 .text
+		   3: 00000000     0 SECTION LOCAL  DEFAULT    6 .rodata
+		   4: 00000434     0 NOTYPE  LOCAL  DEFAULT    2 .L13
+		   5: 00000650     0 NOTYPE  LOCAL  DEFAULT    2 .L38
+		   6: 00000000     0 SECTION LOCAL  DEFAULT    8 .text.__x86.get_[...]
+		   7: 00000000     0 SECTION LOCAL  DEFAULT    9 .debug_info
+		   8: 00000000     0 SECTION LOCAL  DEFAULT   11 .debug_abbrev
+		   9: 00000000     0 SECTION LOCAL  DEFAULT   14 .debug_line
+		   10: 00000000     0 SECTION LOCAL  DEFAULT   16 .debug_str
+		   11: 00000000     0 SECTION LOCAL  DEFAULT   17 .debug_line_str
+		   12: 00000308     0 NOTYPE  LOCAL  DEFAULT    2 .L27
+		   13: 0000031f     0 NOTYPE  LOCAL  DEFAULT    2 .L26
+		   14: 00000336     0 NOTYPE  LOCAL  DEFAULT    2 .L25
+		   15: 0000034d     0 NOTYPE  LOCAL  DEFAULT    2 .L24
+		   16: 00000364     0 NOTYPE  LOCAL  DEFAULT    2 .L23
+		   17: 0000037b     0 NOTYPE  LOCAL  DEFAULT    2 .L22
+		   18: 00000392     0 NOTYPE  LOCAL  DEFAULT    2 .L21
+		   19: 000003a9     0 NOTYPE  LOCAL  DEFAULT    2 .L20
+		   20: 000003bd     0 NOTYPE  LOCAL  DEFAULT    2 .L19
+		   21: 000003d1     0 NOTYPE  LOCAL  DEFAULT    2 .L18
+		   22: 000003e5     0 NOTYPE  LOCAL  DEFAULT    2 .L17
+		   23: 000003f9     0 NOTYPE  LOCAL  DEFAULT    2 .L16
+		   24: 0000040d     0 NOTYPE  LOCAL  DEFAULT    2 .L14
+		   25: 00000498     0 NOTYPE  LOCAL  DEFAULT    2 .L36
+		   26: 000004ac     0 NOTYPE  LOCAL  DEFAULT    2 .L35
+		   27: 000004c0     0 NOTYPE  LOCAL  DEFAULT    2 .L34
+		   28: 000004d4     0 NOTYPE  LOCAL  DEFAULT    2 .L33
+		   29: 000004e8     0 NOTYPE  LOCAL  DEFAULT    2 .L32
+		   30: 000004fc     0 NOTYPE  LOCAL  DEFAULT    2 .L30
+		   31: 00000569     0 NOTYPE  LOCAL  DEFAULT    2 .L49
+		   32: 00000580     0 NOTYPE  LOCAL  DEFAULT    2 .L48
+		   33: 00000597     0 NOTYPE  LOCAL  DEFAULT    2 .L47
+		   34: 000005ae     0 NOTYPE  LOCAL  DEFAULT    2 .L46
+		   35: 000005c5     0 NOTYPE  LOCAL  DEFAULT    2 .L45
+		   36: 000005d9     0 NOTYPE  LOCAL  DEFAULT    2 .L44
+		   37: 000005ed     0 NOTYPE  LOCAL  DEFAULT    2 .L43
+		   38: 00000601     0 NOTYPE  LOCAL  DEFAULT    2 .L42
+		   39: 00000615     0 NOTYPE  LOCAL  DEFAULT    2 .L41
+		   40: 0000063d     0 NOTYPE  LOCAL  DEFAULT    2 .L39
+		   41: 00000000  2418 FUNC    GLOBAL DEFAULT    2 ShowElfHeader
+		   42: 00000000     0 FUNC    GLOBAL HIDDEN     8 __x86.get_pc_thunk.bx
+		   43: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND _GLOBAL_OFFSET_TABLE_
+		   44: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND fread
+		   45: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND exit
+		   46: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND puts
+		   47: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND printf
+		   48: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND putchar
+		   49: 00000972   236 FUNC    GLOBAL DEFAULT    2 ShowSectionFromIndex
+		   50: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND fseek
+		   51: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND stdout
+		   52: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND fprintf
+		   53: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND fputc
+		   54: 00000a5e   371 FUNC    GLOBAL DEFAULT    2 ShowSectionFromName
+		   55: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND __isoc99_fscanf
+		   56: 00000bd1   139 FUNC    GLOBAL DEFAULT    2 main
+		   57: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND fopen
+		   58: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND fclose
+		 */
+
+		/*
+		   Symbol table:
+		   Symbol 0
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:
+		   
+		   Symbol 1
+		   Value:        00000000
+		   Size:         0
+		   Type:         4 ( 'Symbol's name is file name' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          ABS
+		   Symbol name:  elfFile.c
+		   
+		   Symbol 2
+		   Value:        00000000
+		   Size:         0
+		   Type:         3 ( 'Symbol associated with a section' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .text
+		   
+		   Symbol 3
+		   Value:        00000000
+		   Size:         0
+		   Type:         3 ( 'Symbol associated with a section' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          6
+		   Symbol name:  .rodata
+		   
+		   Symbol 4
+		   Value:        00000434
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L13
+		   
+		   Symbol 5
+		   Value:        00000650
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L38
+		   
+		   Symbol 6
+		   Value:        00000000
+		   Size:         0
+		   Type:         3 ( 'Symbol associated with a section' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          8
+		   Symbol name:  .text.__x86.get_pc_thunk.bx
+		   
+		   Symbol 7
+		   Value:        00000000
+		   Size:         0
+		   Type:         3 ( 'Symbol associated with a section' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          9
+		   Symbol name:  .debug_info
+		   
+		   Symbol 8
+		   Value:        00000000
+		   Size:         0
+		   Type:         3 ( 'Symbol associated with a section' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          11
+		   Symbol name:  .debug_abbrev
+		   
+		   Symbol 9
+		   Value:        00000000
+		   Size:         0
+		   Type:         3 ( 'Symbol associated with a section' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          14
+		   Symbol name:  .debug_line
+		   
+		   Symbol 10
+		   Value:        00000000
+		   Size:         0
+		   Type:         3 ( 'Symbol associated with a section' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          16
+		   Symbol name:  .debug_str
+		   
+		   Symbol 11
+		   Value:        00000000
+		   Size:         0
+		   Type:         3 ( 'Symbol associated with a section' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          17
+		   Symbol name:  .debug_line_str
+		   
+		   Symbol 12
+		   Value:        00000308
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L27
+		   
+		   Symbol 13
+		   Value:        0000031f
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L26
+		   
+		   Symbol 14
+		   Value:        00000336
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L25
+		   
+		   Symbol 15
+		   Value:        0000034d
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L24
+		   
+		   Symbol 16
+		   Value:        00000364
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L23
+		   
+		   Symbol 17
+		   Value:        0000037b
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L22
+		   
+		   Symbol 18
+		   Value:        00000392
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L21
+		   
+		   Symbol 19
+		   Value:        000003a9
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L20
+		   
+		   Symbol 20
+		   Value:        000003bd
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L19
+		   
+		   Symbol 21
+		   Value:        000003d1
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L18
+		   
+		   Symbol 22
+		   Value:        000003e5
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L17
+		   
+		   Symbol 23
+		   Value:        000003f9
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L16
+		   
+		   Symbol 24
+		   Value:        0000040d
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L14
+		   
+		   Symbol 25
+		   Value:        00000498
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L36
+		   
+		   Symbol 26
+		   Value:        000004ac
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L35
+		   
+		   Symbol 27
+		   Value:        000004c0
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L34
+		   
+		   Symbol 28
+		   Value:        000004d4
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L33
+		   
+		   Symbol 29
+		   Value:        000004e8
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L32
+		   
+		   Symbol 30
+		   Value:        000004fc
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L30
+		   
+		   Symbol 31
+		   Value:        00000569
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L49
+		   
+		   Symbol 32
+		   Value:        00000580
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L48
+		   
+		   Symbol 33
+		   Value:        00000597
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L47
+		   
+		   Symbol 34
+		   Value:        000005ae
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L46
+		   
+		   Symbol 35
+		   Value:        000005c5
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L45
+		   
+		   Symbol 36
+		   Value:        000005d9
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L44
+		   
+		   Symbol 37
+		   Value:        000005ed
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L43
+		   
+		   Symbol 38
+		   Value:        00000601
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L42
+		   
+		   Symbol 39
+		   Value:        00000615
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L41
+		   
+		   Symbol 40
+		   Value:        0000063d
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         0 ( 'Local symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  .L39
+		   
+		   Symbol 41
+		   Value:        00000000
+		   Size:         2418
+		   Type:         2 ( 'Symbol is a code object' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  ShowElfHeader
+		   
+		   Symbol 42
+		   Value:        00000000
+		   Size:         0
+		   Type:         2 ( 'Symbol is a code object' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   2 (Sym unavailable in other modules)
+		   Ndx:          8
+		   Symbol name:  __x86.get_pc_thunk.bx
+		   
+		   Symbol 43
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  _GLOBAL_OFFSET_TABLE_
+		   
+		   Symbol 44
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  fread
+		   
+		   Symbol 45
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  exit
+		   
+		   Symbol 46
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  puts
+		   
+		   Symbol 47
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  printf
+		   
+		   Symbol 48
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  putchar
+		   
+		   Symbol 49
+		   Value:        00000972
+		   Size:         236
+		   Type:         2 ( 'Symbol is a code object' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  ShowSectionFromIndex
+		   
+		   Symbol 50
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  fseek
+		   
+		   Symbol 51
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  stdout
+		   
+		   Symbol 52
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  fprintf
+		   
+		   Symbol 53
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  fputc
+		   
+		   Symbol 54
+		   Value:        00000a5e
+		   Size:         371
+		   Type:         2 ( 'Symbol is a code object' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  ShowSectionFromName
+		   
+		   Symbol 55
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  __isoc99_fscanf
+		   
+		   Symbol 56
+		   Value:        00000bd1
+		   Size:         139
+		   Type:         2 ( 'Symbol is a code object' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          2
+		   Symbol name:  main
+		   
+		   Symbol 57
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  fopen
+		   
+		   Symbol 58
+		   Value:        00000000
+		   Size:         0
+		   Type:         0 ( 'Symbol type is unspecified' )
+		   Bind:         1 ( 'Global symbol' )
+		   Visibility:   0 (Default symbol visibility rules)
+		   Ndx:          UNDEF
+		   Symbol name:  fclose
+		 */
+
+		string[][] readelfResult = readelfOutput
+			.Split("\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+			.Skip(2)
+			.Select((l, i) =>
+			{
+				string[] tmp = l
+					.Split(':')[1]
+					.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+				if (tmp.Length == 7)
+					return tmp;
+
+
+				if (i != 0)
+					Assert.Fail();
+
+				string[] result = new string[7];
+				Array.Copy(tmp, 0, result, 0, 6);
+				result[6] = "";
+
+				return result;
+
+			})
+			.ToArray();
+
+		const string FIRST_SYMBOL = "Symbol 0";
+		string[][] elfFileResult = elfFileOutput[elfFileOutput.IndexOf(FIRST_SYMBOL)..]
+			.Split("\n\n")
+			.SkipLast(2)
+			.Select(l => l.Split("\n", StringSplitOptions.TrimEntries)[1..]
+				.Select(ll => ll.Split(":", StringSplitOptions.TrimEntries)[1])
+				.ToArray())
+			.ToArray();
+
+		Dictionary<string, string> typeReplacements = new()
+		{
+			["NOTYPE"] = "0",
+			["OBJECT"] = "1",
+			["FUNC"] = "2",
+			["SECTION"] = "3",
+			["FILE"] = "4",
+			["COMMON"] = "5",
+			["TLS"] = "6",
+			["NUM"] = "7",
+			["LOOS"] = "10",
+			["GNU_IFUNC"] = "10",
+			["HIOS"] = "12",
+			["LOPROC"] = "13",
+			["HIPROC"] = "15"
+		};
+
+		Dictionary<string, string> bindReplacements = new()
+		{
+			["LOCAL"] = "0",
+			["GLOBAL"] = "1",
+			["WEAK"] = "2",
+			["NUM"] = "3",
+			["LOOS"] = "10",
+			["GNU_UNIQUE"] = "10",
+			["HIOS"] = "12",
+			["LOPROC"] = "13",
+			["HIPROC"] = "15",
+		};
+
+		Dictionary<string, string> visibilityReplacements = new()
+		{
+			["DEFAULT"] = "0",
+			["INTERNAL"] = "1",
+			["HIDDEN"] = "2",
+			["PROTECTED"] = "3",
+		};
+
+		foreach ((string[] section, int i) in readelfResult.EnumerateWithIndex())
+			foreach ((string value, int j) in section.EnumerateWithIndex())
+			{
+				string expectedValue = value;
+				string actualValue = elfFileResult[i][j];
+
+				switch (j)
+				{
+					case 2 or 3 or 4:
+						expectedValue = (j switch
+						{
+							2 => typeReplacements,
+							3 => bindReplacements,
+							4 => visibilityReplacements
+						})[expectedValue];
+						actualValue = actualValue.Remove(actualValue.IndexOf(" ("));
+						break;
+
+					case 5:
+						expectedValue = expectedValue switch
+						{
+							"UND" => "UNDEF",
+							_ => expectedValue
+						};
+						break;
+
+					case 6:
+						if (!expectedValue.Contains("[...]"))
+							break;
+
+						expectedValue = expectedValue[..expectedValue.IndexOf("[...]")];
+						actualValue = actualValue[..expectedValue.Length];
+						break;
+				}
+
+				Assert.AreEqual(expectedValue, actualValue);
+			}
 	}
 }
