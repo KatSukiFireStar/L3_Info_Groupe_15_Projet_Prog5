@@ -9,6 +9,15 @@
 #include "elfFile.h"
 #include "elfStructure.h"
 
+#pragma region Define
+
+#define LoopOnEachArgs(action) for (int i = 1; i < argc; i++) \
+{                                                             \
+    action                                                    \
+}
+
+#pragma endregion
+
 #pragma region Endian
 
 int needReverse = 0;
@@ -947,10 +956,6 @@ void help()
     fprintf(stdout, "q\t: Quitter ce programme\n");
 }
 
-#define LoopOnEachArgs(action) for (int i = 1; i < argc; i++) \
-{                                                             \
-    action                                                    \
-}
 
 int main(int argc, char *argv[])
 {
