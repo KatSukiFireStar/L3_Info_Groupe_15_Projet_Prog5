@@ -963,9 +963,16 @@ Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word section
         concatenationOffset[i] = -1;
     }
 
-
-    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL), 0};
+    Elf32_SectionFusion sf = {newIndices, concatenationOffset, NULL, 0};
+    mkstemp(sf.tmpFile);
     return sf;
+}
+
+void FreeSectionFusion(Elf32_SectionFusion fusion)
+{
+    free(fusion.newIndices);
+    free(fusion.concatenationOffset);
+    remove(fusion.tmpFile);
 }
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf32_ShdrTable *sectionTables)
@@ -1110,6 +1117,7 @@ void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure)
     Elf32_SectionFusion fusion = FusionSections(elfFiles, headers, sectionTables);
 
     printf("%s\n", fusion.tmpFile);
+    FreeSectionFusion(fusion);
 }
 
 int main(int argc, char *argv[])
