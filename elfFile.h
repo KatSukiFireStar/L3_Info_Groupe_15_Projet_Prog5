@@ -40,6 +40,8 @@ typedef struct
     Elf32_Off *concatenationOffset;
     /** Chemin vers un fichier temporaire qui contiens les sections */
     char *tmpFile;
+    /** Nombre de section dans la fusion*/
+    Elf32_Half numberSection;
 
 } Elf32_SectionFusion;
 

@@ -964,7 +964,7 @@ Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word section
     }
 
 
-    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL)};
+    Elf32_SectionFusion sf = {newIndices, concatenationOffset, tmpnam(NULL), 0};
     return sf;
 }
 
@@ -1092,7 +1092,7 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders, Elf3
             } while (nb < sectionTables[1][i].sh_size);
         }
     }
-    Elf32_Half numberSecionFusion = elfHeaders[0].e_shnum + numbersection2; // à voir plus tard comment l'utiliser
+    fu.numberSection = elfHeaders[0].e_shnum + numbersection2;
     fclose(elfFileW);
     return fu;
 }
