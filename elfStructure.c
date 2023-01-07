@@ -36,8 +36,12 @@ Elf32_Structure NewElf32_Structure(char *path, Elf32_Ehdr header, Elf32_ShdrTabl
                                    Elf32_SymTable symbolTable, Elf32_ReimTable reimplantationTable,
                                    int sectionCount, int symbolCount, int reimplantationCount)
 {
-    Elf32_Structure result = {path, header, sectionTable, symbolTable, reimplantationTable, sectionCount, symbolCount,
-                              reimplantationCount};
+    Elf32_Structure result = {
+            path, header,
+            sectionTable, sectionCount,
+            symbolTable, symbolCount,
+            reimplantationTable, reimplantationCount
+    };
     return result;
 }
 
