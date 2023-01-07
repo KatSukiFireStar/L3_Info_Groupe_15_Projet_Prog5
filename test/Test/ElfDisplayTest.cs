@@ -126,7 +126,7 @@ public class ElfDisplayTest
 			.ToDictionary(l => l[0], l => l[1]);
 
 		Dictionary<string, string> elfFileResult = _elfFileProcess.StandardOutput.ReadLines()
-			.Skip(9)
+			.Skip(10)
 			.Take(18)
 			.Select(Utils.Separate)
 			.Where(l => l.Length == 2)
