@@ -1,6 +1,8 @@
 var searchData=
 [
-  ['fusionreimplantation_0',['FusionReimplantation',['../elfFile_8h.html#a3144f86bfcb8a1f1b415ba4df07f8688',1,'elfFile.c']]],
-  ['fusionsections_1',['FusionSections',['../elfFile_8h.html#ab5003ae56f77c5d7fdf49fe349d307a2',1,'elfFile.c']]],
-  ['fusionsymbols_2',['FusionSymbols',['../elfFile_8h.html#a97d7c187490aea61028153a39adfab6b',1,'elfFile.h']]]
+  ['extractelfinformation_0',['ExtractElfInformation',['../elfFile_8h.html#a19ae190d378c6090b327ca358c130861',1,'elfExtract.c']]],
+  ['extractheader_1',['ExtractHeader',['../elfFile_8h.html#a27ba046fdd1470f335e7379cbcab8f50',1,'elfExtract.c']]],
+  ['extractreimplantationtable_2',['ExtractReimplantationTable',['../elfFile_8h.html#a56244c69ae5f37064f10f780b60cb1b7',1,'elfExtract.c']]],
+  ['extractsectiontable_3',['ExtractSectionTable',['../elfFile_8h.html#ac854b60ad3231b4b2618433475e96ee8',1,'elfExtract.c']]],
+  ['extractsymbolstable_4',['ExtractSymbolsTable',['../elfFile_8h.html#a1fffc3393c1db5b07e408be35601b9c0',1,'elfExtract.c']]]
 ];

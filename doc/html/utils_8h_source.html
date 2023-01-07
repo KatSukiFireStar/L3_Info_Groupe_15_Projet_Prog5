@@ -65,31 +65,39 @@ $(function() {
   <div class="headertitle"><div class="title">utils.h</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">//</span></div>
+<a href="utils_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">//</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// Created by Pyrolink on 06/01/2023.</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">//</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#ifndef PROJET_PROG_UTILS_H</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#define PROJET_PROG_UTILS_H</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;elfStructure.h&quot;</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#define mallocArray(element, size) malloc(sizeof(element) * size)</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>Elf32_Half GetSectionCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="elfStructure_8h.html">elfStructure.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="utils_8h.html#a5a6fb16fa1bb3f3085c48b7106a5be59">   27</a></span><span class="preprocessor">#define mallocArray(element, size) malloc(sizeof(element) * size)</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>Elf32_Half <a class="code hl_function" href="utils_8h.html#ae960326a7cdebf3af94ee2ff87076d7c">GetEntryCountFromType</a>(Elf32_Ehdr header, <a class="code hl_typedef" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> sectionTable, Elf32_Half type);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, <span class="keywordtype">char</span> *name);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keywordtype">void</span> ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offset);</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keywordtype">void</span> CheckMachineEndian(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> fileEndian);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><span class="keywordtype">size_t</span> freadEndian(<span class="keywordtype">void</span> *restrict ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> number, FILE *restrict file);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="preprocessor">#endif </span><span class="comment">//PROJET_PROG_UTILS_H</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>Elf32_Half <a class="code hl_function" href="utils_8h.html#a569d0f2da13d385132706f3f506c37fa">GetSectionCountFromType</a>(Elf32_Ehdr header, <a class="code hl_typedef" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> sectionTable, Elf32_Half type);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>Elf32_Word <a class="code hl_function" href="utils_8h.html#a2f0ff914ecaef8d1f120ece67cd8678a">GetSectionIndexByName</a>(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, <span class="keywordtype">char</span> *name);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keywordtype">void</span> <a class="code hl_function" href="utils_8h.html#acd03bf7615ce15f2c30f540e22de08be">ShowStringFromIndex</a>(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offset);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keywordtype">void</span> <a class="code hl_function" href="utils_8h.html#a88bf933dd8e43ab559d8539c7c67b3b6">CheckMachineEndian</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> fileEndian);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keywordtype">size_t</span> <a class="code hl_function" href="utils_8h.html#a0479d547af675b99a4dd3df59d5d3604">freadEndian</a>(<span class="keywordtype">void</span> *restrict ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> number, FILE *restrict file);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span><span class="preprocessor">#endif </span><span class="comment">//PROJET_PROG_UTILS_H</span></div>
+<div class="ttc" id="aelfStructure_8h_html"><div class="ttname"><a href="elfStructure_8h.html">elfStructure.h</a></div></div>
+<div class="ttc" id="aelfStructure_8h_html_af909f76c31b2301c5623e615956db471"><div class="ttname"><a href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a></div><div class="ttdeci">Elf32_Shdr * Elf32_ShdrTable</div><div class="ttdef"><b>Definition:</b> elfStructure.h:19</div></div>
+<div class="ttc" id="autils_8h_html_a0479d547af675b99a4dd3df59d5d3604"><div class="ttname"><a href="utils_8h.html#a0479d547af675b99a4dd3df59d5d3604">freadEndian</a></div><div class="ttdeci">size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restrict file)</div><div class="ttdef"><b>Definition:</b> utils.c:20</div></div>
+<div class="ttc" id="autils_8h_html_a2f0ff914ecaef8d1f120ece67cd8678a"><div class="ttname"><a href="utils_8h.html#a2f0ff914ecaef8d1f120ece67cd8678a">GetSectionIndexByName</a></div><div class="ttdeci">Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name)</div><div class="ttdef"><b>Definition:</b> utils.c:90</div></div>
+<div class="ttc" id="autils_8h_html_a569d0f2da13d385132706f3f506c37fa"><div class="ttname"><a href="utils_8h.html#a569d0f2da13d385132706f3f506c37fa">GetSectionCountFromType</a></div><div class="ttdeci">Elf32_Half GetSectionCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type)</div><div class="ttdef"><b>Definition:</b> utils.c:65</div></div>
+<div class="ttc" id="autils_8h_html_a88bf933dd8e43ab559d8539c7c67b3b6"><div class="ttname"><a href="utils_8h.html#a88bf933dd8e43ab559d8539c7c67b3b6">CheckMachineEndian</a></div><div class="ttdeci">void CheckMachineEndian(unsigned char fileEndian)</div><div class="ttdef"><b>Definition:</b> utils.c:11</div></div>
+<div class="ttc" id="autils_8h_html_acd03bf7615ce15f2c30f540e22de08be"><div class="ttname"><a href="utils_8h.html#acd03bf7615ce15f2c30f540e22de08be">ShowStringFromIndex</a></div><div class="ttdeci">void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offset)</div><div class="ttdef"><b>Definition:</b> utils.c:78</div></div>
+<div class="ttc" id="autils_8h_html_ae960326a7cdebf3af94ee2ff87076d7c"><div class="ttname"><a href="utils_8h.html#ae960326a7cdebf3af94ee2ff87076d7c">GetEntryCountFromType</a></div><div class="ttdeci">Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type)</div><div class="ttdef"><b>Definition:</b> utils.c:52</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

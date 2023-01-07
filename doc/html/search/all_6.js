@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['tmpfile_0',['tmpFile',['../structElf32__SectionFusion.html#aa4a41fa3f6cf14b0612fc9817f218ca7',1,'Elf32_SectionFusion']]]
+  ['mallocarray_0',['mallocArray',['../utils_8h.html#a5a6fb16fa1bb3f3085c48b7106a5be59',1,'utils.h']]]
 ];

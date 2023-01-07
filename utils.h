@@ -5,6 +5,11 @@
 #ifndef PROJET_PROG_UTILS_H
 #define PROJET_PROG_UTILS_H
 
+/**
+ * @file
+ * Fichier d'en-tête utilitaires
+ */
+
 #include <stdio.h>
 #include "elfStructure.h"
 
@@ -23,9 +28,6 @@
 
 /**
  * Obtient le nombre d'entrée dans une / plusieurs section d'un type
- * <br>
- * Précondition : @p elfFile doit être ouvert en mode lecture
- * @param elfFile Fichier elf
  * @param header Header du fichier @p elfFile
  * @param sectionTable Table des sections du fichier @p elfFile
  * @param type Type de la section
@@ -33,6 +35,13 @@
  */
 Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type);
 
+/**
+ * Obtient le nombre de sections d'un type
+ * @param header Header du fichier @p elfFile
+ * @param sectionTable Table des sections du fichier @p elfFile
+ * @param type Type de la section
+ * @return Le nombre de sections de type @p type
+ */
 Elf32_Half GetSectionCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type);
 
 /**
