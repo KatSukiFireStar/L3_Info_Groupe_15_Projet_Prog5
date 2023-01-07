@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['newelf32_5fstructure_0',['NewElf32_Structure',['../elfStructure_8h.html#a5e81e8e9f72fd8613ea01fbf2b9e1e8e',1,'elfStructure.c']]],
-  ['newsectionfusion_1',['NewSectionFusion',['../elfStructure_8h.html#a469032e68c22b28f7a91100540b6c9ae',1,'elfStructure.c']]]
+  ['getentrycountfromtype_0',['GetEntryCountFromType',['../utils_8h.html#ae960326a7cdebf3af94ee2ff87076d7c',1,'utils.c']]],
+  ['getsectioncountfromtype_1',['GetSectionCountFromType',['../utils_8h.html#a569d0f2da13d385132706f3f506c37fa',1,'utils.c']]],
+  ['getsectionindexbyname_2',['GetSectionIndexByName',['../utils_8h.html#a2f0ff914ecaef8d1f120ece67cd8678a',1,'utils.c']]]
 ];

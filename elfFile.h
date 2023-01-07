@@ -147,6 +147,19 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Structure structure
 #pragma region Fusion
 
 /**
+ * Fusionne les 2 fichiers elf
+ * <br>
+ * Précondition :
+ * <br>
+ * - @p elfFiles doit être un tableau de 2 fichiers ouverts en lecture
+ * <br>
+ * - @p structure doit être un tableau de 2 structures
+ * @param elfFiles Fichiers elf à fusionner
+ * @param structure Structure des 2 fichiers elf
+ */
+void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure);
+
+/**
  * Fusionne les tables de sections.
  * <br>
  * Précondition : chaque fichiers de @p elfFiles doit être ouvert
@@ -183,6 +196,9 @@ Elf32_SymbolFusion FusionSymbols(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], El
  */
 Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure, Elf32_SectionFusion sectionFusion,
                                      Elf32_SymbolFusion symbolFusion);
+
+/** Affiche l'aide du programme */
+void help();
 
 #pragma endregion
 
