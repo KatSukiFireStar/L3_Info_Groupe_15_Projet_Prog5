@@ -2,9 +2,7 @@
 // Created by Pyrolink on 14/12/2022.
 //
 
-#include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 #include "elfFile.h"

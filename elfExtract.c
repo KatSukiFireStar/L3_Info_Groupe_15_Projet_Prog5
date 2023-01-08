@@ -13,7 +13,7 @@ Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path)
     Elf32_Ehdr header = ExtractHeader(elfFile);
     Elf32_ShdrTable sectionTable = ExtractSectionTable(elfFile, header);
     Elf32_SymTable symbolTable = ExtractSymbolsTable(elfFile, header, sectionTable, &symbolCount);
-    Elf32_ReimTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable, symbolTable,
+    Elf32_ReimTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable,
                                                                     &reimplantationCount);
     sectionCount = header.e_shnum;
     Elf32_Structure structure = NewElf32_Structure(path, header, sectionTable, symbolTable, reimplatationTable,
@@ -119,10 +119,10 @@ Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrT
 }
 
 Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                           Elf32_SymTable symbolTable, int *reimplantationCount)
+                                           int *reimplantationCount)
 {
     Elf32_Half reimTableSize = GetSectionCountFromType(header, sectionTable, SHT_REL);
-    Elf32_ReimTable reimplantationTable = mallocArray(Elf32_Rel, reimTableSize);
+    Elf32_ReimTable reimplantationTable = mallocArray(Elf32_Reim, reimTableSize);
     Elf32_Half reimplantationIndex = 0;
     for (Elf32_Half tableIndex = 0; tableIndex < header.e_shnum; tableIndex++)
     {
@@ -138,14 +138,14 @@ Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf
 
         reimplantationTable[reimplantationIndex].nbRel = symbolsInTable;
         reimplantationTable[reimplantationIndex].section = tableIndex;
-        reimplantationTable[reimplantationIndex].reimplantation = malloc(sizeof(Elf32_RelaTable) * symbolsInTable);
+        reimplantationTable[reimplantationIndex].reimplantation = mallocArray(Elf32_Rela, symbolsInTable);
 
         for (Elf32_Half i = 0; i < symbolsInTable; i++)
         {
-            /*freadEndian(&reimplantationTable[reimplantationIndex].reimplantation[i].r_offset,
+            freadEndian(&reimplantationTable[reimplantationIndex].reimplantation[i].r_offset,
                         sizeof(Elf32_Addr), 1, elfFile);
             freadEndian(&reimplantationTable[reimplantationIndex].reimplantation[i].r_info,
-                        sizeof(Elf32_Word), 1, elfFile);*/
+                        sizeof(Elf32_Word), 1, elfFile);
         }
 
         reimplantationIndex++;

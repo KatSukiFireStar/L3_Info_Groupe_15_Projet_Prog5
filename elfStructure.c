@@ -30,6 +30,7 @@ void FreeSectionFusion(Elf32_SectionFusion fusion)
     free(fusion.newIndices);
     free(fusion.concatenationOffset);
     //remove(fusion.tmpFile);
+    // ToDo: décommenter la ligne
 }
 
 Elf32_Structure NewElf32_Structure(char *path, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
@@ -47,7 +48,21 @@ Elf32_Structure NewElf32_Structure(char *path, Elf32_Ehdr header, Elf32_ShdrTabl
 
 void FreeElf32_Structure(Elf32_Structure structure)
 {
+    for (Elf32_Half numberReim = 0; numberReim < structure.reimplantationCount; numberReim++)
+    {
+        free(structure.reimplantationTable[numberReim].reimplantation);
+    }
     free(structure.sectionTable);
     free(structure.symbolTable);
     free(structure.reimplantationTable);
+}
+
+void FreeRelFusion(Elf32_RelFusion relFusion)
+{
+    for (Elf32_Half numberReim = 0; numberReim < relFusion.reimplantationCount; numberReim++)
+    {
+        free(relFusion.reimplantationTable[numberReim].reimplantation);
+    }
+    free(relFusion.newIndices);
+    free(relFusion.reimplantationTable);
 }
