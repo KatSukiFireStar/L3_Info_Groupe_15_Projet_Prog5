@@ -637,7 +637,8 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Structure structure
         Elf32_Half entityInTable = section.sh_size / section.sh_entsize;
 
         printf("Table %d de nom : ", i);
-        ShowStringFromIndex(elfFile, strtab, section.sh_name);
+        ShowStringFromIndex(elfFile, strndx, section.sh_name);
+        printf("\n");
 
         for (int j = 0; j < entityInTable; j++)
         {

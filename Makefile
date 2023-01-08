@@ -3,7 +3,7 @@ CFLAGS=-g -Wall -Werror -Wno-unknown-pragmas
 
 all: elfFile
 
-elfFile: elfStructure.o elfFile.o elfExtract.o elfDisplay.c elfFusion.o utils.o
+elfFile: elfStructure.o elfFile.o elfExtract.o elfDisplay.o elfFusion.o utils.o
 
 %.o: %.h %.c
 
