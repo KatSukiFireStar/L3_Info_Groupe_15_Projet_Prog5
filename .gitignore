@@ -1,4 +1,8 @@
 **/.idea/
+**/.vs/
+**/obj/
+**/bin/
+**/.vscode
 **/.DS_Store
 **/.history/
 
