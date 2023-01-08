@@ -168,8 +168,7 @@ void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure);
  * @param sectionTables Table des sections des 2 fichiers elf
  * @return Résultat de la fusion
  */
-Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Ehdr *elfHeaders,
-                                   Elf32_ShdrTable *sectionTables);
+Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure);
 
 /**
  * Fusionne les tables de symboles

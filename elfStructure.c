@@ -30,6 +30,7 @@ void FreeSectionFusion(Elf32_SectionFusion fusion)
     free(fusion.newIndices);
     free(fusion.concatenationOffset);
     //remove(fusion.tmpFile);
+    // ToDo: décommenter la ligne
 }
 
 Elf32_Structure NewElf32_Structure(char *path, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
