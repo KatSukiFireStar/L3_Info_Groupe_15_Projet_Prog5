@@ -247,8 +247,37 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
 
             int lastSymIndex = ELF32_R_SYM(reim1.reimplantation[i].r_info);
             int newSymIndex = symbolFusion.newIndices[lastSymIndex];
-            reim1.reimplantation[i].r_info &= ~(0xf << 8);
-            reim1.reimplantation[i].r_info |= (newSymIndex << 8);
+
+            reim1.reimplantation[i].r_info = ELF32_R_INFO(newSymIndex, ELF32_R_TYPE(reim1.reimplantation[i].r_info));
+
+            Elf32_Sym sym = structure[1].symbolTable[lastSymIndex];
+
+            if (ELF32_ST_TYPE(sym.st_info) != STT_SECTION || section1.sh_type != SHT_RELA)
+            {
+                continue;
+            }
+
+            switch (ELF32_R_TYPE(reim1.reimplantation[i].r_info))
+            {
+                case R_ARM_ABS8:
+                case R_ARM_ABS12:
+                case R_ARM_ABS16:
+                case R_ARM_ABS32:
+                case R_ARM_ABS32_NOI:
+                    if (offset > 0)
+                    {
+                        reim1.reimplantation[i].r_addend += offset;
+                    }
+                    break;
+
+                case R_ARM_CALL:
+                case R_ARM_JUMP24:
+                    if (offset > 0)
+                    {
+                        reim1.reimplantation[i].r_addend += (offset / 4);
+                    }
+                    break;
+            }
         }
 
         currentIndex++;

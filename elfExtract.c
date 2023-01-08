@@ -121,12 +121,20 @@ Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrT
 Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
                                            int *reimplantationCount)
 {
-    Elf32_Half reimTableSize = GetSectionCountFromType(header, sectionTable, SHT_REL);
+    Elf32_Half reimTableSize = 0;
+    for (Elf32_Half i = 0; i < header.e_shnum; i++)
+    {
+        if (sectionTable[i].sh_type == SHT_REL || sectionTable[i].sh_type == SHT_RELA)
+        {
+            reimTableSize++;
+        }
+    }
+
     Elf32_ReimTable reimplantationTable = mallocArray(Elf32_Reim, reimTableSize);
     Elf32_Half reimplantationIndex = 0;
     for (Elf32_Half tableIndex = 0; tableIndex < header.e_shnum; tableIndex++)
     {
-        if (sectionTable[tableIndex].sh_type != SHT_REL)
+        if (sectionTable[tableIndex].sh_type != SHT_REL && sectionTable[tableIndex].sh_type != SHT_RELA)
         {
             continue;
         }
@@ -146,6 +154,12 @@ Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf
                         sizeof(Elf32_Addr), 1, elfFile);
             freadEndian(&reimplantationTable[reimplantationIndex].reimplantation[i].r_info,
                         sizeof(Elf32_Word), 1, elfFile);
+
+            if (sectionTable[tableIndex].sh_type == SHT_RELA)
+            {
+                freadEndian(&reimplantationTable[reimplantationIndex].reimplantation[i].r_addend,
+                            sizeof(Elf32_Sword), 1, elfFile);
+            }
         }
 
         reimplantationIndex++;
