@@ -138,10 +138,13 @@ typedef struct
 /** Représente les données de fusion des sections de 2 fichiers */
 typedef struct
 {
+    int reimplantationCount;
     /** Nouveaux indices des réimplémentations par table du deuxième fichier */
     Elf32_Word *newIndices;
     /** Nouvelle table de réimplémentation */
     Elf32_ReimTable reimplantationTable;
 } Elf32_RelFusion;
+
+void FreeRelFusion(Elf32_RelFusion relFusion);
 
 #endif //PROJET_PROG_ELFSTRUCTURE_H

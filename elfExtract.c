@@ -13,7 +13,7 @@ Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path)
     Elf32_Ehdr header = ExtractHeader(elfFile);
     Elf32_ShdrTable sectionTable = ExtractSectionTable(elfFile, header);
     Elf32_SymTable symbolTable = ExtractSymbolsTable(elfFile, header, sectionTable, &symbolCount);
-    Elf32_ReimTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable, symbolTable,
+    Elf32_ReimTable reimplatationTable = ExtractReimplantationTable(elfFile, header, sectionTable,
                                                                     &reimplantationCount);
     sectionCount = header.e_shnum;
     Elf32_Structure structure = NewElf32_Structure(path, header, sectionTable, symbolTable, reimplatationTable,
@@ -119,7 +119,7 @@ Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrT
 }
 
 Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                           Elf32_SymTable symbolTable, int *reimplantationCount)
+                                           int *reimplantationCount)
 {
     Elf32_Half reimTableSize = GetSectionCountFromType(header, sectionTable, SHT_REL);
     Elf32_ReimTable reimplantationTable = mallocArray(Elf32_Reim, reimTableSize);

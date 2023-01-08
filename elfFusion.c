@@ -205,6 +205,7 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
     }
 
     fusion.reimplantationTable = mallocArray(Elf32_RelaTable, nbTotal);
+    fusion.reimplantationCount = nbTotal;
 
     for (int reimI0 = 0; reimI0 < structure[0].reimplantationCount; reimI0++)
     {

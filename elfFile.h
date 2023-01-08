@@ -78,7 +78,7 @@ Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrT
  * @return Un tableau de Relocation correspondant à la table des sections
  */
 Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                           Elf32_SymTable symbolTable, int *reimplantationCount);
+                                           int *reimplantationCount);
 
 #pragma endregion
 
