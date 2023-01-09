@@ -133,6 +133,7 @@ typedef struct
     Elf32_SymTable symbolTable;
     /** Nouvelle table de string des symboles */
     char *strtab;
+    Elf32_Half nbSymbol;
 } Elf32_SymbolFusion;
 
 /** Représente les données de fusion des sections de 2 fichiers */
