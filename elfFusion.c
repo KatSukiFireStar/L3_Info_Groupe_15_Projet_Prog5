@@ -158,9 +158,6 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
     Elf32_Half nbTotSym = nbSym1 + nbSym2;
     Elf32_SymbolFusion fusionTable;
 
-    char *name1;
-    char *name2;
-
     fusionTable.newIndices = mallocArray(Elf32_Half, nbSym2);
     for (int i = 0; i < nbSym2; i++)
     {
@@ -174,9 +171,9 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
     strndx[1] = structure[1].sectionTable[structure[1].header.e_shstrndx];
 
     Elf32_Shdr strtab[2];
-    strtab[0] = structure[0].sectionTable[GetSectionIndexByName(elfFile, structure[0].sectionTable,
+    strtab[0] = structure[0].sectionTable[GetSectionIndexByName(elfFile[0], structure[0].sectionTable,
                                                                 structure[0].header, ".strtab")];
-    strtab[1] = structure[1].sectionTable[GetSectionIndexByName(elfFile, structure[1].sectionTable,
+    strtab[1] = structure[1].sectionTable[GetSectionIndexByName(elfFile[1], structure[1].sectionTable,
                                                                 structure[1].header, ".strtab")];
 
     int k = 0;
