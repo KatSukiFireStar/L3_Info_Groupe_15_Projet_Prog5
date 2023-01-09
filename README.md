@@ -22,8 +22,8 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel:
 | 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
 | 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
 | 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
-| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel       | **Absent**              |
-| 09/01/2023 |              |               |                 |                |                  |                         |
+| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel       | Présentiel  pendant 1h  |
+| 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     |                  |                         |
 | 10/01/2023 |              |               |                 |                |                  |                         |
 | 11/01/2023 |              |               |                 |                |                  |                         |
 
