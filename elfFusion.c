@@ -246,13 +246,13 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
 
                 if (!fusion)
                 {
-                    if (structure[0].symbolTable[i].st_shndx != SHN_UNDEF &&
-                        structure[1].symbolTable[j].st_shndx != SHN_UNDEF)
-                    {
-                        printf("Erreur de l'édition de lien: il est interdit pour "
-                               "2 fichiers différents que deux symboles globlaux aient le meme nom ");
-                        exit(-5);
-                    }
+//                    if (structure[0].symbolTable[i].st_shndx != SHN_UNDEF &&
+//                        structure[1].symbolTable[j].st_shndx != SHN_UNDEF)
+//                    {
+//                        printf("Erreur de l'édition de lien: il est interdit pour "
+//                               "2 fichiers différents que deux symboles globlaux aient le meme nom ");
+//                        exit(-5);
+//                    }
 
                     if (structure[0].symbolTable[i].st_shndx == SHN_UNDEF &&
                         structure[1].symbolTable[j].st_shndx != SHN_UNDEF)
@@ -301,12 +301,14 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
         }
         else
         {
-            fusionTable.symbolTable[i].st_size = structure[0].symbolTable[i].st_size;
-            fusionTable.symbolTable[i].st_info = structure[0].symbolTable[i].st_info;
-            fusionTable.symbolTable[i].st_other = structure[0].symbolTable[i].st_other;
-            fusionTable.symbolTable[i].st_shndx = structure[0].symbolTable[i].st_shndx;
-            fusionTable.symbolTable[i].st_name = structure[0].symbolTable[i].st_name;
-            fusionTable.symbolTable[i].st_value = structure[0].symbolTable[i].st_value;
+            fusionTable.symbolTable[k].st_size = structure[0].symbolTable[i].st_size;
+            fusionTable.symbolTable[k].st_info = structure[0].symbolTable[i].st_info;
+            fusionTable.symbolTable[k].st_other = structure[0].symbolTable[i].st_other;
+            fusionTable.symbolTable[k].st_shndx = structure[0].symbolTable[i].st_shndx;
+            fusionTable.symbolTable[k].st_name = structure[0].symbolTable[i].st_name;
+            fusionTable.symbolTable[k].st_value = structure[0].symbolTable[i].st_value;
+
+            k++;
         }
     }
 
@@ -349,6 +351,7 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
         }
         else
         {
+            fprintf(stderr, "st_name = %i\n", sym.st_name);
             fseek(elfFile[index], strtab[index].sh_offset + sym.st_name, SEEK_SET);
         }
 
