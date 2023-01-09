@@ -9,10 +9,13 @@
 
 void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure)
 {
-    Elf32_SectionFusion fusion = FusionSections(elfFiles, structure);
+    Elf32_SectionFusion fusion = FusionSections(elfFiles, structure);  
+      //printf("%s\n", fusion.tmpFile);
+    Elf32_SymbolFusion fusionTableSym= FusionSymbols(elfFiles,structure,fusion);
 
-    printf("%s\n", fusion.tmpFile);
-    FreeSectionFusion(fusion);
+    AffichageTableSymbolFusion(fusionTableSym);
+
+    //FreeSectionFusion(fusion);
 }
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)

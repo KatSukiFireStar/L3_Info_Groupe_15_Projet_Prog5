@@ -180,9 +180,7 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure);
  * @param sectionFusion Fusion des sections des 2 fichiers
  * @return Le résultat de la fusion
  */
-Elf32_SymbolFusion FusionSymbols(FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], Elf32_SymTable symbolTables[2],
-                                 Elf32_SectionFusion sectionFusion);
-
+Elf32_SymbolFusion FusionSymbols(FILE **elfFile,Elf32_Structure *structure, Elf32_SectionFusion sectionFusion);
 /**
  * Fusionne les tables de réimplémentation
  * <br>
