@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #include "elfFile.h"
 #include "elfStructure.h"
@@ -28,6 +29,27 @@ void help()
     fprintf(stdout, "r\t: Afficher la table de reimplantation des fichier en paramètres\n");
     fprintf(stdout, "f\t: Fusionne les header(temporaire)\n");
     fprintf(stdout, "q\t: Quitter ce programme\n");
+}
+
+void ClearBuffer(FILE *stream)
+{
+    int c;
+    do
+    {
+        c = fgetc(stream);
+    } while (c != '\n');
+}
+
+int GetCharAndClear(FILE *stream)
+{
+    int result = fgetc(stream);
+
+    if (result != '\n')
+    {
+        ClearBuffer(stream);
+    }
+
+    return result;
 }
 
 int main(int argc, char *argv[])
@@ -90,27 +112,25 @@ int main(int argc, char *argv[])
 #pragma region Commande
 
         help();
-        command = getchar();
+        command = GetCharAndClear(stdin);
         switch (command)
         {
             case 'q':
                 fin = 1;
                 break;
             case 'h':
-                printf("ELF Header: \n");
                 LoopOnEachArgs(ShowElfHeader(structureElfs[i - 1].header);)
-
                 printf("\n");
                 break;
             case 's':
-                printf("Section table: \n");
+
                 LoopOnEachArgs(ShowSectionTableAndDetails(fopen(structureElfs[i - 1].path, "r"),
                                                           structureElfs[i - 1].header,
                                                           structureElfs[i - 1].sectionTable);)
                 printf("\n");
                 break;
             case 'y':
-                printf("Symbol table: \n");
+
                 LoopOnEachArgs(ShowSymbolsTableAndDetails(fopen(structureElfs[i - 1].path, "r"),
                                                           structureElfs[i - 1].header,
                                                           structureElfs[i - 1].sectionTable,
@@ -118,7 +138,7 @@ int main(int argc, char *argv[])
                 printf("\n");
                 break;
             case 'r':
-                printf("Reimplantation table: \n");
+
                 LoopOnEachArgs(ShowReimplantationTablesAndDetails(fopen(structureElfs[i - 1].path, "r"),
                                                                   structureElfs[i - 1]);)
                 printf("\n");
@@ -140,22 +160,10 @@ int main(int argc, char *argv[])
 
 #pragma region GestionBuffer
 
-        char buffer[128];
-        if (command != '\n')
-        {
-            fgets(buffer, 128, stdin);
-        }
-
         if (!fin)
         {
             fprintf(stdout, "Press enter to continue!");
-            int c = getchar();
-            while (c != '\n')
-            {
-                fgets(buffer, 128, stdin);
-                c = getchar();
-            }
-
+            GetCharAndClear(stdin);
         }
 
 #pragma endregion
@@ -167,7 +175,7 @@ int main(int argc, char *argv[])
 
 #pragma region LiberationStructure
 
-    LoopOnEachArgs(FreeElf32_Structure(structureElfs[i - 1]););
+    LoopOnEachArgs(FreeElf32_Structure(structureElfs[i - 1]);)
 
 #pragma endregion
 

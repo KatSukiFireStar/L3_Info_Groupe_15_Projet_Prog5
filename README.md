@@ -12,23 +12,20 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel:
 
 ### Feuille d'appel
 
-| Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai | Mehdi Chedad            |
-|------------|--------------|---------------|-----------------|----------------|-----------------|-------------------------|
-| 15/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel              |
-| 16/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | **Absent** l'après-midi |
-| 17/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel              |
-| 19/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
-| 20/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
-| 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
-| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
-| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
-| 06/01/2023 |              |               |                 |                |                 |                         |
-| 07/01/2023 |              |               |                 |                |                 |                         |
-| 08/01/2023 |              |               |                 |                |                 |                         |
-| 09/01/2023 |              |               |                 |                |                 |                         |
-| 10/01/2023 |              |               |                 |                |                 |                         |
-| 11/01/2023 |              |               |                 |                |                 |                         |
-| 12/01/2023 |              |               |                 |                |                 |                         |
+| Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai  | Mehdi Chedad            |
+|------------|--------------|---------------|-----------------|----------------|------------------|-------------------------|
+| 15/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**       | Présentiel              |
+| 16/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**       | **Absent** l'après-midi |
+| 17/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**       | Présentiel              |
+| 19/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**       | **Absent**              |
+| 20/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**       | **Absent**              |
+| 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
+| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
+| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
+| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel       | Présentiel  pendant 1h  |
+| 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     |                  |                         |
+| 10/01/2023 |              |               |                 |                |                  |                         |
+| 11/01/2023 |              |               |                 |                |                  |                         |
 
 Mercredi 14 decembre : Mise en place de la methode de travail et 
 initialisation des différents outils (Git / Trello / Fichier de code C)
@@ -81,11 +78,19 @@ Redefinition de la documentation des fonctions dans le fichier elfFile.h + Corre
 sur la fusion des sections
 
 Jeudi 5 janvier:
+
 - Medhi Chedad et Mhammad Hajj: Travaille sur la fonction pour la fusion des sections
 - Babakar Diagne et Mohamed Sbartai: Travaille sur la fonction pour la fusion des symboles
 - Corenthin Zozor et Flavien Gonin: Correction du code pour la fusion des sections + ajout de 
 la commande de fusion + Travaille sur les fonctions de tests + Recuperation fichier fusionné
 donné par le prof + Changement de la structure Elf32_Structure
+
+Vendredi 6 janvier:
+
+- Medhi Chedad et Mhammad Hajj: Travaille sur la fonction pour la fusion des sections
+- Babakar Diagne et Mohamed Sbartai: Travaille sur la fonction pour la fusion des symboles
+- Corenthin Zozor et Flavien Gonin: Correction du code pour la fusion des sections + correction
+de la commande de fusion + Changement de la structure Elf32_SectionFusion
 
 ## Liste des fonctionnalités
 

@@ -11,6 +11,8 @@
 void ShowElfHeader(Elf32_Ehdr header)
 {
 
+    printf("ELF Header: \n");
+
 #pragma region check ELF
 
     if (header.e_ident[EI_MAG0] != ELFMAG0 ||
@@ -275,12 +277,16 @@ void ShowElfHeader(Elf32_Ehdr header)
     // afficher Section header string table index
     printf("  String table section index: \t%d\n", header.e_shstrndx);
 
+    printf("\n");
+
 #pragma endregion
 
 }
 
 void ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable)
 {
+    printf("Section table: \n");
+
     Elf32_Shdr strndx = sectionTable[header.e_shstrndx];
 
 #pragma region Display
@@ -438,6 +444,8 @@ void ShowSectionFromIndex(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Wor
 void ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
                                 Elf32_SymTable symbolTable)
 {
+    printf("Symbol table: \n");
+
     Elf32_Half symTableSize = GetEntryCountFromType(header, sectionTable, SHT_SYMTAB);
     // affichage des symboles
 
@@ -626,6 +634,9 @@ void ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTabl
 
 void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Structure structure)
 {
+
+    printf("Reimplantation table: \n");
+
     Elf32_Shdr strtab = structure.sectionTable[GetSectionIndexByName(elfFile, structure.sectionTable, structure.header,
                                                                      ".strtab")];
     Elf32_Shdr strndx = structure.sectionTable[structure.header.e_shstrndx];
@@ -661,4 +672,5 @@ void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Structure structure
             printf("\n\n");
         }
     }
+    printf("\n");
 }
