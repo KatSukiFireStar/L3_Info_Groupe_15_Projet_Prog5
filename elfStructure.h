@@ -136,6 +136,8 @@ typedef struct
     Elf32_Half nbSymbol;
 } Elf32_SymbolFusion;
 
+void FreeSymbolFusion(Elf32_SymbolFusion symbolFusion);
+
 /** Représente les données de fusion des sections de 2 fichiers */
 typedef struct
 {

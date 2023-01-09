@@ -11,9 +11,11 @@
 void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure)
 {
     Elf32_SectionFusion fusion = FusionSections(elfFiles, structure);
+    Elf32_SymbolFusion symFusion = FusionSymbols(elfFiles, structure, fusion);
 
     printf("%s\n", fusion.tmpFile);
     FreeSectionFusion(fusion);
+    FreeSymbolFusion(symFusion);
 }
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)
@@ -158,7 +160,7 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
     Elf32_Half nbTotSym = nbSym1 + nbSym2;
     Elf32_SymbolFusion fusionTable;
 
-    fusionTable.newIndices = mallocArray(Elf32_Half, nbSym2);
+    fusionTable.newIndices = mallocArray(Elf32_Word, nbSym2);
     for (int i = 0; i < nbSym2; i++)
     {
         fusionTable.newIndices[i] = -1;//au debut aucun indice ne change
@@ -205,18 +207,18 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
 
                 bool fusion = true;
 
-                unsigned char type0 = ELF32_ST_TYPE(structure[0].symbolTable[j].st_info);
+                unsigned char type0 = ELF32_ST_TYPE(structure[0].symbolTable[i].st_info);
                 unsigned char type1 = ELF32_ST_TYPE(structure[1].symbolTable[j].st_info);
 
                 if (type0 == STT_SECTION)
                 {
                     fseek(elfFile[0], strndx[0].sh_offset +
-                                      structure[0].sectionTable[structure[0].symbolTable[j].st_shndx].sh_name,
+                                      structure[0].sectionTable[structure[0].symbolTable[i].st_shndx].sh_name,
                           SEEK_SET);
                 }
                 else
                 {
-                    fseek(elfFile[0], strtab[0].sh_offset + structure[0].symbolTable[j].st_name, SEEK_SET);
+                    fseek(elfFile[0], strtab[0].sh_offset + structure[0].symbolTable[i].st_name, SEEK_SET);
                 }
 
                 if (type1 == STT_SECTION)
@@ -245,7 +247,7 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
                 if (!fusion)
                 {
                     if (structure[0].symbolTable[i].st_shndx != SHN_UNDEF &&
-                        structure[1].symbolTable[i].st_shndx != SHN_UNDEF)
+                        structure[1].symbolTable[j].st_shndx != SHN_UNDEF)
                     {
                         printf("Erreur de l'édition de lien: il est interdit pour "
                                "2 fichiers différents que deux symboles globlaux aient le meme nom ");
@@ -297,12 +299,19 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
                 k++;
             }
         }
+        else
+        {
+            fusionTable.symbolTable[i].st_size = structure[0].symbolTable[i].st_size;
+            fusionTable.symbolTable[i].st_info = structure[0].symbolTable[i].st_info;
+            fusionTable.symbolTable[i].st_other = structure[0].symbolTable[i].st_other;
+            fusionTable.symbolTable[i].st_shndx = structure[0].symbolTable[i].st_shndx;
+            fusionTable.symbolTable[i].st_name = structure[0].symbolTable[i].st_name;
+            fusionTable.symbolTable[i].st_value = structure[0].symbolTable[i].st_value;
+        }
     }
 
     fusionTable.nbSymbol = nbTotSym;
-    fusionTable.strtab = mallocArray(char, fusionTable.nbSymbol + 1);
-    fusionTable.strtab[0] = mallocArray(char, 1);
-    fusionTable.strtab[0][0] = '\0';
+    fusionTable.strtab = mallocArray(char *, fusionTable.nbSymbol);
 
     for (int i = 0; i < fusionTable.nbSymbol; i++)
     {
@@ -322,9 +331,21 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
 
         if (type == STT_SECTION)
         {
+            Elf32_Sym currentSym = structure[0].symbolTable[i];
+            if (index == 1)
+            {
+                for (int j = 0; j < structure[1].symbolCount; j++)
+                {
+                    if (fusionTable.newIndices[j] == i)
+                    {
+                        currentSym = structure[1].symbolTable[j];
+                    }
+                }
+            }
+
             fseek(elfFile[index], strndx[index].sh_offset +
-                              structure[0].sectionTable[structure[index].symbolTable[i].st_shndx].sh_name,
-                  SEEK_SET);
+                                  structure[index].sectionTable[currentSym.st_shndx].sh_name,
+                        SEEK_SET);
         }
         else
         {
@@ -335,18 +356,42 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
         char c;
         do
         {
-            freadEndian(&c, sizeof(char), 1, elfFile[0]);
+            freadEndian(&c, sizeof(char), 1, elfFile[index]);
             nameSize++;
         } while (c != '\0');
 
-        fusionTable.strtab[i + 1] = mallocArray(char, nameSize);
-
-        c = ' ';
-        for (int j = 0; c != '\0'; c++)
+        if (type == STT_SECTION)
         {
-            freadEndian(&c, sizeof(char), 1, elfFile[0]);
-            fusionTable.strtab[i + 1][j] = c;
+            Elf32_Sym currentSym = structure[0].symbolTable[i];
+            if (index == 1)
+            {
+                for (int j = 0; j < structure[1].symbolCount; j++)
+                {
+                    if (fusionTable.newIndices[j] == i)
+                    {
+                        currentSym = structure[1].symbolTable[j];
+                    }
+                }
+            }
+
+            fseek(elfFile[index], strndx[index].sh_offset +
+                                  structure[index].sectionTable[currentSym.st_shndx].sh_name,
+                  SEEK_SET);
         }
+        else
+        {
+            fseek(elfFile[index], strtab[index].sh_offset + sym.st_name, SEEK_SET);
+        }
+
+        fusionTable.strtab[i] = mallocArray(char, nameSize);
+
+        int j = 0;
+        do
+        {
+            freadEndian(&c, sizeof(char), 1, elfFile[index]);
+            fusionTable.strtab[i][j] = c;
+            j++;
+        } while (c != '\0');
     }
 
     return fusionTable;

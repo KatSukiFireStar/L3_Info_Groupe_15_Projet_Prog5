@@ -57,6 +57,17 @@ void FreeElf32_Structure(Elf32_Structure structure)
     free(structure.reimplantationTable);
 }
 
+void FreeSymbolFusion(Elf32_SymbolFusion symbolFusion)
+{
+    for (int i = 0; i < symbolFusion.nbSymbol; ++i)
+    {
+        free(symbolFusion.strtab[i]);
+    }
+    free(symbolFusion.strtab);
+    free(symbolFusion.symbolTable);
+    free(symbolFusion.newIndices);
+}
+
 void FreeRelFusion(Elf32_RelFusion relFusion)
 {
     for (Elf32_Half numberReim = 0; numberReim < relFusion.reimplantationCount; numberReim++)
