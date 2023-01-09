@@ -12,20 +12,20 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel:
 
 ### Feuille d'appel
 
-| Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai  | Mehdi Chedad            |
-|------------|--------------|---------------|-----------------|----------------|------------------|-------------------------|
-| 15/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**       | Présentiel              |
-| 16/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**       | **Absent** l'après-midi |
-| 17/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**       | Présentiel              |
-| 19/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**       | **Absent**              |
-| 20/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**       | **Absent**              |
-| 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
-| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
-| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_     | **Absent**              |
-| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel       | Présentiel  pendant 1h  |
-| 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     |                  |                         |
-| 10/01/2023 |              |               |                 |                |                  |                         |
-| 11/01/2023 |              |               |                 |                |                  |                         |
+| Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai | Mehdi Chedad             |
+|------------|--------------|---------------|-----------------|----------------|-----------------|--------------------------|
+| 15/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel               |
+| 16/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | **Absent** l'après-midi  |
+| 17/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel               |
+| 19/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**               |
+| 20/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**               |
+| 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**               |
+| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**               |
+| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**               |
+| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel pendant 1h    |
+| 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent**               |
+| 10/01/2023 |              |               |                 |                |                 |                          |
+| 11/01/2023 |              |               |                 |                |                 |                          |
 
 Mercredi 14 decembre : Mise en place de la methode de travail et 
 initialisation des différents outils (Git / Trello / Fichier de code C)
@@ -91,6 +91,13 @@ Vendredi 6 janvier:
 - Babakar Diagne et Mohamed Sbartai: Travaille sur la fonction pour la fusion des symboles
 - Corenthin Zozor et Flavien Gonin: Correction du code pour la fusion des sections + correction
 de la commande de fusion + Changement de la structure Elf32_SectionFusion
+
+Lundi 9 janvier:
+
+- Medhi Chedad et Mhammad Hajj: Aide sur la fonction de fusion des symboles
+- Babakar Diagne et Mohamed Sbartai: Travaille sur la fonction pour la fusion des symboles
+- Corenthin Zozor et Flavien Gonin: Fin de la fonction de fusion des tables de reimplantation + correction du code pour
+la fusion des symboles + ajout des fonctions de désallocations mémoire + tri des fonctions selon leurs utilités
 
 ## Liste des fonctionnalités
 
