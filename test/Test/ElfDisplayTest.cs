@@ -3,6 +3,8 @@ using System.Globalization;
 
 namespace Test;
 
+// ToDo: Changer le chemin d'acces en un chemin calculable (ne pas le mettre en dur)
+
 [TestClass]
 public class ElfDisplayTest
 {

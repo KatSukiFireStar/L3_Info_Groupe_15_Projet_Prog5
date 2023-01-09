@@ -4,6 +4,11 @@
 
 ## Mode d'emploi
 
+Pour lancer les tests qui sont prevus avec le programme, il faut installer dotnet. Ensuite, il
+faut se placer dans un terminal dans le fichier du projet. 
+Pour terminer, il faut utiliser la commande suivante :
+  
+    dotnet test test/Test/Test.csproj
 
 ## Journal de travail
 
@@ -12,20 +17,20 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel:
 
 ### Feuille d'appel
 
-| Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai | Mehdi Chedad             |
-|------------|--------------|---------------|-----------------|----------------|-----------------|--------------------------|
-| 15/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel               |
-| 16/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | **Absent** l'après-midi  |
-| 17/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel               |
-| 19/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**               |
-| 20/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**               |
-| 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**               |
-| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**               |
-| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**               |
-| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel pendant 1h    |
-| 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent**               |
-| 10/01/2023 |              |               |                 |                |                 |                          |
-| 11/01/2023 |              |               |                 |                |                 |                          |
+| Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai | Mehdi Chedad            |
+|------------|--------------|---------------|-----------------|----------------|-----------------|-------------------------|
+| 15/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel              |
+| 16/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | **Absent** l'après-midi |
+| 17/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel              |
+| 19/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
+| 20/12/2022 | Distanciel   | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
+| 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
+| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
+| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
+| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel pendant 1h   |
+| 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent** le matin     |
+| 10/01/2023 |              |               |                 |                |                 |                         |
+| 11/01/2023 |              |               |                 |                |                 |                         |
 
 Mercredi 14 decembre : Mise en place de la methode de travail et 
 initialisation des différents outils (Git / Trello / Fichier de code C)
