@@ -132,8 +132,11 @@ typedef struct
     /** Nouvelle table des symboles */
     Elf32_SymTable symbolTable;
     /** Nouvelle table de string des symboles */
-    char *strtab;
+    char **strtab;
+    Elf32_Half nbSymbol;
 } Elf32_SymbolFusion;
+
+void FreeSymbolFusion(Elf32_SymbolFusion symbolFusion);
 
 /** Représente les données de fusion des sections de 2 fichiers */
 typedef struct
@@ -146,5 +149,7 @@ typedef struct
 } Elf32_RelFusion;
 
 void FreeRelFusion(Elf32_RelFusion relFusion);
+
+
 
 #endif //PROJET_PROG_ELFSTRUCTURE_H

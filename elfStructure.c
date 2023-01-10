@@ -12,7 +12,7 @@ Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word section
     Elf32_Word *newIndices = mallocArray(Elf32_Word, sectionSize2);
     for (int i = 0; i < sectionSize2; i++)
     {
-        newIndices[i] = i;
+        newIndices[i] = -1;
     }
 
     Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
@@ -55,6 +55,17 @@ void FreeElf32_Structure(Elf32_Structure structure)
     free(structure.sectionTable);
     free(structure.symbolTable);
     free(structure.reimplantationTable);
+}
+
+void FreeSymbolFusion(Elf32_SymbolFusion symbolFusion)
+{
+    for (int i = 0; i < symbolFusion.nbSymbol; ++i)
+    {
+        free(symbolFusion.strtab[i]);
+    }
+    free(symbolFusion.strtab);
+    free(symbolFusion.symbolTable);
+    free(symbolFusion.newIndices);
 }
 
 void FreeRelFusion(Elf32_RelFusion relFusion)

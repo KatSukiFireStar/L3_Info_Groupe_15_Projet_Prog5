@@ -84,4 +84,6 @@ void CheckMachineEndian(unsigned char fileEndian);
  */
 size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restrict file);
 
+int isLocalSymbolInFusionTable(Elf32_SymbolFusion fusionTable, Elf32_Sym symbol);
+
 #endif //PROJET_PROG_UTILS_H
