@@ -84,8 +84,8 @@ Functions</h2></td></tr>
 <tr class="separator:ac854b60ad3231b4b2618433475e96ee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fffc3393c1db5b07e408be35601b9c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="elfStructure_8h.html#ad9a7d41d2b4a95d426c75f16b926e0f7">Elf32_SymTable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a1fffc3393c1db5b07e408be35601b9c0">ExtractSymbolsTable</a> (FILE *elfFile, Elf32_Ehdr header, <a class="el" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> sectionTable, int *symbolCount)</td></tr>
 <tr class="separator:a1fffc3393c1db5b07e408be35601b9c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56244c69ae5f37064f10f780b60cb1b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="elfStructure_8h.html#ae2ea0ee910877c478579d0e44777d18d">Elf32_ReimTable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a56244c69ae5f37064f10f780b60cb1b7">ExtractReimplantationTable</a> (FILE *elfFile, Elf32_Ehdr header, <a class="el" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> sectionTable, <a class="el" href="elfStructure_8h.html#ad9a7d41d2b4a95d426c75f16b926e0f7">Elf32_SymTable</a> symbolTable, int *reimplantationCount)</td></tr>
-<tr class="separator:a56244c69ae5f37064f10f780b60cb1b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82028fcc52b3bb15fbc1149da754e4a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="elfStructure_8h.html#ae2ea0ee910877c478579d0e44777d18d">Elf32_ReimTable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a82028fcc52b3bb15fbc1149da754e4a9">ExtractReimplantationTable</a> (FILE *elfFile, Elf32_Ehdr header, <a class="el" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> sectionTable, int *reimplantationCount)</td></tr>
+<tr class="separator:a82028fcc52b3bb15fbc1149da754e4a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a913a20ad3ffeff20afe960474ec7d34b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a913a20ad3ffeff20afe960474ec7d34b">ShowElfHeader</a> (Elf32_Ehdr header)</td></tr>
 <tr class="separator:a913a20ad3ffeff20afe960474ec7d34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e335fb66472d849b8246faeb3d51a8c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a9e335fb66472d849b8246faeb3d51a8c">ShowSectionTableAndDetails</a> (FILE *elfFile, Elf32_Ehdr header, <a class="el" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> sectionTable)</td></tr>
@@ -100,12 +100,15 @@ Functions</h2></td></tr>
 <tr class="separator:a41b315ed88b2766ba8174206562c419d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a941f7b8cd416ad6c103dd50a60e3152e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a941f7b8cd416ad6c103dd50a60e3152e">DoFusionCommand</a> (FILE **elfFiles, <a class="el" href="structElf32__Structure.html">Elf32_Structure</a> *structure)</td></tr>
 <tr class="separator:a941f7b8cd416ad6c103dd50a60e3152e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5003ae56f77c5d7fdf49fe349d307a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structElf32__SectionFusion.html">Elf32_SectionFusion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#ab5003ae56f77c5d7fdf49fe349d307a2">FusionSections</a> (FILE **elfFiles, Elf32_Ehdr *elfHeaders, <a class="el" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> *sectionTables)</td></tr>
-<tr class="separator:ab5003ae56f77c5d7fdf49fe349d307a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a97d7c187490aea61028153a39adfab6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structElf32__SymbolFusion.html">Elf32_SymbolFusion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a97d7c187490aea61028153a39adfab6b">FusionSymbols</a> (FILE *elfFiles[2], Elf32_Ehdr elfHeaders[2], <a class="el" href="elfStructure_8h.html#ad9a7d41d2b4a95d426c75f16b926e0f7">Elf32_SymTable</a> symbolTables[2], <a class="el" href="structElf32__SectionFusion.html">Elf32_SectionFusion</a> sectionFusion)</td></tr>
-<tr class="separator:a97d7c187490aea61028153a39adfab6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a0a607fab490d50dd36cfe3d49e8909"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structElf32__SectionFusion.html">Elf32_SectionFusion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a2a0a607fab490d50dd36cfe3d49e8909">FusionSections</a> (FILE **elfFiles, <a class="el" href="structElf32__Structure.html">Elf32_Structure</a> *structure)</td></tr>
+<tr class="separator:a2a0a607fab490d50dd36cfe3d49e8909"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb4aeb55ca0bc4ba4a3740392bd640f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structElf32__SymbolFusion.html">Elf32_SymbolFusion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#afb4aeb55ca0bc4ba4a3740392bd640f4">FusionSymbols</a> (FILE **elfFile, <a class="el" href="structElf32__Structure.html">Elf32_Structure</a> *structure, <a class="el" href="structElf32__SectionFusion.html">Elf32_SectionFusion</a> sectionFusion)</td></tr>
+<tr class="separator:afb4aeb55ca0bc4ba4a3740392bd640f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3144f86bfcb8a1f1b415ba4df07f8688"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structElf32__RelFusion.html">Elf32_RelFusion</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a3144f86bfcb8a1f1b415ba4df07f8688">FusionReimplantation</a> (FILE **elfFiles, <a class="el" href="structElf32__Structure.html">Elf32_Structure</a> *structure, <a class="el" href="structElf32__SectionFusion.html">Elf32_SectionFusion</a> sectionFusion, <a class="el" href="structElf32__SymbolFusion.html">Elf32_SymbolFusion</a> symbolFusion)</td></tr>
 <tr class="separator:a3144f86bfcb8a1f1b415ba4df07f8688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ab4bcc0535434c06c1fbe76174b4d97"><td class="memItemLeft" align="right" valign="top"><a id="a4ab4bcc0535434c06c1fbe76174b4d97" name="a4ab4bcc0535434c06c1fbe76174b4d97"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ElfCreation</b> (char *output, FILE **inputs, <a class="el" href="structElf32__Structure.html">Elf32_Structure</a> *structures, <a class="el" href="structElf32__SectionFusion.html">Elf32_SectionFusion</a> sectionFusion, <a class="el" href="structElf32__SymbolFusion.html">Elf32_SymbolFusion</a> symFusion, <a class="el" href="structElf32__RelFusion.html">Elf32_RelFusion</a> relFusion)</td></tr>
+<tr class="separator:a4ab4bcc0535434c06c1fbe76174b4d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97ee70a8770dc30d06c744b24eb2fcfc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="elfFile_8h.html#a97ee70a8770dc30d06c744b24eb2fcfc">help</a> ()</td></tr>
 <tr class="separator:a97ee70a8770dc30d06c744b24eb2fcfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -222,8 +225,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a56244c69ae5f37064f10f780b60cb1b7" name="a56244c69ae5f37064f10f780b60cb1b7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a56244c69ae5f37064f10f780b60cb1b7">&#9670;&nbsp;</a></span>ExtractReimplantationTable()</h2>
+<a id="a82028fcc52b3bb15fbc1149da754e4a9" name="a82028fcc52b3bb15fbc1149da754e4a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82028fcc52b3bb15fbc1149da754e4a9">&#9670;&nbsp;</a></span>ExtractReimplantationTable()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -245,12 +248,6 @@ Variables</h2></td></tr>
           <td></td>
           <td class="paramtype"><a class="el" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a>&#160;</td>
           <td class="paramname"><em>sectionTable</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="elfStructure_8h.html#ad9a7d41d2b4a95d426c75f16b926e0f7">Elf32_SymTable</a>&#160;</td>
-          <td class="paramname"><em>symbolTable</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -418,8 +415,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ab5003ae56f77c5d7fdf49fe349d307a2" name="ab5003ae56f77c5d7fdf49fe349d307a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab5003ae56f77c5d7fdf49fe349d307a2">&#9670;&nbsp;</a></span>FusionSections()</h2>
+<a id="a2a0a607fab490d50dd36cfe3d49e8909" name="a2a0a607fab490d50dd36cfe3d49e8909"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a0a607fab490d50dd36cfe3d49e8909">&#9670;&nbsp;</a></span>FusionSections()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -433,14 +430,8 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Elf32_Ehdr *&#160;</td>
-          <td class="paramname"><em>elfHeaders</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="elfStructure_8h.html#af909f76c31b2301c5623e615956db471">Elf32_ShdrTable</a> *&#160;</td>
-          <td class="paramname"><em>sectionTables</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structElf32__Structure.html">Elf32_Structure</a> *&#160;</td>
+          <td class="paramname"><em>structure</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -462,8 +453,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a97d7c187490aea61028153a39adfab6b" name="a97d7c187490aea61028153a39adfab6b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97d7c187490aea61028153a39adfab6b">&#9670;&nbsp;</a></span>FusionSymbols()</h2>
+<a id="afb4aeb55ca0bc4ba4a3740392bd640f4" name="afb4aeb55ca0bc4ba4a3740392bd640f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb4aeb55ca0bc4ba4a3740392bd640f4">&#9670;&nbsp;</a></span>FusionSymbols()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -471,20 +462,14 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="structElf32__SymbolFusion.html">Elf32_SymbolFusion</a> FusionSymbols </td>
           <td>(</td>
-          <td class="paramtype">FILE *&#160;</td>
-          <td class="paramname"><em>elfFiles</em>[2], </td>
+          <td class="paramtype">FILE **&#160;</td>
+          <td class="paramname"><em>elfFile</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Elf32_Ehdr&#160;</td>
-          <td class="paramname"><em>elfHeaders</em>[2], </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="elfStructure_8h.html#ad9a7d41d2b4a95d426c75f16b926e0f7">Elf32_SymTable</a>&#160;</td>
-          <td class="paramname"><em>symbolTables</em>[2], </td>
+          <td class="paramtype"><a class="el" href="structElf32__Structure.html">Elf32_Structure</a> *&#160;</td>
+          <td class="paramname"><em>structure</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

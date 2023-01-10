@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['newelf32_5fstructure_0',['NewElf32_Structure',['../elfStructure_8h.html#a5e81e8e9f72fd8613ea01fbf2b9e1e8e',1,'elfStructure.c']]],
-  ['newsectionfusion_1',['NewSectionFusion',['../elfStructure_8h.html#a469032e68c22b28f7a91100540b6c9ae',1,'elfStructure.c']]]
+  ['mallocarrayandcheck_0',['mallocArrayAndCheck',['../utils_8h.html#aa3b569b05d29cfdd0236f34d4373a31b',1,'utils.c']]]
 ];

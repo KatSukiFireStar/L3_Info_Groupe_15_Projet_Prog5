@@ -15,15 +15,25 @@
 
 #pragma region Exit codes
 
+/** Le fichier ouvert n'est pas un fichier elf */
 #define NOT_ELF_FILE    254
+/** La valeur de e_ident[EI_CLASS] est invalide */
 #define INVALID_CLASS   253
+/** La valeur de e_ident[EI_DATA] est invalide */
 #define INVALID_DATA    252
+/** La valeur de e_version est invalide */
 #define INVALID_VERSION 251
+/** La valeur de e_ident[EI_OSABI] est invalide */
 #define INVALID_OSABI   250
+/** La valeur de e_type est invalide */
 #define INVALID_TYPE    249
+/** Aucune section porte le nom recherché */
 #define STRING_ERROR    248
+/** Un symbole est invalide (st_info ou st_other) */
 #define INVALID_SYMBOL  247
+/** 2 fichiers différents ont deux symboles globlaux avec le même nom */
 #define SAME_GLOBALS    246
+/** Une allocation de mémoire à échouée */
 #define MALLOC_FAILED   245
 
 #pragma endregion
