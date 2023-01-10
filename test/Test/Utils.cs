@@ -1,12 +1,15 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 
 namespace Test;
 
 public static class Utils
 {
-	public const string PROJECT_PATH = "../../../../..";
-	public const string TEST_FILE = $"{PROJECT_PATH}/file1.o";
-	public const string PROGRAMM_PATH = $"{PROJECT_PATH}/elfFile";
+	public static readonly string PROJECT_PATH = Path.Combine(
+		Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
+		"../../../../..");
+	public static readonly string TEST_FILE = Path.Combine(PROJECT_PATH, "file1.o");
+	public static readonly string PROGRAMM_PATH = Path.Combine(PROJECT_PATH, "elfFile");
 
 	public static ICollection<string> ReadLines(this StreamReader reader)
 	{
