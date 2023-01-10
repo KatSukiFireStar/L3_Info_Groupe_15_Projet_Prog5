@@ -4,6 +4,17 @@
 #include <elf.h>
 #include "utils.h"
 
+void *mallocArrayAndCheck(size_t elementSize, int nbElements)
+{
+    void *result = malloc(elementSize * nbElements);
+    if (result == NULL)
+    {
+        exit(MALLOC_FAILED);
+    }
+
+    return result;
+}
+
 #pragma region Endian
 
 int needReverse = 0;

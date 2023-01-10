@@ -13,6 +13,12 @@
 #include <stdio.h>
 #include "elfStructure.h"
 
+#pragma region Exit codes
+
+#define MALLOC_FAILED 245
+
+#pragma endregion
+
 /**
  * Alloue un espace mémoire pour un tableau
  * <br>
@@ -24,7 +30,15 @@
  * @param element Type des éléments du tableau
  * @param size Taille du tableau
  */
-#define mallocArray(element, size) malloc(sizeof(element) * size)
+#define mallocArray(element, size) mallocArrayAndCheck(sizeof(element), (size))
+
+/**
+ * Alloue un espace mémoire pour un tableau d'élément.
+ * @param elementSize Taille d'un élément en octet
+ * @param nbElements Nombre d'élément à allouer
+ * @return Le pointeur du tableau alloué
+ */
+void *mallocArrayAndCheck(size_t elementSize, int nbElements);
 
 /**
  * Obtient le nombre d'entrée dans une / plusieurs section d'un type
