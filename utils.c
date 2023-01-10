@@ -75,7 +75,8 @@ size_t fwriteEndian(const void *restrict ptr, size_t size, size_t number, FILE *
         {
             case 2:
             {
-                uint16_t *tmpIntPtr = tmpPtr + i;
+                uint16_t *tmpIntPtr = tmpPtr;
+                tmpIntPtr += i;
                 *tmpIntPtr = ((((*tmpIntPtr) & 0xFF) << 8) | (((*tmpIntPtr) >> 8) & 0xFF));
                 break;
             }
