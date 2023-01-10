@@ -3,16 +3,41 @@
 //
 
 #include <stdbool.h>
-#include <string.h>
 
 #include "elfFile.h"
 #include "utils.h"
 
+#define DEBUG
+
+#ifdef DEBUG
+
+void DebugSectionFusion(Elf32_Structure *structure, Elf32_SectionFusion sectionFusion)
+{
+    fprintf(stderr, "New indices: \n");
+    for (int i = 0; i < structure[1].sectionCount; i++)
+    {
+        fprintf(stderr, "\t%i\n", sectionFusion.newIndices[i]);
+    }
+
+    fprintf(stderr, "Concatenation offset: \n");
+    for (int i = 0; i < structure[1].sectionCount; i++)
+    {
+        fprintf(stderr, "\t%i\n", sectionFusion.concatenationOffset[i]);
+    }
+
+    fprintf(stderr, "Tmp file: %s\n", sectionFusion.tmpFile);
+    fprintf(stderr, "Section number: %i\n", sectionFusion.numberSection);
+}
+
+#endif
+
 void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure)
 {
-    Elf32_SectionFusion fusion = FusionSections(elfFiles, structure);
-    Elf32_SymbolFusion symFusion = FusionSymbols(elfFiles, structure, fusion);
-   
+    Elf32_SectionFusion sectionFusion = FusionSections(elfFiles, structure);
+    Elf32_SymbolFusion symFusion = FusionSymbols(elfFiles, structure, sectionFusion);
+    Elf32_RelFusion relFusion = FusionReimplantation(elfFiles, structure, sectionFusion, symFusion);
+
+    ElfCreation("./debug.o", elfFiles, structure, sectionFusion, symFusion, relFusion);
 
     printf("%s\n", fusion.tmpFile);
     FreeSectionFusion(fusion);
@@ -421,7 +446,7 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
     fusion.newIndices = mallocArray(Elf32_Word, structure[1].reimplantationCount);
     for (int i = 0; i < structure[1].reimplantationCount; i++)
     {
-        fusion.newIndices[i] = i;
+        fusion.newIndices[i] = -1;
     }
 
     for (int reimI0 = 0; reimI0 < structure[0].reimplantationCount; reimI0++)
@@ -482,12 +507,17 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
             continue;
         }
 
+        fusion.newIndices[reimI1] = currentIndex;
+
         Elf32_Reim reim1 = structure[1].reimplantationTable[reimI1];
         Elf32_Shdr section1 = structure[1].sectionTable[reim1.section];
         Elf32_Half entityInTable1 = section1.sh_size / section1.sh_entsize;
-        int newSectionIndex = sectionFusion.newIndices[reim1.section];
 
-        int offset;
+        Elf32_Word newSectionIndex = sectionFusion.newIndices[reim1.section];
+
+        fusion.reimplantationTable[currentIndex].reimplantation = mallocArray(Elf32_Rela, entityInTable1);
+
+        Elf32_Off offset;
         if (newSectionIndex < structure[0].sectionCount)
         {
             offset = sectionFusion.concatenationOffset[newSectionIndex];
@@ -501,13 +531,13 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
         {
             fusion.reimplantationTable[currentIndex].reimplantation[i] = reim1.reimplantation[i];
 
-            if (offset >= 0)
+            if (offset != -1)
             {
                 fusion.reimplantationTable[currentIndex].reimplantation[i].r_offset += offset;
             }
 
             int lastSymIndex = ELF32_R_SYM(reim1.reimplantation[i].r_info);
-            int newSymIndex = symbolFusion.newIndices[lastSymIndex];
+            Elf32_Word newSymIndex = symbolFusion.newIndices[lastSymIndex];
 
             reim1.reimplantation[i].r_info = ELF32_R_INFO(newSymIndex, ELF32_R_TYPE(reim1.reimplantation[i].r_info));
 
@@ -545,4 +575,41 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
     }
 
     return fusion;
+}
+
+void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32_SectionFusion sectionFusion,
+                 Elf32_SymbolFusion symFusion, Elf32_RelFusion relFusion)
+{
+    Elf32_Ehdr header;
+
+    header.e_ident[EI_MAG0] = ELFMAG0;
+    header.e_ident[EI_MAG1] = ELFMAG1;
+    header.e_ident[EI_MAG2] = ELFMAG2;
+    header.e_ident[EI_MAG3] = ELFMAG3;
+
+    // Statique avec l'énoncé
+    header.e_ident[EI_CLASS] = ELFCLASS32;
+    header.e_ident[EI_DATA] = ELFDATA2LSB;
+    header.e_ident[EI_VERSION] = 1;
+    header.e_ident[EI_OSABI] = ELFOSABI_NONE;
+    header.e_ident[EI_ABIVERSION] = 0;
+    header.e_ident[EI_PAD] = 0;
+    for (int i = EI_PAD; i < EI_NIDENT; i++)
+    {
+        header.e_ident[i] = 0;
+    }
+    header.e_type = ET_REL;
+    header.e_machine = EM_ARM;
+    header.e_version = EV_CURRENT;
+    header.e_entry = 0x0;
+    header.e_phoff = 0x0;
+    header.e_shoff = 0xf; // ToDo
+    header.e_flags = 0x5000000; // FixMe: À vérifier
+    header.e_ehsize = 52; // FixMe: À vérifier si constant
+    header.e_phentsize = 0; // Pas de programme
+    header.e_phnum = 0; // Pas de programme
+
+    header.e_shentsize = 0xf; // ToDo
+    header.e_shnum = 0xf; // ToDo
+    header.e_shstrndx = 0; // ToDo
 }

@@ -195,6 +195,9 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
 Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure, Elf32_SectionFusion sectionFusion,
                                      Elf32_SymbolFusion symbolFusion);
 
+void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32_SectionFusion sectionFusion,
+                 Elf32_SymbolFusion symFusion, Elf32_RelFusion relFusion);
+
 /** Affiche l'aide du programme */
 void help();
 
