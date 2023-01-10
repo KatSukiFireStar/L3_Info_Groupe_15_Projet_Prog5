@@ -12,6 +12,7 @@ void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure)
 {
     Elf32_SectionFusion fusion = FusionSections(elfFiles, structure);
     Elf32_SymbolFusion symFusion = FusionSymbols(elfFiles, structure, fusion);
+   
 
     printf("%s\n", fusion.tmpFile);
     FreeSectionFusion(fusion);
@@ -154,14 +155,11 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)
 
 Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf32_SectionFusion sectionFusion)
 {
-    Elf32_Half nbSym1 = GetEntryCountFromType(structure[0].header, structure[0].sectionTable, SHT_SYMTAB);
-    Elf32_Half nbSym2 = GetEntryCountFromType(structure[1].header, structure[1].sectionTable, SHT_SYMTAB);
-
-    Elf32_Half nbTotSym = nbSym1 + nbSym2;
+    Elf32_Word nbTotSym = structure[0].symbolCount + structure[1].symbolCount;
     Elf32_SymbolFusion fusionTable;
 
-    fusionTable.newIndices = mallocArray(Elf32_Word, nbSym2);
-    for (int i = 0; i < nbSym2; i++)
+    fusionTable.newIndices = mallocArray(Elf32_Word, structure[1].symbolCount);
+    for (int i = 0; i < structure[1].symbolCount; i++)
     {
         fusionTable.newIndices[i] = -1;//au debut aucun indice ne change
     }
@@ -178,52 +176,53 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
     strtab[1] = structure[1].sectionTable[GetSectionIndexByName(elfFile[1], structure[1].sectionTable,
                                                                 structure[1].header, ".strtab")];
 
-    int k = 0;
-    for (int i = 0; i < nbSym1; i++)
+    int currentSymbolIndex = 0;
+    for (int symbolIndex0 = 0; symbolIndex0 < structure[0].symbolCount; symbolIndex0++)
     {
-        if (ELF32_ST_BIND(structure[0].symbolTable[i].st_info) == STB_LOCAL)
+        if (ELF32_ST_BIND(structure[0].symbolTable[symbolIndex0].st_info) == STB_LOCAL)
         {
-            fusionTable.symbolTable[k] = structure[0].symbolTable[i];
+            fusionTable.symbolTable[currentSymbolIndex] = structure[0].symbolTable[symbolIndex0];
 
-            k++;
+            currentSymbolIndex++;
             continue;
         }
 
         // If GLOBAL
-        for (int j = 0; j < nbSym2; j++)
+        bool find = false;
+        for (int symbolIndex1 = 0; symbolIndex1 < structure[1].symbolCount; symbolIndex1++)
         {
-            if (ELF32_ST_BIND(structure[1].symbolTable[j].st_info) == STB_LOCAL)
+            if (ELF32_ST_BIND(structure[1].symbolTable[symbolIndex1].st_info) == STB_LOCAL)
             {
                 continue;
             }
 
-            unsigned char type0 = ELF32_ST_TYPE(structure[0].symbolTable[i].st_info);
-            unsigned char type1 = ELF32_ST_TYPE(structure[1].symbolTable[j].st_info);
+            unsigned char type0 = ELF32_ST_TYPE(structure[0].symbolTable[symbolIndex0].st_info);
+            unsigned char type1 = ELF32_ST_TYPE(structure[1].symbolTable[symbolIndex1].st_info);
 
             if (type0 == STT_SECTION)
             {
                 fseek(elfFile[0], strndx[0].sh_offset +
-                                  structure[0].sectionTable[structure[0].symbolTable[i].st_shndx].sh_name,
+                                  structure[0].sectionTable[structure[0].symbolTable[symbolIndex0].st_shndx].sh_name,
                       SEEK_SET);
             }
             else
             {
-                fseek(elfFile[0], strtab[0].sh_offset + structure[0].symbolTable[i].st_name, SEEK_SET);
+                fseek(elfFile[0], strtab[0].sh_offset + structure[0].symbolTable[symbolIndex0].st_name, SEEK_SET);
             }
 
             if (type1 == STT_SECTION)
             {
                 fseek(elfFile[1], strndx[1].sh_offset +
-                                  structure[1].sectionTable[structure[1].symbolTable[j].st_shndx].sh_name,
+                                  structure[1].sectionTable[structure[1].symbolTable[symbolIndex1].st_shndx].sh_name,
                       SEEK_SET);
             }
             else
             {
-                fseek(elfFile[1], strtab[1].sh_offset + structure[1].symbolTable[j].st_name, SEEK_SET);
+                fseek(elfFile[1], strtab[1].sh_offset + structure[1].symbolTable[symbolIndex1].st_name, SEEK_SET);
             }
 
             // If global
-            bool sameName;
+            bool sameName = true;
             char c1, c2;
             do
             {
@@ -236,90 +235,96 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
                 }
             } while (c1 != '\0' || c2 != '\0');
 
-            if (sameName)
+            if (!sameName)
             {
-                if (structure[0].symbolTable[i].st_shndx != SHN_UNDEF &&
-                    structure[1].symbolTable[j].st_shndx != SHN_UNDEF)
-                {
-                    printf("Erreur de l'édition de lien: il est interdit pour "
-                           "2 fichiers différents que deux symboles globlaux aient le meme nom ");
-                    exit(-5);
-                }
-                else if (structure[0].symbolTable[i].st_shndx == SHN_UNDEF &&
-                    structure[1].symbolTable[j].st_shndx != SHN_UNDEF)
-                {
-                    fusionTable.newIndices[j] = k;
-                    nbTotSym--;
-                    fusionTable.symbolTable[k] = structure[1].symbolTable[j];
-                    fusionTable.symbolTable[k].st_shndx = sectionFusion.newIndices[fusionTable.symbolTable[k].st_shndx];
+                continue;
+            }
 
-                    if (sectionFusion.concatenationOffset[i] >= 0)
-                    {
-                        fusionTable.symbolTable[k].st_value +=
-                                sectionFusion.concatenationOffset[fusionTable.symbolTable[k].st_shndx];
-                    }
-                }
-                else if (structure[0].symbolTable[i].st_shndx != SHN_UNDEF &&
-                         structure[1].symbolTable[j].st_shndx == SHN_UNDEF)
-                {
-                    nbTotSym--;
-                    fusionTable.symbolTable[k] = structure[0].symbolTable[i];
-                }
-                else if (structure[0].symbolTable[i].st_shndx == SHN_UNDEF &&
-                    structure[1].symbolTable[j].st_shndx == SHN_UNDEF) //Si les 2 sont non définis
-                {
-                    nbTotSym--;
-                    fusionTable.symbolTable[k] = structure[0].symbolTable[i];
-                    fusionTable.newIndices[j] = i;
-                }
-            }
-            else // If Global && not in 2nde
+            find = true;
+            if (structure[0].symbolTable[symbolIndex0].st_shndx != SHN_UNDEF &&
+                structure[1].symbolTable[symbolIndex1].st_shndx != SHN_UNDEF)
             {
-                fusionTable.symbolTable[k] = structure[0].symbolTable[i];
+                printf("Erreur de l'édition de lien: il est interdit pour "
+                       "2 fichiers différents que deux symboles globlaux aient le meme nom ");
+                exit(-5);
             }
-            k++;
+            else if (structure[0].symbolTable[symbolIndex0].st_shndx == SHN_UNDEF &&
+                     structure[1].symbolTable[symbolIndex1].st_shndx != SHN_UNDEF)
+            {
+                fusionTable.newIndices[symbolIndex1] = currentSymbolIndex;
+                nbTotSym--;
+                fusionTable.symbolTable[currentSymbolIndex] = structure[1].symbolTable[symbolIndex1];
+                fusionTable.symbolTable[currentSymbolIndex].st_shndx = sectionFusion.newIndices[fusionTable.symbolTable[currentSymbolIndex].st_shndx];
+
+                if (sectionFusion.concatenationOffset[symbolIndex0] >= 0)
+                {
+                    fusionTable.symbolTable[currentSymbolIndex].st_value +=
+                            sectionFusion.concatenationOffset[fusionTable.symbolTable[currentSymbolIndex].st_shndx];
+                }
+            }
+            else if (structure[0].symbolTable[symbolIndex0].st_shndx != SHN_UNDEF &&
+                     structure[1].symbolTable[symbolIndex1].st_shndx == SHN_UNDEF)
+            {
+                nbTotSym--;
+                fusionTable.symbolTable[currentSymbolIndex] = structure[0].symbolTable[symbolIndex0];
+            }
+            else if (structure[0].symbolTable[symbolIndex0].st_shndx == SHN_UNDEF &&
+                     structure[1].symbolTable[symbolIndex1].st_shndx == SHN_UNDEF) //Si les 2 sont non définis
+            {
+                nbTotSym--;
+                fusionTable.symbolTable[currentSymbolIndex] = structure[0].symbolTable[symbolIndex0];
+                fusionTable.newIndices[symbolIndex1] = symbolIndex0;
+            }
         }
+        if (!find)
+        {
+            fusionTable.symbolTable[currentSymbolIndex] = structure[0].symbolTable[symbolIndex0];
+        }
+        currentSymbolIndex++;
     }
 
-    for (int j = 0; j < nbSym2; j++)
+    for (int symbolIndex1 = 0; symbolIndex1 < structure[1].symbolCount; symbolIndex1++)
     {
-        if (fusionTable.newIndices[j] != -1)
+        if (fusionTable.newIndices[symbolIndex1] != -1)
         {
             continue;
         }
-        fusionTable.newIndices[j] = k;
-        fusionTable.symbolTable[k] = structure[1].symbolTable[j];
+        fusionTable.newIndices[symbolIndex1] = currentSymbolIndex;
+        fusionTable.symbolTable[currentSymbolIndex] = structure[1].symbolTable[symbolIndex1];
 
-        Elf32_Word lastSection = fusionTable.symbolTable[k].st_shndx;
+        Elf32_Section lastSection = structure[1].symbolTable[symbolIndex1].st_shndx;
 
         if (lastSection == SHN_ABS)
         {
-            k++;
+            currentSymbolIndex++;
             continue;
         }
 
         Elf32_Word newSection = sectionFusion.newIndices[lastSection];
 
-        fusionTable.symbolTable[k].st_shndx = newSection;
+        fusionTable.symbolTable[currentSymbolIndex].st_shndx = newSection;
 
         if (newSection < structure[0].sectionCount)
         {
-            fusionTable.symbolTable[k].st_value +=
+            fusionTable.symbolTable[currentSymbolIndex].st_value +=
                     sectionFusion.concatenationOffset[lastSection];
         }
 
-        k++;
+        currentSymbolIndex++;
     }
 
+
+    // Recreer la strtab des symboles
     fusionTable.nbSymbol = nbTotSym;
     fusionTable.strtab = mallocArray(char *, fusionTable.nbSymbol);
 
-    for (int i = 0; i < fusionTable.nbSymbol; i++)
+
+    for (int fusionSymbolIndex = 0; fusionSymbolIndex < fusionTable.nbSymbol; fusionSymbolIndex++)
     {
-        Elf32_Sym sym = fusionTable.symbolTable[i];
+        Elf32_Sym sym = fusionTable.symbolTable[fusionSymbolIndex];
         int index;
 
-        if (i < structure[0].symbolCount)
+        if (fusionSymbolIndex < structure[0].symbolCount)
         {
             index = 0;
         }
@@ -328,20 +333,24 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
             index = 1;
         }
 
-        unsigned char type = ELF32_ST_TYPE(sym.st_info);
+        unsigned char type = ELF32_ST_TYPE(fusionTable.symbolTable[fusionSymbolIndex].st_info);
 
         if (type == STT_SECTION)
         {
-            Elf32_Sym currentSym = structure[0].symbolTable[i];
+            Elf32_Sym currentSym;
             if (index == 1)
             {
                 for (int j = 0; j < structure[1].symbolCount; j++)
                 {
-                    if (fusionTable.newIndices[j] == i)
+                    if (fusionTable.newIndices[j] == fusionSymbolIndex)
                     {
                         currentSym = structure[1].symbolTable[j];
                     }
                 }
+            }
+            else
+            {
+                currentSym = structure[0].symbolTable[fusionSymbolIndex];
             }
 
             fseek(elfFile[index], strndx[index].sh_offset +
@@ -350,7 +359,6 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
         }
         else
         {
-            fprintf(stderr, "st_name = %i\n", sym.st_name);
             fseek(elfFile[index], strtab[index].sh_offset + sym.st_name, SEEK_SET);
         }
 
@@ -364,16 +372,20 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
 
         if (type == STT_SECTION)
         {
-            Elf32_Sym currentSym = structure[0].symbolTable[i];
+            Elf32_Sym currentSym;
             if (index == 1)
             {
                 for (int j = 0; j < structure[1].symbolCount; j++)
                 {
-                    if (fusionTable.newIndices[j] == i)
+                    if (fusionTable.newIndices[j] == fusionSymbolIndex)
                     {
                         currentSym = structure[1].symbolTable[j];
                     }
                 }
+            }
+            else
+            {
+                currentSym = structure[0].symbolTable[fusionSymbolIndex];
             }
 
             fseek(elfFile[index], strndx[index].sh_offset +
@@ -385,20 +397,19 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
             fseek(elfFile[index], strtab[index].sh_offset + sym.st_name, SEEK_SET);
         }
 
-        fusionTable.strtab[i] = mallocArray(char, nameSize);
+        fusionTable.strtab[fusionSymbolIndex] = mallocArray(char, nameSize);
 
         int j = 0;
         do
         {
             freadEndian(&c, sizeof(char), 1, elfFile[index]);
-            fusionTable.strtab[i][j] = c;
+            fusionTable.strtab[fusionSymbolIndex][j] = c;
             j++;
         } while (c != '\0');
     }
 
     return fusionTable;
 }
-
 
 Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure, Elf32_SectionFusion sectionFusion,
                                      Elf32_SymbolFusion symbolFusion)
