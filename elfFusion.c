@@ -39,9 +39,9 @@ void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure)
 
     ElfCreation("./debug.o", elfFiles, structure, sectionFusion, symFusion, relFusion);
 
-    printf("%s\n", fusion.tmpFile);
-    FreeSectionFusion(fusion);
+    FreeSectionFusion(sectionFusion);
     FreeSymbolFusion(symFusion);
+    FreeRelFusion(relFusion);
 }
 
 Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)
@@ -108,6 +108,7 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)
                     sectioncreated = true;
                     // the index of the section merged in the second file turn to 1
                     mergedindex[j] = true;
+                    fu.newIndices[j] = i;
                     //we write the section from the first file to the tmp file
                     numbersection2--;
                     char c;
@@ -158,7 +159,7 @@ Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure)
         if (mergedindex[i] == false)
         {
             // the new index of the sections
-            fu.newIndices[i] = numbersectiontmp;
+            //fu.newIndices[i] = numbersectiontmp;
             // number sections in tmp file increased
             numbersectiontmp++;
             fseek(elfFiles[1], structure[1].sectionTable[i].sh_offset, SEEK_SET);
@@ -484,7 +485,7 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
         }
     }
 
-    fusion.reimplantationTable = mallocArray(Elf32_RelaTable, nbTotal);
+    fusion.reimplantationTable = mallocArray(Elf32_Reim, nbTotal);
     fusion.reimplantationCount = nbTotal;
 
     for (int reimI0 = 0; reimI0 < structure[0].reimplantationCount; reimI0++)
@@ -492,6 +493,8 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
         Elf32_Reim reim0 = structure[0].reimplantationTable[reimI0];
         Elf32_Shdr section0 = structure[0].sectionTable[reim0.section];
         Elf32_Half entityInTable0 = section0.sh_size / section0.sh_entsize;
+
+        fusion.reimplantationTable[reimI0].reimplantation = mallocArray(Elf32_Rela, entityInTable0);
 
         for (int i = 0; i < entityInTable0; i++)
         {

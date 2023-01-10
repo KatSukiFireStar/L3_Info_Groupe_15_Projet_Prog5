@@ -12,7 +12,7 @@ Elf32_SectionFusion NewSectionFusion(Elf32_Word sectionSize1, Elf32_Word section
     Elf32_Word *newIndices = mallocArray(Elf32_Word, sectionSize2);
     for (int i = 0; i < sectionSize2; i++)
     {
-        newIndices[i] = i;
+        newIndices[i] = -1;
     }
 
     Elf32_Off *concatenationOffset = mallocArray(Elf32_Off, sectionSize1);
