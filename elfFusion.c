@@ -580,39 +580,3 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
     return fusion;
 }
 
-void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32_SectionFusion sectionFusion,
-                 Elf32_SymbolFusion symFusion, Elf32_RelFusion relFusion)
-{
-    Elf32_Ehdr header;
-
-    header.e_ident[EI_MAG0] = ELFMAG0;
-    header.e_ident[EI_MAG1] = ELFMAG1;
-    header.e_ident[EI_MAG2] = ELFMAG2;
-    header.e_ident[EI_MAG3] = ELFMAG3;
-
-    // Statique avec l'énoncé
-    header.e_ident[EI_CLASS] = ELFCLASS32;
-    header.e_ident[EI_DATA] = ELFDATA2LSB;
-    header.e_ident[EI_VERSION] = 1;
-    header.e_ident[EI_OSABI] = ELFOSABI_NONE;
-    header.e_ident[EI_ABIVERSION] = 0;
-    header.e_ident[EI_PAD] = 0;
-    for (int i = EI_PAD; i < EI_NIDENT; i++)
-    {
-        header.e_ident[i] = 0;
-    }
-    header.e_type = ET_REL;
-    header.e_machine = EM_ARM;
-    header.e_version = EV_CURRENT;
-    header.e_entry = 0x0;
-    header.e_phoff = 0x0;
-    header.e_shoff = 0xf; // ToDo
-    header.e_flags = 0x5000000; // FixMe: À vérifier
-    header.e_ehsize = 52; // FixMe: À vérifier si constant
-    header.e_phentsize = 0; // Pas de programme
-    header.e_phnum = 0; // Pas de programme
-
-    header.e_shentsize = 0xf; // ToDo
-    header.e_shnum = 0xf; // ToDo
-    header.e_shstrndx = 0; // ToDo
-}
