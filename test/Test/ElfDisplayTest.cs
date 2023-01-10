@@ -583,7 +583,9 @@ public class ElfDisplayTest
 			["GROUP"] = "17",
 			["SYMTAB_SHNDX"] = "18",
 			["RELR"] = "19",
-			["NUM"] = "20"
+			["NUM"] = "20",
+
+			["ARM_ATTRIBUTES"] = "1879048195"
 		};
 
 		Dictionary<char, int> flags = new()
