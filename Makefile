@@ -9,7 +9,7 @@ docs:
 	doxygen DOXYFILE
 
 tests:
-	dotnet test test
+	dotnet test test --verbosity normal
 
 clean:
 	rm -f elfFile elfFile.o elfStructure.o elfExtract.o elfDisplay.o elfFusion.o utils.o

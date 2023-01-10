@@ -37,7 +37,7 @@ public class ElfDisplayTest
 
 	private void ExecuteAndClose(char arg)
 	{
-		_elfFileProcess.StandardInput.WriteLine(arg);
+		_elfFileProcess!.StandardInput.WriteLine(arg);
 		_elfFileProcess.StandardInput.WriteLine();
 		_elfFileProcess.StandardInput.WriteLine('q');
 	}
@@ -132,8 +132,8 @@ public class ElfDisplayTest
 			.Take(18)
 			.Select(Utils.Separate)
 			.Where(l => l.Length == 2)
-			.ToDictionary(l => keyReplacement.TryGetValue(l[0], out string key) ? key : l[0],
-				l => valueReplacement.TryGetValue(l[1], out string value) ? value : l[1]);
+			.ToDictionary(l => keyReplacement.TryGetValue(l[0], out string? key) ? key : l[0],
+				l => valueReplacement.TryGetValue(l[1], out string? value) ? value : l[1]);
 
 		foreach ((string key, string value) in readelfResult)
 		{
@@ -1369,7 +1369,8 @@ public class ElfDisplayTest
 						{
 							2 => typeReplacements,
 							3 => bindReplacements,
-							4 => visibilityReplacements
+							4 => visibilityReplacements,
+							_ => throw new ArgumentOutOfRangeException()
 						})[expectedValue];
 						actualValue = actualValue.Remove(actualValue.IndexOf(" ("));
 						break;

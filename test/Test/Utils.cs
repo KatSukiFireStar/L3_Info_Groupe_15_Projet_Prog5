@@ -6,7 +6,7 @@ namespace Test;
 public static class Utils
 {
 	public static readonly string PROJECT_PATH = Path.Combine(
-		Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), 
+		Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, 
 		"../../../../..");
 	public static readonly string TEST_FILE = Path.Combine(PROJECT_PATH, "file1.o");
 	public static readonly string PROGRAMM_PATH = Path.Combine(PROJECT_PATH, "elfFile");
