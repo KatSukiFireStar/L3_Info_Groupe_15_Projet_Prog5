@@ -51,9 +51,37 @@ size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restric
 
 size_t fwriteEndian(const void *restrict ptr, size_t size, size_t number, FILE *restrict file)
 {
-    //fprintf(stderr, "Not impplemented!");
+    if (!needReverse)
+    {
+        return fwrite(ptr, size, number, file);
+    }
 
-    return fwrite(ptr, size, number, file);
+    void *tmpPtr = malloc(size * number);
+
+    for (int i = 0; i < number; i++)
+    {
+        switch (size)
+        {
+            case 2:
+            {
+                uint16_t *tmpIntPtr = tmpPtr + i;
+                *tmpIntPtr = ((((*tmpIntPtr) & 0xFF) << 8) | (((*tmpIntPtr) >> 8) & 0xFF));
+                break;
+            }
+            case 4:
+            {
+                uint32_t *tmpIntPtr = (uint32_t *) ptr;
+                tmpIntPtr += i;
+                *tmpIntPtr = ((((*tmpIntPtr) & 0xFF) << 24) | ((((*tmpIntPtr) >> 8) & 0xFF) << 16) |
+                              ((((*tmpIntPtr) >> 16) & 0xFF) << 8) | (((*tmpIntPtr) >> 24) & 0xFF));
+                break;
+            }
+        }
+    }
+
+    size_t result = fwrite(tmpPtr, size, number, file);
+    free(tmpPtr);
+    return result;
 }
 
 #pragma endregion
