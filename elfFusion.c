@@ -495,6 +495,7 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
         Elf32_Half entityInTable0 = section0.sh_size / section0.sh_entsize;
 
         fusion.reimplantationTable[reimI0].reimplantation = mallocArray(Elf32_Rela, entityInTable0);
+        fusion.reimplantationTable[reimI0].section = reim0.section;
 
         for (int i = 0; i < entityInTable0; i++)
         {
@@ -517,6 +518,8 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
         Elf32_Half entityInTable1 = section1.sh_size / section1.sh_entsize;
 
         Elf32_Word newSectionIndex = sectionFusion.newIndices[reim1.section];
+
+        fusion.reimplantationTable[currentIndex].section = newSectionIndex;
 
         fusion.reimplantationTable[currentIndex].reimplantation = mallocArray(Elf32_Rela, entityInTable1);
 
@@ -542,7 +545,8 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
             int lastSymIndex = ELF32_R_SYM(reim1.reimplantation[i].r_info);
             Elf32_Word newSymIndex = symbolFusion.newIndices[lastSymIndex];
 
-            reim1.reimplantation[i].r_info = ELF32_R_INFO(newSymIndex, ELF32_R_TYPE(reim1.reimplantation[i].r_info));
+            fusion.reimplantationTable[currentIndex].reimplantation[i].r_info =
+                    ELF32_R_INFO(newSymIndex, ELF32_R_TYPE(reim1.reimplantation[i].r_info));
 
             Elf32_Sym sym = structure[1].symbolTable[lastSymIndex];
 
@@ -560,7 +564,7 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
                 case R_ARM_ABS32_NOI:
                     if (offset > 0)
                     {
-                        reim1.reimplantation[i].r_addend += offset;
+                        fusion.reimplantationTable[currentIndex].reimplantation[i].r_addend += offset;
                     }
                     break;
 
@@ -568,7 +572,7 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
                 case R_ARM_JUMP24:
                     if (offset > 0)
                     {
-                        reim1.reimplantation[i].r_addend += (offset / 4);
+                        fusion.reimplantationTable[currentIndex].reimplantation[i].r_addend += (offset / 4);
                     }
                     break;
             }
@@ -580,3 +584,171 @@ Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure
     return fusion;
 }
 
+void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32_SectionFusion sectionFusion,
+                 Elf32_SymbolFusion symFusion, Elf32_RelFusion relFusion)
+{
+    Elf32_Ehdr header;
+
+    header.e_ident[EI_MAG0] = ELFMAG0;
+    header.e_ident[EI_MAG1] = ELFMAG1;
+    header.e_ident[EI_MAG2] = ELFMAG2;
+    header.e_ident[EI_MAG3] = ELFMAG3;
+
+    // Statique avec l'énoncé
+    header.e_ident[EI_CLASS] = ELFCLASS32;
+    header.e_ident[EI_DATA] = ELFDATA2LSB;
+    header.e_ident[EI_VERSION] = 1;
+    header.e_ident[EI_OSABI] = ELFOSABI_NONE;
+    header.e_ident[EI_ABIVERSION] = 0;
+    header.e_ident[EI_PAD] = 0;
+    for (int i = EI_PAD; i < EI_NIDENT; i++)
+    {
+        header.e_ident[i] = 0;
+    }
+    header.e_type = ET_REL;
+    header.e_machine = EM_ARM;
+    header.e_version = EV_CURRENT;
+    header.e_entry = 0x0;
+    header.e_phoff = 0x0;
+    header.e_shoff = 0xf; // ToDo
+    header.e_flags = EF_MIPS_ARCH_32; // FixMe: À vérifier
+    header.e_ehsize = sizeof(Elf32_Ehdr);
+    header.e_phentsize = 0; // Pas de programme
+    header.e_phnum = 0; // Pas de programme
+
+    header.e_shentsize = 0xf; // ToDo
+    header.e_shnum = structures[0].sectionCount + structures[1].sectionCount; // ToDo: Mettre à jour
+    header.e_shstrndx = 0; // ToDo
+
+    Elf32_ShdrTable newTable = mallocArray(Elf32_Shdr, header.e_shnum);
+
+    Elf32_Off currentSectionOffset = header.e_ehsize;
+    Elf32_Section currentSectionIndex = 0;
+    for (int sectionIndexFile0 = 0; sectionIndexFile0 < structures[0].sectionCount; sectionIndexFile0++)
+    {
+        Elf32_Shdr section0 = structures[0].sectionTable[sectionIndexFile0];
+        newTable[currentSectionIndex] = section0;
+
+        Elf32_Shdr *concatenatedSection = NULL;
+
+        switch (section0.sh_type)
+        {
+            case SHT_PROGBITS:
+                if (sectionIndexFile0 == 0)
+                {
+                    break;
+                }
+
+                newTable[currentSectionIndex].sh_offset = currentSectionOffset;
+
+                if (sectionFusion.concatenationOffset[sectionIndexFile0] != -1)
+                {
+                    concatenatedSection = NULL;
+                    for (int sectionIndexFile1 = 0; sectionIndexFile1 < structures[1].sectionCount; sectionIndexFile1++)
+                    {
+                        if (sectionFusion.newIndices[sectionIndexFile1] == sectionIndexFile0)
+                        {
+                            concatenatedSection = &structures[1].sectionTable[sectionIndexFile1];
+                        }
+                    }
+
+                    if (concatenatedSection != NULL)
+                    {
+                        newTable[currentSectionIndex].sh_size += concatenatedSection->sh_size;
+                    }
+                }
+
+                currentSectionOffset += newTable[currentSectionIndex].sh_size;
+
+                break;
+            case SHT_SYMTAB:
+                newTable[currentSectionIndex].sh_size = sizeof(Elf32_Sym) * symFusion.nbSymbol;
+                newTable[currentSectionIndex].sh_entsize = sizeof(Elf32_Sym);
+                newTable[currentSectionIndex].sh_offset = currentSectionOffset;
+
+                currentSectionOffset += newTable[currentSectionIndex].sh_size;
+
+                break;
+            case SHT_REL:
+                newTable[currentSectionIndex].sh_offset = currentSectionOffset;
+                newTable[currentSectionIndex].sh_entsize = sizeof(Elf32_Rel);
+
+                concatenatedSection = NULL;
+                for (int relIndexFile1 = 0; relIndexFile1 < structures[1].reimplantationCount; relIndexFile1++)
+                {
+                    if (relFusion.reimplantationTable[0].section == sectionIndexFile0)
+                    {
+                        concatenatedSection = &structures[1].sectionTable[relIndexFile1];
+                    }
+                }
+
+                if (concatenatedSection != NULL)
+                {
+                    newTable[currentSectionIndex].sh_size += concatenatedSection->sh_size;
+                }
+
+                newTable[currentSectionIndex].sh_offset = currentSectionOffset;
+
+                currentSectionOffset += newTable[currentSectionIndex].sh_size;
+                break;
+            case SHT_RELA:
+                newTable[currentSectionIndex].sh_offset = currentSectionOffset;
+                newTable[currentSectionIndex].sh_entsize = sizeof(Elf32_Rela);
+
+                concatenatedSection = NULL;
+                for (int sectionIndexFile1 = 0; sectionIndexFile1 < structures[1].sectionCount; sectionIndexFile1++)
+                {
+                    if (relFusion.newIndices[sectionIndexFile1] == sectionIndexFile0)
+                    {
+                        concatenatedSection = &structures[1].sectionTable[sectionIndexFile1];
+                    }
+                }
+
+                if (concatenatedSection != NULL)
+                {
+                    newTable[currentSectionIndex].sh_size += concatenatedSection->sh_size;
+                }
+
+                newTable[currentSectionIndex].sh_offset = currentSectionOffset;
+
+                currentSectionOffset += newTable[currentSectionIndex].sh_size;
+                break;
+        }
+        currentSectionIndex++;
+    }
+
+    for (int sectionIndexFile1 = 0; sectionIndexFile1 < structures[1].sectionCount; sectionIndexFile1++)
+    {
+        Elf32_Shdr section1 = structures[1].sectionTable[sectionIndexFile1];
+
+        switch (section1.sh_type)
+        {
+            case SHT_PROGBITS:
+                if (sectionFusion.newIndices[sectionIndexFile1] != -1)
+                {
+                    continue;
+                }
+
+                newTable[currentSectionIndex] = section1;
+                newTable[currentSectionIndex].sh_offset = currentSectionOffset;
+                break;
+//            case SHT_SYMTAB:
+//                break;
+            case SHT_REL:
+            case SHT_RELA:
+                if (sectionFusion.newIndices[sectionIndexFile1] != -1)
+                {
+                    continue;
+                }
+
+                newTable[currentSectionIndex] = section1;
+                newTable[currentSectionIndex].sh_offset = currentSectionOffset;
+                break;
+        }
+        currentSectionIndex++;
+    }
+
+    (void) header;
+
+    free(newTable);
+}

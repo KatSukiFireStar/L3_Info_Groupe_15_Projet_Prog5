@@ -32,7 +32,7 @@ typedef Elf32_Rela *Elf32_RelaTable;
 typedef struct
 {
     /** Section de réimplémentation */
-    int section;
+    Elf32_Section section;
     /** Table des réimplémentation de la section #section */
     Elf32_RelaTable reimplantation;
     /** Nombre de réimplémentation contenu dans la section #section */
