@@ -20,7 +20,7 @@ void ShowElfHeader(Elf32_Ehdr header)
         header.e_ident[EI_MAG2] != ELFMAG2 ||
         header.e_ident[EI_MAG3] != ELFMAG3)
     {
-        exit(-1);
+        exit(NOT_ELF_FILE);
     }
 
 #pragma endregion
@@ -46,7 +46,7 @@ void ShowElfHeader(Elf32_Ehdr header)
             printf("ELF64");
             break;
         default:
-            exit(-1);
+            exit(INVALID_CLASS);
     }
 
     printf("\n");
@@ -62,7 +62,7 @@ void ShowElfHeader(Elf32_Ehdr header)
             printf("2's complement, Big endian");
             break;
         default:
-            exit(-1);
+            exit(INVALID_DATA);
     }
 
     printf("\n");
@@ -78,7 +78,7 @@ void ShowElfHeader(Elf32_Ehdr header)
             printf("Current");
             break;
         default:
-            exit(-1);
+            exit(INVALID_VERSION);
     }
     printf(")\n");
 
@@ -129,7 +129,7 @@ void ShowElfHeader(Elf32_Ehdr header)
             printf("Standalone (embedded) application");
             break;
         default:
-            exit(-1);
+            exit(INVALID_OSABI);
     }
     printf("\n");
 
@@ -159,7 +159,7 @@ void ShowElfHeader(Elf32_Ehdr header)
             printf("NUM, Fichier Core");
             break;
         default:
-            exit(-1);
+            exit(INVALID_TYPE);
     }
     printf("\n");
 
@@ -514,7 +514,7 @@ void ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTabl
                 printf("'End of processor-specific' ");
                 break;
             default:
-                exit(-3);
+                exit(INVALID_SYMBOL);
         }
         printf(")\n");
 
@@ -554,7 +554,7 @@ void ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTabl
                 printf("'End of processor-specific' ");
                 break;
             default:
-                exit(-3);
+                exit(INVALID_SYMBOL);
         }
         printf(")\n");
 
@@ -576,7 +576,7 @@ void ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTabl
                 printf("Not preemptible, not exported");
                 break;
             default:
-                exit(-3);
+                exit(INVALID_SYMBOL);
         }
         printf(")\n");
 

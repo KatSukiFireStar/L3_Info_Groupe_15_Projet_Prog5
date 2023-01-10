@@ -15,7 +15,16 @@
 
 #pragma region Exit codes
 
-#define MALLOC_FAILED 245
+#define NOT_ELF_FILE    254
+#define INVALID_CLASS   253
+#define INVALID_DATA    252
+#define INVALID_VERSION 251
+#define INVALID_OSABI   250
+#define INVALID_TYPE    249
+#define STRING_ERROR    248
+#define INVALID_SYMBOL  247
+#define SAME_GLOBALS    246
+#define MALLOC_FAILED   245
 
 #pragma endregion
 

@@ -186,9 +186,9 @@ Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_
     if (nameId == -1)
     {
         printf("The string is not found");
-        exit(-2);
+        exit(STRING_ERROR);
     }
 
     printf("No section have the %s name", name);
-    exit(-2);
+    exit(STRING_ERROR);
 }

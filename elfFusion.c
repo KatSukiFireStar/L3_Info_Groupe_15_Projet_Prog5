@@ -272,7 +272,7 @@ Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf
             {
                 printf("Erreur de l'édition de lien: il est interdit pour "
                        "2 fichiers différents que deux symboles globlaux aient le meme nom ");
-                exit(-5);
+                exit(SAME_GLOBALS);
             }
             else if (structure[0].symbolTable[symbolIndex0].st_shndx == SHN_UNDEF &&
                      structure[1].symbolTable[symbolIndex1].st_shndx != SHN_UNDEF)
