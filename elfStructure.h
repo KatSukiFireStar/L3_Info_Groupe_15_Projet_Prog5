@@ -133,6 +133,9 @@ typedef struct
     Elf32_SymTable symbolTable;
     /** Nouvelle table de string des symboles */
     char **strtab;
+
+    int totalChar;
+
     Elf32_Half nbSymbol;
 } Elf32_SymbolFusion;
 

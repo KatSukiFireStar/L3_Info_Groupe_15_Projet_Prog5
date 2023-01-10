@@ -49,6 +49,13 @@ size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restric
     return result;
 }
 
+size_t fwriteEndian(const void *restrict ptr, size_t size, size_t number, FILE *restrict file)
+{
+    //fprintf(stderr, "Not impplemented!");
+
+    return fwrite(ptr, size, number, file);
+}
+
 #pragma endregion
 
 Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type)
@@ -145,13 +152,4 @@ Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_
 
     printf("No section have the %s name", name);
     exit(-2);
-}
-
-int isLocalSymbolInFusionTable(Elf32_SymbolFusion fusionTable, Elf32_Sym symbol){
-    for(int i=0; i<fusionTable.nbSymbol; i++){
-        if(fusionTable.symbolTable[i].st_info==STB_LOCAL && fusionTable.symbolTable[i].st_name==symbol.st_name){
-            return 1;
-        }
-    }
-    return 0;
 }
