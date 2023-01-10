@@ -4,8 +4,9 @@ namespace Test;
 
 public static class Utils
 {
-	public const string TEST_FILE = "/mnt/c/Users/Pyrolink/Desktop/cours/projet_prog/testFile.o";
-	public const string PROGRAMM_PATH = "/mnt/c/Users/Pyrolink/Desktop/cours/projet_prog/elfFile";
+	public const string PROJECT_PATH = "../../../../..";
+	public const string TEST_FILE = $"{PROJECT_PATH}/file1.o";
+	public const string PROGRAMM_PATH = $"{PROJECT_PATH}/elfFile";
 
 	public static ICollection<string> ReadLines(this StreamReader reader)
 	{

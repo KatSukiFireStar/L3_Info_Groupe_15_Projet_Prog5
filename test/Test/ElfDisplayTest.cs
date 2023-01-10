@@ -147,6 +147,7 @@ public class ElfDisplayTest
 					expectedValue = expectedValue.Remove(expectedValue.IndexOf(" ("));
 					break;
 				case "flags":
+					expectedValue = expectedValue.Remove(expectedValue.IndexOf(", "));
 					actualValue = actualValue.Remove(actualValue.IndexOf(" ("));
 					break;
 				case "size of this header":

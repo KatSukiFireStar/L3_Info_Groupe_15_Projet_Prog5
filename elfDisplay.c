@@ -200,6 +200,9 @@ void ShowElfHeader(Elf32_Ehdr header)
         case EM_X86_64:
             printf("AMD x86-64 architecture");
             break;
+        case EM_ARM:
+            printf("ARM");
+            break;
         default:
             printf("Machine not implemented (%d)", header.e_machine);
     }
