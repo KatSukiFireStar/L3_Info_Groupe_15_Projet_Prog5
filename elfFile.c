@@ -31,26 +31,9 @@ void help()
     fprintf(stdout, "q\t: Quitter ce programme\n");
 }
 
-void ClearBuffer(FILE *stream)
-{
-    int c;
-    do
-    {
-        c = fgetc(stream);
-    } while (c != '\n');
-}
 
-int GetCharAndClear(FILE *stream)
-{
-    int result = fgetc(stream);
+//ToDo a voir si l'on deplace ces fonctions dans le utils
 
-    if (result != '\n')
-    {
-        ClearBuffer(stream);
-    }
-
-    return result;
-}
 
 int main(int argc, char *argv[])
 {

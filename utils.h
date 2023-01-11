@@ -131,4 +131,8 @@ size_t fwriteEndian(const void *restrict ptr, size_t size, size_t number, FILE *
 
 int isLocalSymbolInFusionTable(Elf32_SymbolFusion fusionTable, Elf32_Sym symbol);
 
+void ClearBuffer(FILE *stream);
+
+int GetCharAndClear(FILE *stream);
+
 #endif //PROJET_PROG_UTILS_H
