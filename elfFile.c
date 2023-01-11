@@ -31,10 +31,6 @@ void help()
     fprintf(stdout, "q\t: Quitter ce programme\n");
 }
 
-
-//ToDo a voir si l'on deplace ces fonctions dans le utils
-
-
 int main(int argc, char *argv[])
 {
 
