@@ -2,7 +2,17 @@
 
 ### La gestion de ce README a été effectué par Corenthin Zozor et Flavien Gonin.
 
-## Mode d'emploi
+## Sommaire
++ 1 - Mode d'emploi 
++ 2 - Structure du code
++ 3 - Journal de travaille
+  + 3.1 - Feuille d'appel
+  + 3.2 - Travaille réalise chaque jour
++ 4 - Liste des fonctionnalités
++ 5 - Liste des tests
++ 6 - Liste des bugs connus
+
+## 1 - Mode d'emploi
 
 Pour compiler le programme, il faut entrer l'une des commandes suivantes dans un terminal :
 
@@ -17,18 +27,55 @@ Pour supprimer les fichiers objets ou les fichiers résiduels, il faut utiliser 
 
     make clean
 
-Pour lancer les tests qui sont prévus avec le programme, il faut installer dotnet. Ensuite, il
-faut se placer dans un terminal dans le fichier du projet. 
-Pour terminer, il faut utiliser la commande suivante :
-  
-    dotnet test test/Test/Test.csproj
+Pour lancer les tests qui sont prévus avec le programme, il faut installer dotnet. Pour cela, il faut installer le
+sdk de dotnet et si ce n'est pas fait, il faut aussi installer le runtime. Voici les commandes pour l'installation de 
+dotnet sur un environnement debian :
 
-## Journal de travail
+    sudo apt install dotnet-runtime-6.0
+    sudo apt install dotnet-sdk-6.0
+
+Ensuite, pour pouvoir lancer les different tests prévus, il faut utiliser la commande suivante :
+
+    make tests
+
+Enfin, pour pouvoir générer la doc du projet, il faut installer doxygen avec la commande
+suivante :
+
+    sudo apt install doxygen
+
+Pour la générer une fois cela fait, il faut utiliser la commande suivante :
+
+    make docs
+
+Pour ouvrir la documentation, il faut utiliser la commande :
+
+    make openDoc
+
+## 2 - Structure du code
+
+Notre code posséde une structure selon son utilité. En effet, chaque fonction se trouve dans 
+un fichier différent selon son utilisation. Il y a plusieurs fichiers dont les suivants :
++ elfDisplay : Dans ce fichier, il n'y a que les fonctions permettant l'affichage des données 
+d'un fichier au format elf
++ elfExtract : Dans ce fichier, il n'y a que les fonctions permettant l'extraction des données
+d'un fichier au format elf
++ elfFusion : Dans ce fichier, il n'y a que les fonctions permettant soit la fusion des données
+extraite au préalable, soit des fonctions de débug de ces fusions
++ elfStructure : Dans ces fichiers, il y a les définitions des structures que nous utilisons, 
+mais aussi diverses fonctions permettant d'instancier diverses structures. Il y a aussi 
+des fonctions permettant la libération de la mémoire
++ utils : Dans ces fichiers, il y a les définitions de diverses fonctions utilitaires
++ elfFile.h : Dans ce fichier, il y a les définitions des fonctions des fichiers elfDisplay, 
+elfExtract, elfFusion et elfFile
++ elfFile.c : Ce fichier contient le main de l'application et une fonction permettant l'affichage
+des commandes pouvant être utilisé
+
+## 3 - Journal de travail
 
 Le travail est fait par équipe donc les taches de travail sont données à l'équipe 
 même si certains membres manquent à l'appel. Voici ci-après la liste d'appel :
 
-### Feuille d'appel
+### 3.1 - Feuille d'appel
 
 | Nom / Date | Mhammad Hajj | Flavien Gonin | Corenthin Zozor | Diagne Babakar | Mohamed Sbartai | Mehdi Chedad            |
 |------------|--------------|---------------|-----------------|----------------|-----------------|-------------------------|
@@ -40,10 +87,12 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel 
 | 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
 | 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
 | 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
-| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel pendant 1h   |
+| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel 1h           |
 | 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent** le matin     |
 | 10/01/2023 | _Distanciel_ | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent**              |
-| 11/01/2023 |              |               |                 |                |                 |                         |
+| 11/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      |                         |
+
+### 3.2 - Travaille réalise chaque jour
 
 Mercredi 14 decembre : Mise en place de la methode de travail et 
 initialisation des différents outils (Git / Trello / Fichier de code C)
@@ -124,7 +173,14 @@ Mardi 10 janvier :
 - Corenthin Zozor et Flavien Gonin : Fin des corrections des methodes de fusion + fin des corrections des problèmes de 
 mémoire + Début création du fichier elf final
 
-## Liste des fonctionnalités
+Mercredi 11 janvier :
+
+- Medhi Chedad et Mhammad Hajj : Travail sur la presentation
+- Babakar Diagne et Mohamed Sbartai : Travail sur la presentation
+- Corenthin Zozor et Flavien Gonin : Redaction des fichiers de rendu
+
+
+## 4 - Liste des fonctionnalités
 
 - Test plusieurs conditions avant de lancer l'application
   - L'application test s'il y a bien au moins deux fichiers passés en paramètres
@@ -133,7 +189,7 @@ mémoire + Début création du fichier elf final
 - Affichage des informations des fichiers passer en paramètres
 - Fusionne et produit un nouveau fichier avec les fichiers en paramètres
 
-## Liste des tests
+## 5 - Liste des tests
 
 - Test de comparaison des headers 
   - On compare notre header avec le header afficher par readelf
@@ -141,8 +197,8 @@ mémoire + Début création du fichier elf final
   - On compare notre table des sections avec la table des sections par readelf
 - Test de comparaison des tables de symboles
   - On compare notre table des symboles avec la table des symboles par readelf
-- Test de comparaison des tables de reimplantation
-  - On compare notre table de reimplantation avec la table de reimplantation de readelf
 
-## Liste des bugs connus
+## 6 - Liste des bugs connus
 
+- Certains types / machines ne sont pas implémentés et font donc planter le programme
+- Si certaines données sont invalides, le exit ne se fait que lors de l'affichage
