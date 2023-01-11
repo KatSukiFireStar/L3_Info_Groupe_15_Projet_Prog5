@@ -90,7 +90,7 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel 
 | 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel 1h           |
 | 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent** le matin     |
 | 10/01/2023 | _Distanciel_ | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent**              |
-| 11/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      |                         |
+| 11/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel              |
 
 ### 3.2 - Travaille réalise chaque jour
 
