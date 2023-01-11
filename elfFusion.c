@@ -631,8 +631,17 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
     newTable[STN_UNDEF].sh_info = 0;
     newTable[STN_UNDEF].sh_link = 0;
 
+    Elf32_Section lastSymtabIndexFile1 = -1;
+    int *finalNewIndices = mallocArray(int, structures[1].sectionCount);
+
+    for (int i = 0; i < structures[1].sectionCount; i++)
+    {
+        finalNewIndices[i] = -1;
+    }
+
     Elf32_Off currentSectionOffset = header.e_ehsize;
     Elf32_Section currentSectionIndex = 1;
+    Elf32_Section currentReimIndex = 0;
     for (int sectionIndexFile0 = 0; sectionIndexFile0 < structures[0].sectionCount; sectionIndexFile0++)
     {
         Elf32_Shdr section0 = structures[0].sectionTable[sectionIndexFile0];
@@ -653,6 +662,7 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
                         if (sectionFusion.newIndices[sectionIndexFile1] == sectionIndexFile0)
                         {
                             concatenatedSection = &structures[1].sectionTable[sectionIndexFile1];
+                            finalNewIndices[sectionIndexFile1] = sectionIndexFile0;
                         }
                     }
 
@@ -678,11 +688,20 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
                 newTable[currentSectionIndex].sh_entsize = sizeof(Elf32_Rel);
 
                 concatenatedSection = NULL;
-                for (int relIndexFile1 = 0; relIndexFile1 < structures[1].reimplantationCount; relIndexFile1++)
+
+                if (currentSectionIndex >= structures[0].sectionCount)
                 {
-                    if (relFusion.reimplantationTable[0].section == sectionIndexFile0)
+                    break;
+                }
+
+
+                for (int reimIndexFile1 = 0; reimIndexFile1 < structures[1].reimplantationCount; reimIndexFile1++)
+                {
+                    if (relFusion.newIndices[reimIndexFile1] == currentReimIndex)
                     {
-                        concatenatedSection = &structures[1].sectionTable[relIndexFile1];
+                        concatenatedSection = &structures[1].sectionTable[reimIndexFile1];
+                        currentReimIndex++;
+                        break;
                     }
                 }
 
@@ -738,8 +757,9 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
 
                 currentSectionOffset += newTable[currentSectionIndex].sh_size;
                 break;
-//            case SHT_SYMTAB:
-//                break;
+            case SHT_SYMTAB:
+                lastSymtabIndexFile1 = sectionIndexFile1;
+                break;
             case SHT_REL:
             case SHT_RELA:
                 if (sectionFusion.newIndices[sectionIndexFile1] != -1)
@@ -760,6 +780,7 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
     strndx[0] = mallocArray(char, 1);
     strndx[0][0] = '\0';
 
+    // Réécrire string table
     int sizeNameTot = 1;
     for (int sectionIndex = 1; sectionIndex < currentSectionIndex; sectionIndex++)
     {
@@ -780,12 +801,30 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
         }
         else
         {
-            for (int j = 0; j < structures[1].sectionCount; j++)
+            switch (newTable[sectionIndex].sh_type)
             {
-                if (symFusion.newIndices[j] == sectionIndex)
-                {
-                    lastSection = &structures[1].sectionTable[j];
-                }
+                case SHT_PROGBITS:
+                    for (int j = 0; j < structures[1].sectionCount; j++)
+                    {
+                        if (sectionFusion.newIndices[j] == sectionIndex)
+                        {
+                            lastSection = &structures[1].sectionTable[j];
+                        }
+                    }
+                    break;
+                case SHT_SYMTAB:
+                    lastSection = &structures[1].sectionTable[lastSymtabIndexFile1];
+                    break;
+                case SHT_REL:
+                case SHT_RELA:
+                    for (int j = 0; j < structures[1].sectionCount; j++)
+                    {
+                        if (relFusion.newIndices[j] == sectionIndex)
+                        {
+                            lastSection = &structures[1].sectionTable[j];
+                        }
+                    }
+                    break;
             }
         }
 
@@ -989,6 +1028,7 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
 
     fclose(outputFile);
     free(newTable);
+    free(finalNewIndices);
 
     for (int i = 0; i < header.e_shnum; i++)
     {

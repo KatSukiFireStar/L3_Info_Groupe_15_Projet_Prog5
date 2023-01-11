@@ -37,12 +37,12 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel 
 | 17/12/2022 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | **Absent**      | Présentiel              |
 | 19/12/2022 | _Distanciel_ | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
 | 20/12/2022 | _Distanciel_ | _Distanciel_  | _Distanciel_    | _Distanciel_   | **Absent**      | **Absent**              |
-| 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
-| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
-| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | **Absent**              |
+| 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | _Distanciel_            |
+| 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | _Distanciel_            |
+| 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | _Distanciel_            |
 | 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel pendant 1h   |
 | 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent** le matin     |
-| 10/01/2023 | _Distanciel_ | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent**              |
+| 10/01/2023 | _Distanciel_ | Présentiel    | Présentiel      | Présentiel     | Présentiel      | _Distanciel_            |
 | 11/01/2023 |              |               |                 |                |                 |                         |
 
 Mercredi 14 decembre : Mise en place de la methode de travail et 
