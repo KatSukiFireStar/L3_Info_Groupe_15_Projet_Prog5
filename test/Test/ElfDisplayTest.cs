@@ -13,10 +13,10 @@ public class ElfDisplayTest
 
 	private readonly ProcessStartInfo _readelfStart;
 	private Process? _readelfProcess;
-	private static readonly (string HEADER, string SECTION, string SYMBOL) READELF_ARGS =
-		("-h", "-S", "-s");
-	private static readonly (char HEADER, char SECTION, char SYMBOL) ELF_FILE_ARGS =
-		('h', 's', 'y');
+	private static readonly (string HEADER, string SECTION, string SYMBOL, string REL) READELF_ARGS =
+		("-h", "-S", "-s", "-r");
+	private static readonly (char HEADER, char SECTION, char SYMBOL, char REL) ELF_FILE_ARGS =
+		('h', 's', 'y', 'r');
 
 	public ElfDisplayTest()
 	{
@@ -1395,4 +1395,286 @@ public class ElfDisplayTest
 				Assert.AreEqual(expectedValue, actualValue);
 			}
 	}
+
+	//[TestMethod]
+	//public void RelTable()
+	//{
+	//	_elfFileProcess = Process.Start(_elfFileStart);
+
+	//	SetArg(READELF_ARGS.REL);
+	//	_readelfProcess = Process.Start(_readelfStart);
+
+
+	//	Assert.IsNotNull(_elfFileProcess);
+	//	Assert.IsNotNull(_readelfProcess);
+
+	//	ExecuteAndClose(ELF_FILE_ARGS.REL);
+
+	//	string readelfOutput = _readelfProcess.ReadOutput();
+	//	string elfFileOutput = _elfFileProcess.ReadOutput();
+
+	//	Debug.WriteLine(readelfOutput);
+	//	Debug.WriteLine(elfFileOutput);
+
+	//	/*
+	//	   Relocation section '.rel.text.startup' at offset 0x404 contains 1 entry:
+	//	   Offset     Info    Type            Sym.Value  Sym. Name
+	//	   00000004  0000111c R_ARM_CALL        00000000   afficher
+		   
+	//	   Relocation section '.rel.debug_info' at offset 0x40c contains 10 entries:
+	//	   Offset     Info    Type            Sym.Value  Sym. Name
+	//	   00000008  00000802 R_ARM_ABS32       00000000   .debug_abbrev
+	//	   0000000d  00000c02 R_ARM_ABS32       00000000   .debug_str
+	//	   00000012  00000c02 R_ARM_ABS32       00000000   .debug_str
+	//	   00000016  00000c02 R_ARM_ABS32       00000000   .debug_str
+	//	   0000001a  00000a02 R_ARM_ABS32       00000000   .debug_rnglists
+	//	   00000022  00000b02 R_ARM_ABS32       00000000   .debug_line
+	//	   00000027  00000c02 R_ARM_ABS32       00000000   .debug_str
+	//	   00000035  00000c02 R_ARM_ABS32       00000000   .debug_str
+	//	   00000040  00000502 R_ARM_ABS32       00000000   .text.startup
+	//	   0000004f  00000502 R_ARM_ABS32       00000000   .text.startup
+		   
+	//	   Relocation section '.rel.debug_aranges' at offset 0x45c contains 2 entries:
+	//	   Offset     Info    Type            Sym.Value  Sym. Name
+	//	   00000006  00000702 R_ARM_ABS32       00000000   .debug_info
+	//	   00000010  00000502 R_ARM_ABS32       00000000   .text.startup
+		   
+	//	   Relocation section '.rel.debug_rnglists' at offset 0x46c contains 1 entry:
+	//	   Offset     Info    Type            Sym.Value  Sym. Name
+	//	   0000000d  00000502 R_ARM_ABS32       00000000   .text.startup
+		   
+	//	   Relocation section '.rel.debug_line' at offset 0x474 contains 1 entry:
+	//	   Offset     Info    Type            Sym.Value  Sym. Name
+	//	   0000002d  00000502 R_ARM_ABS32       00000000   .text.startup
+		   
+	//	   Relocation section '.rel.debug_frame' at offset 0x47c contains 2 entries:
+	//	   Offset     Info    Type            Sym.Value  Sym. Name
+	//	   00000014  00000d02 R_ARM_ABS32       00000000   .debug_frame
+	//	   00000018  00000502 R_ARM_ABS32       00000000   .text.startup
+	//	 */
+
+	//	/*
+	//	 Reimplantation table: 
+	//	   Table 0 de nom : .rel.text.startup
+	//	   Offset: 	0x00000004
+	//	   Info: 	0x0000111c
+	//	   Type: 	28
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	afficher
+		   
+	//	   Table 1 de nom : .rel.debug_info
+	//	   Offset: 	0x00000008
+	//	   Info: 	0x00000802
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_abbrev
+		   
+	//	   Offset: 	0x0000000d
+	//	   Info: 	0x00000c02
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_str
+		   
+	//	   Offset: 	0x00000012
+	//	   Info: 	0x00000c02
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_str
+		   
+	//	   Offset: 	0x00000016
+	//	   Info: 	0x00000c02
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_str
+		   
+	//	   Offset: 	0x0000001a
+	//	   Info: 	0x00000a02
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_rnglists
+		   
+	//	   Offset: 	0x00000022
+	//	   Info: 	0x00000b02
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_line
+		   
+	//	   Offset: 	0x00000027
+	//	   Info: 	0x00000c02
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_str
+		   
+	//	   Offset: 	0x00000035
+	//	   Info: 	0x00000c02
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_str
+		   
+	//	   Offset: 	0x00000040
+	//	   Info: 	0x00000502
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.text.startup
+		   
+	//	   Offset: 	0x0000004f
+	//	   Info: 	0x00000502
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.text.startup
+		   
+	//	   Table 2 de nom : .rel.debug_aranges
+	//	   Offset: 	0x00000006
+	//	   Info: 	0x00000702
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_info
+		   
+	//	   Offset: 	0x00000010
+	//	   Info: 	0x00000502
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.text.startup
+		   
+	//	   Table 3 de nom : .rel.debug_rnglists
+	//	   Offset: 	0x0000000d
+	//	   Info: 	0x00000502
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.text.startup
+		   
+	//	   Table 4 de nom : .rel.debug_line
+	//	   Offset: 	0x0000002d
+	//	   Info: 	0x00000502
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.text.startup
+		   
+	//	   Table 5 de nom : .rel.debug_frame
+	//	   Offset: 	0x00000014
+	//	   Info: 	0x00000d02
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.debug_frame
+		   
+	//	   Offset: 	0x00000018
+	//	   Info: 	0x00000502
+	//	   Type: 	2
+	//	   Symbol value: 0x00000000
+	//	   Symbol name: 	.text.startup
+	//	 */
+
+	//	Dictionary<string, string[][]> readelfResult = readelfOutput
+	//		.Split("Relocation section", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+	//		.Select(l => l.Split("\n"))
+	//		.ToDictionary(l => l[0].Split('\'')[1], l =>
+	//		{
+	//			string[][] tmp = l[2..]
+	//				.Select(ll => ll.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+	//				.ToArray();
+
+	//				if (tmp.All(ll => ll.Length == 5))
+	//					return tmp;
+
+	//				throw new();
+	//			return tmp;
+	//		});
+
+	//	const string FIRST_TABLE = "Table 0 de nom";
+	//	var elfFileResult = elfFileOutput[elfFileOutput.IndexOf(FIRST_TABLE)..]
+	//		.Split("Table ")
+	//		.Skip(1)
+	//		.Select(l => l.Split("\n\n", StringSplitOptions.RemoveEmptyEntries))
+	//		.ToDictionary(l => l[0].Split(new[]{" : ", "\n"}, StringSplitOptions.TrimEntries)[1],
+	//			l =>
+	//			{
+	//				var tmp = l.Select(ll => ll.Split("\n")).ToArray();
+	//				// tmp[0] = tmp[0]
+	//				return tmp;
+	//			});
+	//	string[][] none = elfFileOutput[elfFileOutput.IndexOf(FIRST_TABLE)..]
+	//		.Split("\n\n")
+	//		.SkipLast(2)
+	//		.Select(l => l.Split("\n", StringSplitOptions.TrimEntries)[1..]
+	//			.Select(ll => ll.Split(":", StringSplitOptions.TrimEntries)[1])
+	//			.ToArray())
+	//		.ToArray();
+
+	//	/*Dictionary<string, string> typeReplacements = new()
+	//	{
+	//		["NOTYPE"] = "0",
+	//		["OBJECT"] = "1",
+	//		["FUNC"] = "2",
+	//		["SECTION"] = "3",
+	//		["FILE"] = "4",
+	//		["COMMON"] = "5",
+	//		["TLS"] = "6",
+	//		["NUM"] = "7",
+	//		["LOOS"] = "10",
+	//		["GNU_IFUNC"] = "10",
+	//		["HIOS"] = "12",
+	//		["LOPROC"] = "13",
+	//		["HIPROC"] = "15"
+	//	};
+
+	//	Dictionary<string, string> bindReplacements = new()
+	//	{
+	//		["LOCAL"] = "0",
+	//		["GLOBAL"] = "1",
+	//		["WEAK"] = "2",
+	//		["NUM"] = "3",
+	//		["LOOS"] = "10",
+	//		["GNU_UNIQUE"] = "10",
+	//		["HIOS"] = "12",
+	//		["LOPROC"] = "13",
+	//		["HIPROC"] = "15",
+	//	};
+
+	//	Dictionary<string, string> visibilityReplacements = new()
+	//	{
+	//		["DEFAULT"] = "0",
+	//		["INTERNAL"] = "1",
+	//		["HIDDEN"] = "2",
+	//		["PROTECTED"] = "3",
+	//	};
+
+	//	foreach ((string[] section, int i) in readelfResult.EnumerateWithIndex())
+	//		foreach ((string value, int j) in section.EnumerateWithIndex())
+	//		{
+	//			string expectedValue = value;
+	//			string actualValue = elfFileResult[i][j];
+
+	//			switch (j)
+	//			{
+	//				case 2 or 3 or 4:
+	//					expectedValue = (j switch
+	//					{
+	//						2 => typeReplacements,
+	//						3 => bindReplacements,
+	//						4 => visibilityReplacements,
+	//						_ => throw new ArgumentOutOfRangeException()
+	//					})[expectedValue];
+	//					actualValue = actualValue.Remove(actualValue.IndexOf(" ("));
+	//					break;
+
+	//				case 5:
+	//					expectedValue = expectedValue switch
+	//					{
+	//						"UND" => "UNDEF",
+	//						_ => expectedValue
+	//					};
+	//					break;
+
+	//				case 6:
+	//					if (!expectedValue.Contains("[...]"))
+	//						break;
+
+	//					expectedValue = expectedValue[..expectedValue.IndexOf("[...]")];
+	//					actualValue = actualValue[..expectedValue.Length];
+	//					break;
+	//			}
+
+	//			Assert.AreEqual(expectedValue, actualValue);
+	//		}*/
+	//}
 }
