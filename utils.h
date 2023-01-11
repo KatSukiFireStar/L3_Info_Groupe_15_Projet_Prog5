@@ -117,6 +117,15 @@ void CheckMachineEndian(unsigned char fileEndian);
  */
 size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restrict file);
 
+/**
+ * Permet d'écrire un fichier en fonction de la variable @p needReverse
+ * @param ptr Emplacement de stockage des données
+ * @param size Taille de l'élément en octets
+ * @param number Nombre maximal d'éléments à lire
+ * @param file Pointeur vers la structure FILE
+ * @return fwrite retourne le nombre d’éléments complets écrits par la fonction,
+ * qui peut être inférieur à count si une erreur se produit
+ */
 size_t fwriteEndian(const void *restrict ptr, size_t size, size_t number, FILE *restrict file);
 
 
