@@ -155,3 +155,24 @@ int isLocalSymbolInFusionTable(Elf32_SymbolFusion fusionTable, Elf32_Sym symbol)
     }
     return 0;
 }
+
+void ClearBuffer(FILE *stream)
+{
+    int c;
+    do
+    {
+        c = fgetc(stream);
+    } while (c != '\n');
+}
+
+int GetCharAndClear(FILE *stream)
+{
+    int result = fgetc(stream);
+
+    if (result != '\n')
+    {
+        ClearBuffer(stream);
+    }
+
+    return result;
+}

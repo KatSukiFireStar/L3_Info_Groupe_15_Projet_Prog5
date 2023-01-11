@@ -124,6 +124,8 @@ void FreeSectionFusion(Elf32_SectionFusion fusion);
 
 #pragma endregion
 
+#pragma region Elf32_SymbolFusion
+
 /** Représente les données de fusion des symboles de 2 fichiers */
 typedef struct
 {
@@ -138,6 +140,10 @@ typedef struct
 
 void FreeSymbolFusion(Elf32_SymbolFusion symbolFusion);
 
+#pragma endregion
+
+#pragma region Elf32_RelFusion
+
 /** Représente les données de fusion des sections de 2 fichiers */
 typedef struct
 {
@@ -149,6 +155,8 @@ typedef struct
 } Elf32_RelFusion;
 
 void FreeRelFusion(Elf32_RelFusion relFusion);
+
+#pragma endregion
 
 
 
