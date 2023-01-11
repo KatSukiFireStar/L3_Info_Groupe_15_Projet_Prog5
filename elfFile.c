@@ -27,7 +27,7 @@ void help()
     fprintf(stdout, "s\t: Afficher la table des sections des fichier en paramètres\n");
     fprintf(stdout, "y\t: Afficher la table des symboles des fichier en paramètres\n");
     fprintf(stdout, "r\t: Afficher la table de reimplantation des fichier en paramètres\n");
-    fprintf(stdout, "f\t: Fusionne les header(temporaire)\n");
+    fprintf(stdout, "f\t: Fusionne les fichiers en paramètres\n");
     fprintf(stdout, "q\t: Quitter ce programme\n");
 }
 
@@ -52,11 +52,11 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Vous n'avez pas mis de fichier en paramètres!\n");
         return -3;
     }
-//    else if (argc <= 2)
-//    {
-//        fprintf(stderr, "Vous n'avez mis qu'un seul fichier en paramètres!\n");
-//        return -4;
-//    }
+    else if (argc <= 2)
+    {
+        fprintf(stderr, "Vous n'avez mis qu'un seul fichier en paramètres!\n");
+        return -4;
+    }
 
     for (int i = 1; i < argc; i++)
     {

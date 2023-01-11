@@ -642,7 +642,7 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
     Elf32_Off currentSectionOffset = header.e_ehsize;
     Elf32_Section currentSectionIndex = 1;
     Elf32_Section currentReimIndex = 0;
-    for (int sectionIndexFile0 = 0; sectionIndexFile0 < structures[0].sectionCount; sectionIndexFile0++)
+    for (int sectionIndexFile0 = 1; sectionIndexFile0 < structures[0].sectionCount; sectionIndexFile0++)
     {
         Elf32_Shdr section0 = structures[0].sectionTable[sectionIndexFile0];
         newTable[currentSectionIndex] = section0;
@@ -749,7 +749,7 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
         currentSectionIndex++;
     }
 
-    for (int sectionIndexFile1 = 0; sectionIndexFile1 < structures[1].sectionCount; sectionIndexFile1++)
+    for (int sectionIndexFile1 = 1; sectionIndexFile1 < structures[1].sectionCount; sectionIndexFile1++)
     {
         Elf32_Shdr section1 = structures[1].sectionTable[sectionIndexFile1];
 
@@ -771,7 +771,8 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
                 break;
             case SHT_REL:
             case SHT_RELA:
-                if (sectionFusion.newIndices[sectionIndexFile1] != -1)
+
+                if (relFusion.newIndices[sectionIndexFile1] != -1)
                 {
                     continue;
                 }
@@ -828,12 +829,13 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
                 case SHT_RELA:
                     for (int j = 0; j < structures[1].sectionCount; j++)
                     {
-                        if (relFusion.newIndices[j] == sectionIndex)
+                        if (sectionFusion.newIndices[j] == sectionIndex)
                         {
                             lastSection = &structures[1].sectionTable[j];
                         }
                     }
                     break;
+                default:
             }
         }
 
@@ -935,9 +937,11 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
     fwrite(&header.e_shstrndx, sizeof(Elf32_Half), 1, outputFile);
 
     FILE *progBitTmp = fopen(sectionFusion.tmpFile, "r");
+
     char c = ' ';
     for (int sectionIndex = 1; sectionIndex < currentSectionIndex; sectionIndex++)
     {
+
         switch (newTable[sectionIndex].sh_type)
         {
             case SHT_PROGBITS:
