@@ -87,10 +87,10 @@ même si certains membres manquent à l'appel. Voici ci-après la liste d'appel 
 | 03/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | _Distanciel_            |
 | 04/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | _Distanciel_            |
 | 05/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | _Distantiel_    | _Distanciel_            |
-| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel pendant 1h   |
+| 06/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel 1h           |
 | 09/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | **Absent** le matin     |
 | 10/01/2023 | _Distanciel_ | Présentiel    | Présentiel      | Présentiel     | Présentiel      | _Distanciel_            |
-| 11/01/2023 |              |               |                 |                |                 |                         |
+| 11/01/2023 | Présentiel   | Présentiel    | Présentiel      | Présentiel     | Présentiel      | Présentiel              |
 
 Mercredi 14 decembre : Mise en place de la methode de travail et 
 initialisation des différents outils (Git / Trello / Fichier de code C)
@@ -200,3 +200,5 @@ Mercredi 11 janvier :
 
 - Certains types / machines ne sont pas implémentés et font donc planter le programme
 - Si certaines données sont invalides, le exit ne se fait que lors de l'affichage
+- Plusieurs problemes de mémoires lors de la fusion
+- Le fichier créer n'est pas correct
