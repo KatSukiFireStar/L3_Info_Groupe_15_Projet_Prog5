@@ -12,8 +12,7 @@ openDoc:
 	xdg-open Documentation.html
 
 tests:
-	LANG=en_US
-	dotnet test test --verbosity normal
+	LANG=en_US && dotnet test test --verbosity normal
 
 clean:
 	rm -f elfFile elfFile.o elfStructure.o elfExtract.o elfDisplay.o elfFusion.o utils.o
