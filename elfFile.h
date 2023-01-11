@@ -5,45 +5,90 @@
 #ifndef PROJET_PROG_ELFFILE_H
 #define PROJET_PROG_ELFFILE_H
 
-/** @file */
+/**
+ * @file
+ * Fichier d'en-tête principal. Contient les signatures des méthodes d'extractions et d'affichage
+ */
 
-#include <stdio.h>
 #include <elf.h>
+#include <stdio.h>
 
-#pragma region typdefs and defines
+#include "elfStructure.h"
+
+#pragma region Global variables
 
 /**
- * Alloue un espace mémoire pour un tableau
- * <br>
- * Précondition :
- * <br>
- * - @p element doit être un type c
- * <br>
- * - @p size doit être positif et non nul
- * @param element Type des éléments du tableau
- * @param size Taille du tableau
+ * Indique si les valeurs doivent être inversées lors d'une lecture ou d'une écriture
+ * (fichier en big et machine en little ou inverse)
  */
-#define mallocArray(element, size) malloc(sizeof(element) * size)
-
-/** Représente une table des sections */
-typedef Elf32_Shdr *Elf32_ShdrTable;
-/** Représente une table des symboles */
-typedef Elf32_Sym *Elf32_SymTable;
-/** Représente une table des réimplémentations */
-typedef Elf32_Rel *Elf32_RelTable;
+extern int needReverse;
 
 #pragma endregion
 
-#pragma region Main methods
+#pragma region Extract
 
 /**
- * Affiche et extrait le header d'un fichier ELF
+ * Extrait toutes les informations d'un fichier ELF et créer une structure ELF
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf
+ * @param path Chemin d'acces au fichier ELF
+ * @return Un objet de type ELF32_Structure
+ */
+Elf32_Structure ExtractElfInformation(FILE *elfFile, char *path);
+
+/**
+ * Extrait le header d'un fichier ELF
  * <br>
  * Précondition : @p elfFile doit être ouvert en mode lecture
  * @param elfFile Fichier elf.
  * @return Le header de @p elfFile
  */
-Elf32_Ehdr ShowElfHeader(FILE *elfFile);
+Elf32_Ehdr ExtractHeader(FILE *elfFile);
+
+/**
+ * Extrait la table des sections d'un fichier ELF
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf.
+ * @param header Header du fichier
+ * @return La table des sections de @p elfFile
+ */
+Elf32_ShdrTable ExtractSectionTable(FILE *elfFile, Elf32_Ehdr header);
+
+/**
+ * Extrait la tables des symboles d'un fichier ELF
+ * @param elfFile Fichier elf
+ * @param header Header du fichier @p elfFile
+ * @param sectionTable Table des sections du fichier @p elfFile
+ * @param symbolCount Paramètre out. La valeur de l'adresse prends le nombre de symboles trouvés
+ * @return La table des symboles de @p elfFile
+ */
+Elf32_SymTable ExtractSymbolsTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable, int *symbolCount);
+
+/**
+ * Extrait la table de relocation d'un fichier ELF
+ * <br>
+ * Précondition : @p elfFile doit être ouvert en mode lecture
+ * @param elfFile Fichier elf
+ * @param header Header du fichier @p elfFile
+ * @param sectionTable Table des sections du fichier @p elfFile
+ * @param symbolTable Table des symboles du fichier @p elfFile
+ * @param reimplantationCount Paramètre out. La valeur à l'adresse prends le nombre de table de réimplémentations trouvées
+ * @return Un tableau de Relocation correspondant à la table des sections
+ */
+Elf32_ReimTable ExtractReimplantationTable(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
+                                           int *reimplantationCount);
+
+#pragma endregion
+
+#pragma region Display
+
+/**
+ * Affiche le header d'un fichier ELF
+ * @param header Header du fichier.
+ */
+void ShowElfHeader(Elf32_Ehdr header);
 
 /**
  * Affiche la table des sections ELF et des détails relatifs à chaque section de @p elfFile
@@ -51,9 +96,9 @@ Elf32_Ehdr ShowElfHeader(FILE *elfFile);
  * Précondition : @p elfFile doit être ouvert en mode lecture
  * @param elfFile Fichier elf.
  * @param header Header du fichier
- * @return Un tableau de SectionHeader correpondant à la table des sections
+ * @param sectionTable Table des section du fichier à afficher
  */
-Elf32_ShdrTable ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header);
+void ShowSectionTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable);
 
 /**
  * Affiche le contenu d'une section elf
@@ -83,88 +128,78 @@ void ShowSectionFromName(FILE *elfFile, Elf32_ShdrTable sectionTable, Elf32_Ehdr
  * @param elfFile Fichier elf
  * @param header Header du fichier @p elfFile
  * @param sectionTable Table des sections du fichier @p elfFile
- * @return Un tableau de Symbol correpondant à la table des sections
+ * @param symbolTable Table des symboles du fichier @p elfFile à afficher
  */
-Elf32_SymTable ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable);
+void ShowSymbolsTableAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
+                                Elf32_SymTable symbolTable);
 
 /**
  * Affiche les tables de réimplantation ELF et des détails relatifs à chaque entrée de @p elfFile
  * <br>
  * Précondition : @p elfFile doit être ouvert en mode lecture
  * @param elfFile Fichier elf
- * @param header Header du fichier @p elfFile
- * @param sectionTable Table des sections du fichier @p elfFile
- * @param symbolTable Table des symboles du fichier @p elfFile
- * @return Un tableau de Relocation correpondant à la table des sections
+ * @param structure Structure du fichier @p elfFile
  */
-Elf32_RelTable ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Ehdr header, Elf32_ShdrTable sectionTable,
-                                                  Elf32_SymTable symbolTable);
+void ShowReimplantationTablesAndDetails(FILE *elfFile, Elf32_Structure structure);
 
 #pragma endregion
 
-#pragma region Utils methods
+#pragma region Fusion
 
 /**
- * Obtient l'index de la section avec son nom
+ * Fusionne les 2 fichiers elf
  * <br>
- * Précondition : @p elfFile doit être ouvert en mode lecture
- * @param elfFile Fichier elf
- * @param sectionTable Table des sections
- * @param header Header du fichier @p elfFile
- * @param name Nom de le section à rechercher
- * @return L'index de la section @p name si elle existe. Sinon exit
- */
-Elf32_Word GetSectionIndexByName(FILE *elfFile, Elf32_Shdr *sectionTable, Elf32_Ehdr header, char *name);
-
-/**
- * Affiche la chaîne de caractère depuis une table des strings
+ * Précondition :
  * <br>
- * Précondition : @p elfFile doit être ouvert en mode lecture
- * @param elfFile Fichier elf
- * @param stringTable Table des strings
- * @param offset Offset du string dans la table @p stringTable
- */
-void ShowStringFromIndex(FILE *elfFile, Elf32_Shdr stringTable, Elf32_Word offset);
-
-/**
- * Obtient le nombre d'entrée dans une / plusieurs section d'un type
+ * - @p elfFiles doit être un tableau de 2 fichiers ouverts en lecture
  * <br>
- * Précondition : @p elfFile doit être ouvert en mode lecture
- * @param elfFile Fichier elf
- * @param header Header du fichier @p elfFile
- * @param sectionTable Table des sections du fichier @p elfFile
- * @param type Type de la section
- * @return Le nombre d'entrée dans les sections de type @p type
+ * - @p structure doit être un tableau de 2 structures
+ * @param elfFiles Fichiers elf à fusionner
+ * @param structure Structure des 2 fichiers elf
  */
-Elf32_Half GetEntryCountFromType(Elf32_Ehdr header, Elf32_ShdrTable sectionTable, Elf32_Half type);
+void DoFusionCommand(FILE **elfFiles, Elf32_Structure *structure);
 
 /**
- * Initialise la variable @p needReverse en fonction de l'endian de la machine et de @p fileEndian
- * @param fileEndian Endian du fichier. Si différent de ELFDATA2MSB ou ELFDATA2LSB, @p fileEndian prendra la valeur 0
+ * Fusionne les tables de sections.
+ * <br>
+ * Précondition : chaque fichiers de @p elfFiles doit être ouvert
+ * @param elfFiles Fichiers elf à fusionner
+ * @param elfHeaders Header des 2 fichiers
+ * @param sectionTables Table des sections des 2 fichiers elf
+ * @return Résultat de la fusion
  */
-void CheckMachineEndian(unsigned char fileEndian);
+Elf32_SectionFusion FusionSections(FILE **elfFiles, Elf32_Structure *structure);
 
 /**
- * Permet de lire le fichier elf en fonction de la variable @p needReverse
- * @param ptr Emplacement de stockage des données
- * @param size Taille de l’élément en octets
- * @param number Nombre maximal d’éléments à lire
- * @param file Pointeur vers la structure FILE
- * @return Retourne le nombre d’éléments complets lus par la fonction,
- * qui peut être inférieur à count si une erreur se produit,
- * ou si elle rencontre la fin du fichier avant d’atteindre count.
+ * Fusionne les tables de symboles
+ * <br>
+ * Précondition : chaque fichiers de elfFiles doit être ouvert
+ * @param elfFiles Fichiers elf à fusionner
+ * @param elfHeaders Header des 2 fichiers
+ * @param symbolTables Table de symbole des 2 fichier
+ * @param sectionFusion Fusion des sections des 2 fichiers
+ * @return Le résultat de la fusion
  */
-size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restrict file);
-
-#pragma endregion
-
-#pragma region Global variables
+Elf32_SymbolFusion FusionSymbols(FILE **elfFile, Elf32_Structure *structure, Elf32_SectionFusion sectionFusion);
 
 /**
- * Indique si les valeurs lues doivent être inversées
- * (fichier en big et machine en little ou inverse)
+ * Fusionne les tables de réimplémentation
+ * <br>
+ * Précondition : chaque fichiers de elfFiles doit être ouvert
+ * @param elfFiles Fichiers elf à fusionner
+ * @param structure Structure des 2 fichiers
+ * @param sectionFusion Fusion des sections des 2 fichiers
+ * @param symbolFusion Fusion des symboles des 2 fichiers
+ * @return Le résultat de la fusion
  */
-int needReverse;
+Elf32_RelFusion FusionReimplantation(FILE **elfFiles, Elf32_Structure *structure, Elf32_SectionFusion sectionFusion,
+                                     Elf32_SymbolFusion symbolFusion);
+
+void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32_SectionFusion sectionFusion,
+                 Elf32_SymbolFusion symFusion, Elf32_RelFusion relFusion);
+
+/** Affiche l'aide du programme */
+void help();
 
 #pragma endregion
 

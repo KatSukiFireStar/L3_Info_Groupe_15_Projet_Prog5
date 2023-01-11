@@ -1,4 +1,19 @@
 var searchData=
 [
-  ['freadendian_0',['freadEndian',['../elfFile_8h.html#a0479d547af675b99a4dd3df59d5d3604',1,'elfFile.c']]]
+  ['elf32_5freim_4',['Elf32_Reim',['../structElf32__Reim.html',1,'']]],
+  ['elf32_5freimtable_5',['Elf32_ReimTable',['../elfStructure_8h.html#ae2ea0ee910877c478579d0e44777d18d',1,'elfStructure.h']]],
+  ['elf32_5frelatable_6',['Elf32_RelaTable',['../elfStructure_8h.html#aea239d6afe7de034af35bc834cc22dfa',1,'elfStructure.h']]],
+  ['elf32_5frelfusion_7',['Elf32_RelFusion',['../structElf32__RelFusion.html',1,'']]],
+  ['elf32_5fsectionfusion_8',['Elf32_SectionFusion',['../structElf32__SectionFusion.html',1,'']]],
+  ['elf32_5fshdrtable_9',['Elf32_ShdrTable',['../elfStructure_8h.html#af909f76c31b2301c5623e615956db471',1,'elfStructure.h']]],
+  ['elf32_5fstructure_10',['Elf32_Structure',['../structElf32__Structure.html',1,'']]],
+  ['elf32_5fsymbolfusion_11',['Elf32_SymbolFusion',['../structElf32__SymbolFusion.html',1,'']]],
+  ['elf32_5fsymtable_12',['Elf32_SymTable',['../elfStructure_8h.html#ad9a7d41d2b4a95d426c75f16b926e0f7',1,'elfStructure.h']]],
+  ['elffile_2eh_13',['elfFile.h',['../elfFile_8h.html',1,'']]],
+  ['elfstructure_2eh_14',['elfStructure.h',['../elfStructure_8h.html',1,'']]],
+  ['extractelfinformation_15',['ExtractElfInformation',['../elfFile_8h.html#a19ae190d378c6090b327ca358c130861',1,'elfExtract.c']]],
+  ['extractheader_16',['ExtractHeader',['../elfFile_8h.html#a27ba046fdd1470f335e7379cbcab8f50',1,'elfExtract.c']]],
+  ['extractreimplantationtable_17',['ExtractReimplantationTable',['../elfFile_8h.html#a82028fcc52b3bb15fbc1149da754e4a9',1,'elfExtract.c']]],
+  ['extractsectiontable_18',['ExtractSectionTable',['../elfFile_8h.html#ac854b60ad3231b4b2618433475e96ee8',1,'elfExtract.c']]],
+  ['extractsymbolstable_19',['ExtractSymbolsTable',['../elfFile_8h.html#a1fffc3393c1db5b07e408be35601b9c0',1,'elfExtract.c']]]
 ];

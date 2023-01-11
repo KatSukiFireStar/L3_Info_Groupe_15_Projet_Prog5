@@ -3,9 +3,16 @@ CFLAGS=-g -Wall -Werror -Wno-unknown-pragmas
 
 all: elfFile
 
-elfFile: elfFile.o
+elfFile: elfStructure.o elfFile.o elfExtract.o elfDisplay.o elfFusion.o utils.o
 
-%.o: %.c %.h
+docs:
+	doxygen Doxyfile
+
+openDoc:
+	xdg-open Documentation.html
+
+tests:
+	LANG=en_US && dotnet test test --verbosity normal
 
 clean:
-	rm -f elfFile elfFile.o
+	rm -f elfFile elfFile.o elfStructure.o elfExtract.o elfDisplay.o elfFusion.o utils.o
