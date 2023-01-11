@@ -67,6 +67,11 @@ size_t fwriteEndian(const void *restrict ptr, size_t size, size_t number, FILE *
         return fwrite(ptr, size, number, file);
     }
 
+    if (size == 1)
+    {
+        return fwrite(ptr, size, number, file);
+    }
+
     void *tmpPtr = malloc(size * number);
 
     for (int i = 0; i < number; i++)
@@ -75,17 +80,25 @@ size_t fwriteEndian(const void *restrict ptr, size_t size, size_t number, FILE *
         {
             case 2:
             {
+                uint16_t *intPtr = (uint16_t *) ptr;
                 uint16_t *tmpIntPtr = tmpPtr;
+
+                intPtr += i;
                 tmpIntPtr += i;
-                *tmpIntPtr = ((((*tmpIntPtr) & 0xFF) << 8) | (((*tmpIntPtr) >> 8) & 0xFF));
+
+                *tmpIntPtr = ((((*intPtr) & 0xFF) << 8) | (((*intPtr) >> 8) & 0xFF));
                 break;
             }
             case 4:
             {
+                uint32_t *intPtr = (uint32_t *) ptr;
                 uint32_t *tmpIntPtr = (uint32_t *) ptr;
+
+                intPtr += i;
                 tmpIntPtr += i;
-                *tmpIntPtr = ((((*tmpIntPtr) & 0xFF) << 24) | ((((*tmpIntPtr) >> 8) & 0xFF) << 16) |
-                              ((((*tmpIntPtr) >> 16) & 0xFF) << 8) | (((*tmpIntPtr) >> 24) & 0xFF));
+
+                *tmpIntPtr = ((((*intPtr) & 0xFF) << 24) | ((((*intPtr) >> 8) & 0xFF) << 16) |
+                              ((((*intPtr) >> 16) & 0xFF) << 8) | (((*intPtr) >> 24) & 0xFF));
                 break;
             }
         }

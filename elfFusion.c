@@ -694,13 +694,13 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
                     break;
                 }
 
-
                 for (int reimIndexFile1 = 0; reimIndexFile1 < structures[1].reimplantationCount; reimIndexFile1++)
                 {
                     if (relFusion.newIndices[reimIndexFile1] == currentReimIndex)
                     {
                         concatenatedSection = &structures[1].sectionTable[reimIndexFile1];
                         currentReimIndex++;
+
                         break;
                     }
                 }
@@ -719,11 +719,20 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
                 newTable[currentSectionIndex].sh_entsize = sizeof(Elf32_Rela);
 
                 concatenatedSection = NULL;
-                for (int sectionIndexFile1 = 0; sectionIndexFile1 < structures[1].sectionCount; sectionIndexFile1++)
+
+                if (currentSectionIndex >= structures[0].sectionCount)
                 {
-                    if (relFusion.newIndices[sectionIndexFile1] == sectionIndexFile0)
+                    break;
+                }
+
+                for (int reimIndexFile1 = 0; reimIndexFile1 < structures[1].reimplantationCount; reimIndexFile1++)
+                {
+                    if (relFusion.newIndices[reimIndexFile1] == currentReimIndex)
                     {
-                        concatenatedSection = &structures[1].sectionTable[sectionIndexFile1];
+                        concatenatedSection = &structures[1].sectionTable[reimIndexFile1];
+
+                        currentReimIndex++;
+                        break;
                     }
                 }
 
@@ -908,24 +917,25 @@ void ElfCreation(char *output, FILE **inputs, Elf32_Structure *structures, Elf32
 
     FILE *outputFile = fopen(output, "w");
 
+    CheckMachineEndian(ELFDATA2MSB);
     //ecriture du header
     fwriteEndian(&header.e_ident, sizeof(unsigned char), EI_NIDENT, outputFile);
-    fwriteEndian(&header.e_type, sizeof(Elf32_Half), 1, outputFile);
-    fwriteEndian(&header.e_machine, sizeof(Elf32_Half), 1, outputFile);
-    fwriteEndian(&header.e_version, sizeof(Elf32_Word), 1, outputFile);
-    fwriteEndian(&header.e_entry, sizeof(Elf32_Addr), 1, outputFile);
-    fwriteEndian(&header.e_phoff, sizeof(Elf32_Off), 1, outputFile);
-    fwriteEndian(&header.e_shoff, sizeof(Elf32_Off), 1, outputFile);
-    fwriteEndian(&header.e_flags, sizeof(Elf32_Word), 1, outputFile);
-    fwriteEndian(&header.e_ehsize, sizeof(Elf32_Half), 1, outputFile);
-    fwriteEndian(&header.e_phentsize, sizeof(Elf32_Half), 1, outputFile);
-    fwriteEndian(&header.e_phnum, sizeof(Elf32_Half), 1, outputFile);
-    fwriteEndian(&header.e_shentsize, sizeof(Elf32_Half), 1, outputFile);
-    fwriteEndian(&header.e_shnum, sizeof(Elf32_Half), 1, outputFile);
-    fwriteEndian(&header.e_shstrndx, sizeof(Elf32_Half), 1, outputFile);
+    fwrite(&header.e_type, sizeof(Elf32_Half), 1, outputFile);
+    fwrite(&header.e_machine, sizeof(Elf32_Half), 1, outputFile);
+    fwrite(&header.e_version, sizeof(Elf32_Word), 1, outputFile);
+    fwrite(&header.e_entry, sizeof(Elf32_Addr), 1, outputFile);
+    fwrite(&header.e_phoff, sizeof(Elf32_Off), 1, outputFile);
+    fwrite(&header.e_shoff, sizeof(Elf32_Off), 1, outputFile);
+    fwrite(&header.e_flags, sizeof(Elf32_Word), 1, outputFile);
+    fwrite(&header.e_ehsize, sizeof(Elf32_Half), 1, outputFile);
+    fwrite(&header.e_phentsize, sizeof(Elf32_Half), 1, outputFile);
+    fwrite(&header.e_phnum, sizeof(Elf32_Half), 1, outputFile);
+    fwrite(&header.e_shentsize, sizeof(Elf32_Half), 1, outputFile);
+    fwrite(&header.e_shnum, sizeof(Elf32_Half), 1, outputFile);
+    fwrite(&header.e_shstrndx, sizeof(Elf32_Half), 1, outputFile);
 
     FILE *progBitTmp = fopen(sectionFusion.tmpFile, "r");
-    char c;
+    char c = ' ';
     for (int sectionIndex = 1; sectionIndex < currentSectionIndex; sectionIndex++)
     {
         switch (newTable[sectionIndex].sh_type)
