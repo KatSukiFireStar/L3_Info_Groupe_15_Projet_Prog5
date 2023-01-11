@@ -52,11 +52,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Vous n'avez pas mis de fichier en paramètres!\n");
         return -3;
     }
-    else if (argc <= 2)
-    {
-        fprintf(stderr, "Vous n'avez mis qu'un seul fichier en paramètres!\n");
-        return -4;
-    }
+    
 
     for (int i = 1; i < argc; i++)
     {
@@ -123,6 +119,11 @@ int main(int argc, char *argv[])
                 printf("\n");
                 break;
             case 'f':
+                if (argc <= 2)
+                {
+                    fprintf(stderr, "Vous n'avez mis qu'un seul fichier en paramètres!\n");
+                    return -4;
+                }
                 elfFiles[0] = fopen(argv[1], "r");
                 elfFiles[1] = fopen(argv[2], "r");
 
