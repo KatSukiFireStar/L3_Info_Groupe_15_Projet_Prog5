@@ -128,11 +128,21 @@ size_t freadEndian(void *restrict ptr, size_t size, size_t number, FILE *restric
  */
 size_t fwriteEndian(const void *restrict ptr, size_t size, size_t number, FILE *restrict file);
 
-
-int isLocalSymbolInFusionTable(Elf32_SymbolFusion fusionTable, Elf32_Sym symbol);
-
+/**
+ * Vide le buffer de @p stream (avance jusqu'à rencontrer une \\n)
+ * <br>
+ * Préconditions : @p stream doit être accessible en lecture
+ * @param stream Stram à vider
+ */
 void ClearBuffer(FILE *stream);
 
+/**
+ * Obtient le caractère en input et clear @p stream
+ * <br>
+ * Préconditions : @p stream doit être accessible en lecture
+ * @param stream Stream à lire puis vider
+ * @return Le caractère lu
+ */
 int GetCharAndClear(FILE *stream);
 
 #endif //PROJET_PROG_UTILS_H
