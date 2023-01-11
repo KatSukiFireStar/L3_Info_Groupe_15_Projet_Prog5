@@ -6,7 +6,7 @@ all: elfFile
 elfFile: elfStructure.o elfFile.o elfExtract.o elfDisplay.o elfFusion.o utils.o
 
 docs:
-	doxygen DOXYFILE
+	doxygen Doxyfile
 
 tests:
 	dotnet test test --verbosity normal

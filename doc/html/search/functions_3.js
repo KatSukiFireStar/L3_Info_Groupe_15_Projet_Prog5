@@ -5,5 +5,6 @@ var searchData=
   ['freesectionfusion_2',['FreeSectionFusion',['../elfStructure_8h.html#a747b86ad1ca395db95235b7d51c0c88e',1,'elfStructure.c']]],
   ['fusionreimplantation_3',['FusionReimplantation',['../elfFile_8h.html#a3144f86bfcb8a1f1b415ba4df07f8688',1,'elfFusion.c']]],
   ['fusionsections_4',['FusionSections',['../elfFile_8h.html#a2a0a607fab490d50dd36cfe3d49e8909',1,'elfFusion.c']]],
-  ['fusionsymbols_5',['FusionSymbols',['../elfFile_8h.html#afb4aeb55ca0bc4ba4a3740392bd640f4',1,'elfFusion.c']]]
+  ['fusionsymbols_5',['FusionSymbols',['../elfFile_8h.html#afb4aeb55ca0bc4ba4a3740392bd640f4',1,'elfFusion.c']]],
+  ['fwriteendian_6',['fwriteEndian',['../utils_8h.html#a238698ba416a7ac2afe3850c1c0497c4',1,'utils.c']]]
 ];

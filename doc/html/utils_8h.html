@@ -114,12 +114,12 @@ Functions</h2></td></tr>
 <tr class="separator:a88bf933dd8e43ab559d8539c7c67b3b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0479d547af675b99a4dd3df59d5d3604"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#a0479d547af675b99a4dd3df59d5d3604">freadEndian</a> (void *restrict ptr, size_t size, size_t number, FILE *restrict file)</td></tr>
 <tr class="separator:a0479d547af675b99a4dd3df59d5d3604"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a238698ba416a7ac2afe3850c1c0497c4"><td class="memItemLeft" align="right" valign="top"><a id="a238698ba416a7ac2afe3850c1c0497c4" name="a238698ba416a7ac2afe3850c1c0497c4"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>fwriteEndian</b> (const void *restrict ptr, size_t size, size_t number, FILE *restrict file)</td></tr>
+<tr class="memitem:a238698ba416a7ac2afe3850c1c0497c4"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#a238698ba416a7ac2afe3850c1c0497c4">fwriteEndian</a> (const void *restrict ptr, size_t size, size_t number, FILE *restrict file)</td></tr>
 <tr class="separator:a238698ba416a7ac2afe3850c1c0497c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa65980f38fd2cfe7888a36903e45b042"><td class="memItemLeft" align="right" valign="top"><a id="aa65980f38fd2cfe7888a36903e45b042" name="aa65980f38fd2cfe7888a36903e45b042"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>isLocalSymbolInFusionTable</b> (<a class="el" href="structElf32__SymbolFusion.html">Elf32_SymbolFusion</a> fusionTable, Elf32_Sym symbol)</td></tr>
-<tr class="separator:aa65980f38fd2cfe7888a36903e45b042"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34546e724dcf143ed698277385dcf132"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#a34546e724dcf143ed698277385dcf132">ClearBuffer</a> (FILE *stream)</td></tr>
+<tr class="separator:a34546e724dcf143ed698277385dcf132"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98401d7487aace0cf11e94e0e821da3c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="utils_8h.html#a98401d7487aace0cf11e94e0e821da3c">GetCharAndClear</a> (FILE *stream)</td></tr>
+<tr class="separator:a98401d7487aace0cf11e94e0e821da3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Fichier d'en-tête utilitaires </p>
@@ -341,6 +341,31 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>isLocalSymbolInFusionT
 
 </div>
 </div>
+<a id="a34546e724dcf143ed698277385dcf132" name="a34546e724dcf143ed698277385dcf132"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34546e724dcf143ed698277385dcf132">&#9670;&nbsp;</a></span>ClearBuffer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ClearBuffer </td>
+          <td>(</td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>stream</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Vide le buffer de <code>stream</code> (avance jusqu'à rencontrer une \n) <br  />
+ Préconditions : <code>stream</code> doit être accessible en lecture </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Stram à vider </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a0479d547af675b99a4dd3df59d5d3604" name="a0479d547af675b99a4dd3df59d5d3604"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0479d547af675b99a4dd3df59d5d3604">&#9670;&nbsp;</a></span>freadEndian()</h2>
 
@@ -388,6 +413,82 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>isLocalSymbolInFusionT
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Retourne le nombre d’éléments complets lus par la fonction, qui peut être inférieur à count si une erreur se produit, ou si elle rencontre la fin du fichier avant d’atteindre count. </dd></dl>
+
+</div>
+</div>
+<a id="a238698ba416a7ac2afe3850c1c0497c4" name="a238698ba416a7ac2afe3850c1c0497c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a238698ba416a7ac2afe3850c1c0497c4">&#9670;&nbsp;</a></span>fwriteEndian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t fwriteEndian </td>
+          <td>(</td>
+          <td class="paramtype">const void *restrict&#160;</td>
+          <td class="paramname"><em>ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>number</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FILE *restrict&#160;</td>
+          <td class="paramname"><em>file</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Permet d'écrire un fichier en fonction de la variable <code>needReverse</code> </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ptr</td><td>Emplacement de stockage des données </td></tr>
+    <tr><td class="paramname">size</td><td>Taille de l'élément en octets </td></tr>
+    <tr><td class="paramname">number</td><td>Nombre maximal d'éléments à lire </td></tr>
+    <tr><td class="paramname">file</td><td>Pointeur vers la structure FILE </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>fwrite retourne le nombre d’éléments complets écrits par la fonction, qui peut être inférieur à count si une erreur se produit </dd></dl>
+
+</div>
+</div>
+<a id="a98401d7487aace0cf11e94e0e821da3c" name="a98401d7487aace0cf11e94e0e821da3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98401d7487aace0cf11e94e0e821da3c">&#9670;&nbsp;</a></span>GetCharAndClear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int GetCharAndClear </td>
+          <td>(</td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>stream</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Obtient le caractère en input et clear <code>stream</code> <br  />
+ Préconditions : <code>stream</code> doit être accessible en lecture </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream</td><td>Stream à lire puis vider </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Le caractère lu </dd></dl>
 
 </div>
 </div>
